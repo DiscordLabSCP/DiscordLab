@@ -2,7 +2,7 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.Bot", "DiscordLab.Bot\DiscordLab.Bot.csproj", "{108A7588-D546-40F7-96A5-A46301CA7D47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.StatusChannel", "DiscordLab.StatusChannel\DiscordLab.StatusChannel.csproj", "{1EC41DF2-7FFF-433A-9459-6A0EBBA737BE}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.StatusModule", "DiscordLab.StatusModule\DiscordLab.StatusModule.csproj", "{1EC41DF2-7FFF-433A-9459-6A0EBBA737BE}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
