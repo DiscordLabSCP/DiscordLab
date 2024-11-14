@@ -1,13 +1,18 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.Interfaces;
 using Exiled.API.Features;
 using UnityEngine.PlayerLoop;
 
 namespace DiscordLab.Bot;
 
-public class Discord
+public class Discord : IRegisterable
 {
     public static Discord Instance;
+    
+    public static DiscordSocketClient Client;
+    
+    public static SocketGuild Guild;
 
     public void Init()
     {
@@ -20,8 +25,6 @@ public class Discord
         Task.Run(StopClient);
     }
     
-    private static DiscordSocketClient Client;
-    
     private static async Task StartClient()
     {
         DiscordSocketConfig config = new()
@@ -31,6 +34,7 @@ public class Discord
         };
         Client = new(config);
         Client.Log += DiscordLog;
+        Client.Ready += Ready;
         
         await Client.LoginAsync(TokenType.Bot, Plugin.Instance.Config.Token);
         await Client.StartAsync();
@@ -45,6 +49,12 @@ public class Discord
     private static Task DiscordLog(LogMessage msg)
     {
         Log.Info(msg);
+        return Task.CompletedTask;
+    }
+
+    private static Task Ready()
+    {
+        Guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
         return Task.CompletedTask;
     }
 }
