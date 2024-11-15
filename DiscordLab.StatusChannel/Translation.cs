@@ -1,11 +1,10 @@
 ﻿using Exiled.API.Interfaces;
 
-namespace DiscordLab.StatusModule;
+namespace DiscordLab.StatusChannel;
 
 public class Translation : ITranslation
 {
     public string EmbedTitle { get; set; } = "Server Status";
     public string EmbedStartDescription { get; set; } = "{current}/{max} currently online";
     public string WaitingForPlayers { get; set; } = "Waiting for players...";
-    public string BotStatus { get; set; } = "{current/max} players";
 }

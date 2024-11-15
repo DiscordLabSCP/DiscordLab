@@ -23,8 +23,8 @@ After you have configured the bot, start your server and the bot should start up
 
 ## Modules
 
-- `DiscordLab.StatusModule.dll` - Will set the bot's custom status to the server's player count. Will
-also make a message inside a preset channel with the player count in a pretty embed.
+- `DiscordLab.StatusChannel.dll` - Will create a message in the set channel with the current status of the server. If there is already a message by the bot then it will edit that.
+- `DiscordLab.BotStatus.dll` - Will set the bot's status to the current server status.
 
 ## Requesting modules
 

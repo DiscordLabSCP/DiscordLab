@@ -10,7 +10,7 @@ namespace DiscordLab.Bot.Handlers
     {
         public static DiscordBot Instance { get; private set; }
         
-        private DiscordSocketClient Client { get; set; }
+        public DiscordSocketClient Client { get; private set; }
 
         public SocketGuild Guild;
 

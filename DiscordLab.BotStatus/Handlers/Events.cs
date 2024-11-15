@@ -2,41 +2,43 @@
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 
-namespace DiscordLab.StatusModule;
+namespace DiscordLab.BotStatus.Handlers;
 
 public class Events : IRegisterable
 {
     public void Init()
     {
+        Exiled.Events.Handlers.Server.WaitingForPlayers += OnWaitingForPlayers;
+        Exiled.Events.Handlers.Server.RoundStarted += OnRoundStarted;
         Exiled.Events.Handlers.Player.Verified += OnPlayerVerified;
         Exiled.Events.Handlers.Player.Left += OnPlayerLeave;
-        Exiled.Events.Handlers.Server.WaitingForPlayers += OnWaitingForPlayers;
     }
     
     public void Unregister()
     {
+        Exiled.Events.Handlers.Server.WaitingForPlayers -= OnWaitingForPlayers;
+        Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStarted;
         Exiled.Events.Handlers.Player.Verified -= OnPlayerVerified;
         Exiled.Events.Handlers.Player.Left -= OnPlayerLeave;
-        Exiled.Events.Handlers.Server.WaitingForPlayers -= OnWaitingForPlayers;
     }
-
+    
     private void OnPlayerVerified(VerifiedEventArgs ev)
     {
-        if(!Round.IsStarted) return;
-        Plugin.Instance.Discord.SetStatus();
-        Plugin.Instance.Discord.SetCustomStatus();
+        if(Round.InProgress) DiscordBot.Instance.SetStatus();
     }
-
+    
     private void OnPlayerLeave(LeftEventArgs ev)
     {
-        if(!Round.IsStarted) return;
-        Plugin.Instance.Discord.SetStatus();
-        Plugin.Instance.Discord.SetCustomStatus();
+        if(Round.InProgress) DiscordBot.Instance.SetStatus();
     }
 
+    private void OnRoundStarted()
+    {
+        DiscordBot.Instance.SetStatus();
+    }
+    
     private void OnWaitingForPlayers()
     {
-        Plugin.Instance.Discord.SetStatus();
-        Plugin.Instance.Discord.SetCustomStatus();
+        DiscordBot.Instance.SetStatus();
     }
 }

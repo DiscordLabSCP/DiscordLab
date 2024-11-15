@@ -4,11 +4,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("DiscordLab.StatusModule")]
+[assembly: AssemblyTitle("DiscordLab.BotStatus")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("DiscordLab.StatusModule")]
+[assembly: AssemblyProduct("DiscordLab.BotStatus")]
 [assembly: AssemblyCopyright("Copyright ©  2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
@@ -19,7 +19,7 @@ using System.Runtime.InteropServices;
 [assembly: ComVisible(false)]
 
 // The following GUID is for the ID of the typelib if this project is exposed to COM
-[assembly: Guid("1EC41DF2-7FFF-433A-9459-6A0EBBA737BE")]
+[assembly: Guid("C2E4178B-327D-4D87-BAB3-6F5582F1745F")]
 
 // Version information for an assembly consists of the following four values:
 //
