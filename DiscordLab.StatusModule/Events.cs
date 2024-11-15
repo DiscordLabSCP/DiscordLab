@@ -1,8 +1,8 @@
-﻿using DiscordLab.Bot.Interfaces;
+﻿using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 
-namespace DiscordLab.StatusChannel;
+namespace DiscordLab.StatusModule;
 
 public class Events : IRegisterable
 {
@@ -22,12 +22,14 @@ public class Events : IRegisterable
 
     private void OnPlayerVerified(VerifiedEventArgs ev)
     {
+        if(!Round.IsStarted) return;
         Plugin.Instance.Discord.SetStatus();
         Plugin.Instance.Discord.SetCustomStatus();
     }
 
     private void OnPlayerLeave(LeftEventArgs ev)
     {
+        if(!Round.IsStarted) return;
         Plugin.Instance.Discord.SetStatus();
         Plugin.Instance.Discord.SetCustomStatus();
     }

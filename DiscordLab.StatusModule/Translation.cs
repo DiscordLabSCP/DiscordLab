@@ -1,6 +1,6 @@
 ﻿using Exiled.API.Interfaces;
 
-namespace DiscordLab.StatusChannel;
+namespace DiscordLab.StatusModule;
 
 public class Translation : ITranslation
 {

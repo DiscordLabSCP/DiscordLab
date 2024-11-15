@@ -1,7 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 
-namespace DiscordLab.Bot.Extensions;
+namespace DiscordLab.Bot.API.Extensions;
 
 public static class IMessageExtensions
 {
