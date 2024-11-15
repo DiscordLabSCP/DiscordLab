@@ -8,6 +8,7 @@
       Newtonsoft.Json
       System.Collections.Immutable
       System.Threading.Tasks.Extensions
+      System.ValueTuple
     </IncludeAssemblies>
   </Costura>
 </Weavers>
