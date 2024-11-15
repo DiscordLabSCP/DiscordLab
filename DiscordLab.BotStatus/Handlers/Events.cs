@@ -29,7 +29,7 @@ public class Events : IRegisterable
     
     private void OnPlayerLeave(LeftEventArgs ev)
     {
-        if(Round.InProgress) DiscordBot.Instance.SetStatus();
+        if(Round.InProgress) DiscordBot.Instance.SetStatus(Player.List.Count(p => p != ev.Player));
     }
 
     private void OnRoundStarted()

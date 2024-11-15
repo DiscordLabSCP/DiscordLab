@@ -30,11 +30,12 @@ public class DiscordBot : IRegisterable
         return StatusChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
     }
 
-    public void SetStatusMessage()
+    public void SetStatusMessage(IEnumerable<Player> players = null)
     {
-        string description = Round.InProgress ? string.Join("\n", Player.List.Select(player => "- " + player.Nickname)) : Translation.WaitingForPlayers;
+        players ??= Player.List.ToList();
+        string description = Round.InProgress ? string.Join("\n", players.Select(player => "- " + player.Nickname)) : Translation.WaitingForPlayers;
         string prefix =
-            $"{Plugin.Instance.Translation.EmbedStartDescription.Replace("{current}", Server.PlayerCount.ToString()).Replace("{max}", Server.MaxPlayerCount.ToString())}\n";
+            $"{Plugin.Instance.Translation.EmbedStartDescription.Replace("{current}", players.Count().ToString()).Replace("{max}", Server.MaxPlayerCount.ToString())}\n";
         string fullDescription = Round.InProgress ? prefix + description : description;
         EmbedBuilder embed = new EmbedBuilder()
             .WithTitle(Translation.EmbedTitle)

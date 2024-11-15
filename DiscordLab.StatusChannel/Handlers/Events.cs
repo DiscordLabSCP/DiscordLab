@@ -39,6 +39,6 @@ public class Events : IRegisterable
     
     private void OnPlayerLeave(LeftEventArgs ev)
     {
-        if(Round.InProgress) DiscordBot.Instance.SetStatusMessage();
+        if(Round.InProgress) DiscordBot.Instance.SetStatusMessage(Player.List.Where(p => p != ev.Player));
     }
 }

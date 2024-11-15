@@ -19,9 +19,10 @@ public class DiscordBot : IRegisterable
         // Nothing to unregister here yippie!
     }
 
-    public void SetStatus()
+    public void SetStatus(int? count = null)
     {
-        string status = Round.InProgress ? Translation.StatusMessage.Replace("{current}", Server.PlayerCount.ToString()).Replace("{max}", Server.MaxPlayerCount.ToString()) : Translation.WaitingForPlayers;
+        count ??= Server.PlayerCount;
+        string status = Round.InProgress ? Translation.StatusMessage.Replace("{current}", count.ToString()).Replace("{max}", Server.MaxPlayerCount.ToString()) : Translation.WaitingForPlayers;
         if (Bot.Handlers.DiscordBot.Instance.Client.Activity?.ToString().Trim() == status) return;
         try
         {
