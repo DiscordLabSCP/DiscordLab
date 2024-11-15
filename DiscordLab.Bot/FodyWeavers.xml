@@ -6,6 +6,7 @@
       Discord.Net.Rest
       Microsoft.Bcl.AsyncInterfaces
       Newtonsoft.Json
+      System.Collections.Immutable
     </IncludeAssemblies>
   </Costura>
 </Weavers>

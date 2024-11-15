@@ -33,7 +33,6 @@ namespace DiscordLab.Bot.Handlers
 
         private async Task StartClient()
         {
-            Log.Info("test");
             DiscordSocketConfig config = new()
             {
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
