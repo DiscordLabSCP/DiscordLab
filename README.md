@@ -26,6 +26,8 @@ After you have configured the bot, start your server and the bot should start up
 
 - `DiscordLab.StatusChannel.dll` - Will create a message in the set channel with the current status of the server. If there is already a message by the bot then it will edit that.
 - `DiscordLab.BotStatus.dll` - Will set the bot's status to the current server status.
+- `DiscordLab.ConnectionLogs.dll` - Will send a message in a specific channel when people connect, disconnect or when round starts.
+- `DiscordLab.DeathLogs.dll` - Will send a message in a specific channel when someone dies, or gets killed when cuffed (good for moderation purposes, if needed)
 
 ## Requesting modules
 
