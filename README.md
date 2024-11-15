@@ -5,8 +5,9 @@ features you want on your Discord server/bot. This allows you to have a Discord 
 
 ## Get started
 
-Go to the [Releases](https://github.com/JayXTQ/DiscordLab/releases/latest) and download the latest version
-of `DiscordLab.Bot.dll` and all other modules you want for your bot. If you are curious about modules please go to
+Go to the [Releases](https://github.com/JayXTQ/DiscordLab/releases) and download the latest version
+of `DiscordLab.Bot.dll` and all other modules you want for your bot (make sure you have a look for the latest version of your module released, 
+it could cause issues if you download an outdated one). If you are curious about modules please go to
 the [Modules](#modules) section. After downloading the files, put them in your EXILED plugins folder and start
 your server.
 
