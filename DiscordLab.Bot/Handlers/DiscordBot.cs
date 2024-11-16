@@ -27,16 +27,18 @@ namespace DiscordLab.Bot.Handlers
 
         private Task DiscLog(LogMessage msg)
         {
-            PluginAPI.Core.Log.Info(msg.ToString());
+            if(msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Critical) Log.Error(msg);
+            else Log.Info(msg);
             return Task.CompletedTask;
         }
 
         private async Task StartClient()
         {
+            Log.Debug("Starting Discord client...");
             DiscordSocketConfig config = new()
             {
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
-                LogLevel = LogSeverity.Error
+                LogLevel = Plugin.Instance.Config.Debug ? LogSeverity.Debug : LogSeverity.Warning
             };
             Client = new(config);
             Client.Log += DiscLog;
