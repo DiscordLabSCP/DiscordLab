@@ -22,7 +22,8 @@ public class DiscordBot : IRegisterable
     public void SetStatus(int? count = null)
     {
         count ??= Server.PlayerCount;
-        string status = Round.InProgress ? Translation.StatusMessage.Replace("{current}", count.ToString()).Replace("{max}", Server.MaxPlayerCount.ToString()) : Translation.WaitingForPlayers;
+        string status = Translation.StatusMessage.Replace("{current}", count.ToString())
+            .Replace("{max}", Server.MaxPlayerCount.ToString());
         if (Bot.Handlers.DiscordBot.Instance.Client.Activity?.ToString().Trim() == status) return;
         try
         {

@@ -33,10 +33,10 @@ public class DiscordBot : IRegisterable
     public void SetStatusMessage(IEnumerable<Player> players = null)
     {
         players ??= Player.List.ToList();
-        string description = Round.InProgress ? string.Join("\n", players.Select(player => "- " + player.Nickname)) : Translation.WaitingForPlayers;
+        string description = string.Join("\n", players.Select(player => "- " + player.Nickname));
         string prefix =
             $"{Plugin.Instance.Translation.EmbedStartDescription.Replace("{current}", players.Count().ToString()).Replace("{max}", Server.MaxPlayerCount.ToString())}\n";
-        string fullDescription = Round.InProgress ? prefix + description : description;
+        string fullDescription = prefix + description;
         EmbedBuilder embed = new EmbedBuilder()
             .WithTitle(Translation.EmbedTitle)
             .WithColor(Color.Blue)

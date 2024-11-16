@@ -1,4 +1,5 @@
 ﻿using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Bot.API.Modules;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 
@@ -25,11 +26,13 @@ public class Events : IRegisterable
     private void OnPlayerVerified(VerifiedEventArgs ev)
     {
         if(Round.InProgress) DiscordBot.Instance.SetStatus();
+        else QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerVerified", () => DiscordBot.Instance.SetStatus());
     }
     
     private void OnPlayerLeave(LeftEventArgs ev)
     {
         if(Round.InProgress) DiscordBot.Instance.SetStatus(Player.List.Count(p => p != ev.Player));
+        else QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerLeave", () => DiscordBot.Instance.SetStatus(Player.List.Count(p => p != ev.Player)));
     }
 
     private void OnRoundStarted()
