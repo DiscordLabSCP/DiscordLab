@@ -1,5 +1,4 @@
 ﻿name: "Build Project"
-description: "Build the project and upload artifacts"
 
 on:
   push:
@@ -22,7 +21,7 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore DiscordLab.sln
       - name: Build with msbuild
-        run: msbuild DiscordLab.sln -t:rebuild /p:Configuration=Debug
+        run: msbuild DiscordLab.sln -t:rebuild /p:Configuration=Debug /p:LangVersion=latest
       - name: Archive artifacts
         uses: actions/upload-artifact@v4
         with:
