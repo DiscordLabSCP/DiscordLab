@@ -19,10 +19,12 @@ public class Events : IRegisterable
 
     private void OnPlayerDying(DyingEventArgs ev)
     {
-        if (ev.Attacker == null || ev.Player == ev.Attacker) return;
+        if (ev.Player == ev.Attacker) return;
         SocketTextChannel channel;
         bool isCuffed = ev.Player.IsCuffed;
-
+        
+        if (ev.Attacker == null) isCuffed = false;
+        
         if (isCuffed)
         {
             channel = DiscordBot.Instance.GetCuffedChannel();
@@ -34,7 +36,9 @@ public class Events : IRegisterable
         } 
         else
         {
-            channel = DiscordBot.Instance.GetChannel();
+            if(ev.Attacker != null)
+                channel = DiscordBot.Instance.GetChannel();
+            else channel = DiscordBot.Instance.GetSelfChannel();
         }
 
         if (channel == null)
@@ -42,8 +46,6 @@ public class Events : IRegisterable
             Log.Error("Either the guild is null or the channel is null. So the death message has failed to send.");
             return;
         }
-
-        if (ev.Attacker == null) isCuffed = false;
 
         string message =
             (isCuffed ? Plugin.Instance.Translation.CuffedPlayerDeath :

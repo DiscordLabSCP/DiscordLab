@@ -9,6 +9,7 @@ public class DiscordBot : IRegisterable
     
     private SocketTextChannel Channel { get; set; }
     private SocketTextChannel CuffedChannel { get; set; }
+    private SocketTextChannel SelfChannel { get; set; }
     
     public void Init()
     {
@@ -30,5 +31,11 @@ public class DiscordBot : IRegisterable
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         return CuffedChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
+    }
+
+    public SocketTextChannel GetSelfChannel()
+    {
+        if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        return SelfChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
     }
 }
