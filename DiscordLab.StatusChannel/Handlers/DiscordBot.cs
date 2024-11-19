@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Globalization;
+using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
@@ -39,7 +40,7 @@ public class DiscordBot : IRegisterable
         string fullDescription = Translation.EmbedDescription.Replace("{players}", playersString);
         EmbedBuilder embed = new EmbedBuilder()
             .WithTitle(Translation.EmbedTitle)
-            .WithColor(Plugin.Instance.Config.Color)
+            .WithColor(uint.Parse(Plugin.Instance.Config.Color, NumberStyles.HexNumber))
             .WithDescription(fullDescription);
         JToken jId = Bot.API.Modules.WriteableConfig.GetConfig()["StatusChannelMessageId"];
         if (jId == null)

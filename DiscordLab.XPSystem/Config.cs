@@ -10,6 +10,6 @@ public class Config : IConfig
     public bool Debug { get; set; } = false;
     [Description("The channel ID to send the level up messages to.")]
     public ulong ChannelId { get; set; } = new ();
-    [Description("The color of the embed.")]
-    public Color Color { get; set; } = Color.Blue;
+    [Description("The hex color code of the embed. Do not include the #.")]
+    public string Color { get; set; } = "3498DB";
 }

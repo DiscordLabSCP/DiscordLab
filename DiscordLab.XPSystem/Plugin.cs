@@ -12,7 +12,7 @@ namespace DiscordLab.XPSystem
         public override string Prefix => "DL.XPSystem";
         public override Version Version => new (1, 0, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        public override PluginPriority Priority => PluginPriority.Low;
 
         public static Plugin Instance { get; private set; }
         

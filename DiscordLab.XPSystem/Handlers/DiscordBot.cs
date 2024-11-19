@@ -1,3 +1,4 @@
+using System.Globalization;
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
@@ -42,13 +43,12 @@ public class DiscordBot : IRegisterable
 
         command.WithName(Translation.CommandName);
         command.WithDescription(Translation.CommandDescription);
-        command.Options.Add(new SlashCommandOptionBuilder
-        {
-            Name = Translation.CommandOptionName,
-            Description = Translation.CommandOptionDescription,
-            Type = ApplicationCommandOptionType.String,
-            IsRequired = true
-        });
+        SlashCommandOptionBuilder option = new();
+        option.WithName(Translation.CommandOptionName);
+        option.WithDescription(Translation.CommandOptionDescription);
+        option.WithType(ApplicationCommandOptionType.String);
+        option.IsRequired = true;
+        command.AddOption(option);
 
         Timing.CallDelayed(1f, () =>
         {
@@ -73,18 +73,19 @@ public class DiscordBot : IRegisterable
         if (XPAPI.TryParseUserId(option, out PlayerId playerId) == false)
         {
             await command.RespondAsync(Translation.FailToGetUser);
+            return;
         }
         PlayerInfoWrapper info = XPAPI.GetPlayerInfo(playerId);
         EmbedBuilder embed = new()
         {
             Title = Translation.EmbedTitle,
             Description = Translation.EmbedDescription.Replace("{level}", info.Level.ToString()).Replace("{currentxp}", info.XP.ToString()).Replace("{neededxp}", info.NeededXPCurrent.ToString()),
-            Footer = new EmbedFooterBuilder
+            Footer = new ()
             {
                 Text = Translation.EmbedFooter.Replace("{user}", info.Nickname)
                     .Replace("{userid}", option)
             },
-            Color = Plugin.Instance.Config.Color
+            Color = new Color(uint.Parse(Plugin.Instance.Config.Color, NumberStyles.HexNumber))
         };
         await command.RespondAsync(null, [embed.Build()]);
     }
