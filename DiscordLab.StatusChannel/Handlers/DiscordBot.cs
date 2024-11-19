@@ -1,9 +1,12 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Newtonsoft.Json.Linq;
+using UnityEngine;
+using Color = Discord.Color;
 
 namespace DiscordLab.StatusChannel.Handlers;
 
@@ -77,7 +80,9 @@ public class DiscordBot : IRegisterable
                     return;
                 }
                 
-                await channel.ModifyMessageAsync(id, msg =>
+                IUserMessage message = (IUserMessage) oldMessage;
+
+                await message.ModifyAsync(msg =>
                 {
                     msg.Content = null;
                     msg.Embed = embed.Build();

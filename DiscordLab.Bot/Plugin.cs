@@ -9,7 +9,7 @@ namespace DiscordLab.Bot
         public override string Name => "DiscordLab";
         public override string Author => "JayXTQ";
         public override string Prefix => "DiscordLab";
-        public override Version Version => new (1, 0, 4);
+        public override Version Version => new (1, 1, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.High;
 
