@@ -36,3 +36,33 @@ You can make module requests by making an issue on the GitHub repository. Please
 to include a detailed description of what you want the module to do and how you want it to work.
 
 If the module is something that interacts with another plugin, please link the plugin.
+
+## API Guide
+
+You should really only reference DiscordLab.Bot in your project, unless you need to hook to another module for their Channel or whatever.
+
+In `DiscordLab.Bot.Handlers` there is a `DiscordBot` class which you can use to interact with the bot which is logged in.
+This class has an `Instance` property which means you can just do `DiscordLab.Bot.Handlers.DiscordBot.Instance` to get the bot instance. This has
+a `Client` property which is the main Discord client and a `Guild` property which is the guild the main bot has referenced in the config.
+
+You should always bind stuff to the `Guild` property for sending messages or finding channels, but you may need to
+use the `Client` property sometimes too, like for the `Ready` event. When doing the Ready event, you can just add the
+event on like a normal event, so usually it would be like this:
+
+```cs
+DiscordLab.Bot.Handlers.DiscordBot.Instance.Client.Ready += OnReady;
+```
+
+```cs
+private async Task OnReady()
+{
+    // Do stuff here
+}
+```
+
+If you want to access Guild in the ready event, I would recommend doing a `Timing.CallDelayed` as Guild is fetched in the Ready
+event too, so it may not be available straight away.
+
+Also, you can just do any event that Discord.Net supports, not just Ready.
+
+Last thing, make sure channels are always text channels if you plan on sending/receiving messages, `Guild.GetTextChannel` is a good method to use.
