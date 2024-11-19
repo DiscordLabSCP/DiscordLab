@@ -1,12 +1,9 @@
 ﻿using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Newtonsoft.Json.Linq;
-using UnityEngine;
-using Color = Discord.Color;
 
 namespace DiscordLab.StatusChannel.Handlers;
 
@@ -28,7 +25,7 @@ public class DiscordBot : IRegisterable
         StatusChannel = null;
     }
 
-    public SocketTextChannel GetChannel()
+    private SocketTextChannel GetChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         if(Plugin.Instance.Config.ChannelId == 0) return null;
