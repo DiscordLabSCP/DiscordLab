@@ -42,7 +42,7 @@ public class DiscordBot : IRegisterable
         string fullDescription = Translation.EmbedDescription.Replace("{players}", playersString);
         EmbedBuilder embed = new EmbedBuilder()
             .WithTitle(Translation.EmbedTitle)
-            .WithColor(Color.Blue)
+            .WithColor(Plugin.Instance.Config.Color)
             .WithDescription(fullDescription);
         JToken jId = Bot.API.Modules.WriteableConfig.GetConfig()["StatusChannelMessageId"];
         if (jId == null)
