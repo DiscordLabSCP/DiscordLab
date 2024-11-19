@@ -31,6 +31,7 @@ public class DiscordBot : IRegisterable
     public SocketTextChannel GetChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.ChannelId == 0) return null;
         return StatusChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
     }
 

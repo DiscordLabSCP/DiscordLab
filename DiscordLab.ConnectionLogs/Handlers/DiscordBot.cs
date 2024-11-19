@@ -30,18 +30,21 @@ public class DiscordBot : IRegisterable
     public SocketTextChannel GetJoinChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.JoinChannelId == 0) return null;
         return JoinChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.JoinChannelId);
     }
     
     public SocketTextChannel GetLeaveChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.LeaveChannelId == 0) return null;
         return LeaveChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.LeaveChannelId);
     }
 
     public SocketTextChannel GetRoundStartChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.RoundStartChannelId == 0) return null;
         return RoundStartChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.RoundStartChannelId);
     }
 }

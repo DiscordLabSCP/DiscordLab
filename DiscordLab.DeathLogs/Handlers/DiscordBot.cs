@@ -24,18 +24,21 @@ public class DiscordBot : IRegisterable
     public SocketTextChannel GetChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.ChannelId == 0) return null;
         return Channel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
     }
     
     public SocketTextChannel GetCuffedChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.CuffedChannelId == 0) return null;
         return CuffedChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
     }
 
     public SocketTextChannel GetSelfChannel()
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.SelfChannelId == 0) return null;
         return SelfChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
     }
 }
