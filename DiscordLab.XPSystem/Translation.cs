@@ -19,7 +19,7 @@ public class Translation : ITranslation
     [Description("The title of the embed.")]
     public string EmbedTitle { get; set; } = "Player Level";
     [Description("The start of the description of the embed.")]
-    public string EmbedDescription { get; set; } = "The level of the player is {level}.";
+    public string EmbedDescription { get; set; } = "The level of the player is {level}.\nThey have {currentxp} out of {neededxp} XP.";
     [Description("The footer of the embed.")]
     public string EmbedFooter { get; set; } = "Requested user: {user} ({userid})";
 }

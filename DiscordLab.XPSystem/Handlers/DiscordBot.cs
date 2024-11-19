@@ -78,7 +78,7 @@ public class DiscordBot : IRegisterable
         EmbedBuilder embed = new()
         {
             Title = Translation.EmbedTitle,
-            Description = Translation.EmbedDescription.Replace("{level}", info.Level.ToString()),
+            Description = Translation.EmbedDescription.Replace("{level}", info.Level.ToString()).Replace("{currentxp}", info.XP.ToString()).Replace("{neededxp}", info.NeededXPCurrent.ToString()),
             Footer = new EmbedFooterBuilder
             {
                 Text = Translation.EmbedFooter.Replace("{user}", info.Nickname)
