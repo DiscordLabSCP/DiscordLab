@@ -54,7 +54,7 @@ public class DiscordBot : IRegisterable
         {
             try
             {
-                Bot.Handlers.DiscordBot.Instance.Client.CreateGlobalApplicationCommandAsync(command.Build());
+                Bot.Handlers.DiscordBot.Instance.Guild.CreateApplicationCommandAsync(command.Build());
             }
             catch (Exception e)
             {
