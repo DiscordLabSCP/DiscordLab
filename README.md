@@ -28,6 +28,7 @@ After you have configured the bot, start your server and the bot should start up
 - `DiscordLab.BotStatus.dll` - Will set the bot's status to the current server status.
 - `DiscordLab.ConnectionLogs.dll` - Will send a message in a specific channel when people connect, disconnect or when round starts.
 - `DiscordLab.DeathLogs.dll` - Will send a message in a specific channel when someone dies, or gets killed when cuffed (good for moderation purposes, if needed)
+- `DiscordLab.XPSystem.dll` - Allows integration with the XPSystem plugin (EXILED only) to give you a `/getlevel` (customisable) command and an logger to log when people level up.
 
 ## Requesting modules
 
