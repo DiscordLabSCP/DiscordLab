@@ -38,10 +38,8 @@ public class DiscordBot : IRegisterable
     public void SetStatusMessage(IEnumerable<Player> players = null)
     {
         players ??= Player.List.ToList();
-        string description = string.Join("\n", players.Select(player => "- " + player.Nickname));
-        string prefix =
-            $"{Plugin.Instance.Translation.EmbedStartDescription.Replace("{current}", players.Count().ToString()).Replace("{max}", Server.MaxPlayerCount.ToString())}\n";
-        string fullDescription = prefix + description;
+        string playersString = string.Join("\n", players.Select(p => Translation.PlayersList.Replace("{player}", p.Nickname).Replace("{playerid}", p.UserId)));
+        string fullDescription = Translation.EmbedDescription.Replace("{players}", playersString);
         EmbedBuilder embed = new EmbedBuilder()
             .WithTitle(Translation.EmbedTitle)
             .WithColor(Color.Blue)
