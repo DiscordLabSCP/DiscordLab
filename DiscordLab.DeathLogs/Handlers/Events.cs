@@ -19,7 +19,7 @@ public class Events : IRegisterable
 
     private void OnPlayerDying(DyingEventArgs ev)
     {
-        if (ev.Player == ev.Attacker) return;
+        if (ev.Attacker == null || ev.Player == ev.Attacker) return;
         SocketTextChannel channel;
         bool isCuffed = ev.Player.IsCuffed;
 
@@ -43,10 +43,16 @@ public class Events : IRegisterable
             return;
         }
 
+        if (ev.Attacker == null) isCuffed = false;
+
         string message =
-            (isCuffed ? Plugin.Instance.Translation.CuffedPlayerDeath : Plugin.Instance.Translation.PlayerDeath)
+            (isCuffed ? Plugin.Instance.Translation.CuffedPlayerDeath :
+                ev.Attacker != null ? Plugin.Instance.Translation.PlayerDeath :
+                Plugin.Instance.Translation.PlayerDeathSelf)
             .Replace("{player}", ev.Player.Nickname)
-            .Replace("{playerrole}", ev.Player.Role.Name)
+            .Replace("{playerrole}", ev.Player.Role.Name);
+        
+        if(ev.Attacker != null) message = message
             .Replace("{attacker}", ev.Attacker.Nickname)
             .Replace("{attackerrole}", ev.Attacker.Role.Name);
         

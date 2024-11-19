@@ -9,4 +9,5 @@ public class Translation : ITranslation
     public string PlayerDeath { get; set; } = "`{player}` (`{playerrole}`) has been killed by `{attacker}` as `{attackerrole}`.";
     [Description("The message that will be sent when a cuffed player dies, unless the cuffed channel is disabled.")]
     public string CuffedPlayerDeath { get; set; } = "`{player}` (`{playerrole}`) has been killed by `{attacker}` as `{attackerrole}` while cuffed.";
+    public string PlayerDeathSelf { get; set; } = "`{player}` (`{playerrole}`) has died.";
 }
