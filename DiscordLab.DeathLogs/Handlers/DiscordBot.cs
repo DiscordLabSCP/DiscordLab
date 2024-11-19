@@ -22,11 +22,13 @@ public class DiscordBot : IRegisterable
 
     public SocketTextChannel GetChannel()
     {
+        if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         return Channel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
     }
     
     public SocketTextChannel GetCuffedChannel()
     {
+        if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         return CuffedChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
     }
 }

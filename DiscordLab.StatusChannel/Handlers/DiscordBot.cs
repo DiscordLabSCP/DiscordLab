@@ -27,6 +27,7 @@ public class DiscordBot : IRegisterable
 
     public SocketTextChannel GetChannel()
     {
+        if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         return StatusChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
     }
 
@@ -46,16 +47,41 @@ public class DiscordBot : IRegisterable
         {
             Task.Run(async () =>
             {
-                RestUserMessage msg = await GetChannel().SendMessageAsync(null, false, embed.Build());
+                SocketTextChannel channel = GetChannel();
+                if (channel == null)
+                {
+                    Log.Error("Either the guild is null or the channel is null. So the status message has failed to send.");
+                    return;
+                }
+                RestUserMessage msg = await channel.SendMessageAsync(null, false, embed.Build());
                 Bot.API.Modules.WriteableConfig.WriteConfigOption("StatusChannelMessageId", msg.Id);
             });
         }
         else
         {
-            GetChannel().ModifyMessageAsync(jId.ToObject<ulong>(), msg =>
+            SocketTextChannel channel = GetChannel();
+            if (channel == null)
             {
-                msg.Content = null;
-                msg.Embed = embed.Build();
+                Log.Error("Either the guild is null or the channel is null. So the status message has failed to be edited.");
+                return;
+            }
+
+            Task.Run(async () =>
+            {
+                ulong id = jId.ToObject<ulong>();
+                IMessage oldMessage = channel.GetCachedMessage(id) ?? await channel.GetMessageAsync(id);
+                if(oldMessage == null || oldMessage.Author.Id != Bot.Handlers.DiscordBot.Instance.Client.CurrentUser.Id)
+                {
+                    RestUserMessage msg = await channel.SendMessageAsync(null, false, embed.Build());
+                    Bot.API.Modules.WriteableConfig.WriteConfigOption("StatusChannelMessageId", msg.Id);
+                    return;
+                }
+                
+                await channel.ModifyMessageAsync(id, msg =>
+                {
+                    msg.Content = null;
+                    msg.Embed = embed.Build();
+                });
             });
         }
     }

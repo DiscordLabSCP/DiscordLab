@@ -1,5 +1,6 @@
 ﻿using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
+using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
 
 namespace DiscordLab.DeathLogs.Handlers;
@@ -34,6 +35,12 @@ public class Events : IRegisterable
         else
         {
             channel = DiscordBot.Instance.GetChannel();
+        }
+
+        if (channel == null)
+        {
+            Log.Error("Either the guild is null or the channel is null. So the death message has failed to send.");
+            return;
         }
 
         string message =
