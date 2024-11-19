@@ -50,11 +50,11 @@ public class DiscordBot : IRegisterable
             IsRequired = true
         });
 
-        Timing.CallDelayed(1f, async () =>
+        Timing.CallDelayed(1f, () =>
         {
             try
             {
-                await Bot.Handlers.DiscordBot.Instance.Client.CreateGlobalApplicationCommandAsync(command.Build());
+                Bot.Handlers.DiscordBot.Instance.Client.CreateGlobalApplicationCommandAsync(command.Build());
             }
             catch (Exception e)
             {
