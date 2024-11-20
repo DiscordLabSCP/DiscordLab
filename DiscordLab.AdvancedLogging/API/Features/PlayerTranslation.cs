@@ -1,0 +1,81 @@
+﻿using System.ComponentModel;
+
+namespace DiscordLab.AdvancedLogging.API.Features;
+
+public class PlayerTranslation
+{
+    public string ReservedSlot { get; set; } = "A user with the user ID of {UserId} has used their reserved slot.";
+    public string Kicked { get; set; } = "Player {PlayerNickname} ({PlayerId}) has been kicked from the server.";
+    public string Banned { get; set; } = "Player {PlayerNickname} ({PlayerId}) has been banned from the server for {Reason}.";
+    public string UsedItem { get; set; } = "Player {PlayerNickname} ({PlayerId}) has used {ItemName}.";
+    [Description("According to EXILED, there is no interactable object given.")]
+    public string Interacted { get; set; } = "Player {PlayerNickname} ({PlayerId}) has interacted with something.";
+    public string ActivatingWarheadPanel { get; set; } = "Player {PlayerNickname} ({PlayerId}) has activated the warhead panel.";
+    public string ActivatingWorkstation { get; set; } = "Player {PlayerNickname} ({PlayerId}) has activated a workstation.";
+    [Description("Due to EXILED limitations, this is the joining event. If we used the main one there would be no player nickname.")]
+    public string Verified { get; set; } = "Player {PlayerNickname} ({PlayerId}) has joined the server.";
+    public string Left { get; set; } = "Player {PlayerNickname} ({PlayerId}) has left the server.";
+    public string Hurt { get; set; } = "Player {PlayerNickname} ({PlayerId}) has been hurt by {AttackerNickname} ({AttackerId}) dealing {Amount} damage.";
+    public string Healed { get; set; } = "Player {PlayerNickname} ({PlayerId}) has been healed giving {HealedAmount} health.";
+    public string Died { get; set; } = "Played {PlayerNickname} ({PlayerId}) has been killed by {AttackerNickname} ({AttackerId}).";
+    public string ChangingRole { get; set; } = "";
+    public string ThrownProjectile { get; set; } = "";
+    public string DroppedItem { get; set; } = "";
+    public string PickingUpItem { get; set; } = "";
+    public string Handcuffing { get; set; } = "";
+    public string RemovedHandcuffs { get; set; } = "";
+    public string Escaping { get; set; } = "";
+    public string Shot { get; set; } = "";
+    public string EnteringPocketDimension { get; set; } = "";
+    public string EscapingPocketDimension { get; set; } = "";
+    public string FailingEscapePocketDimension { get; set; } = "";
+    public string ReloadingWeapon { get; set; } = "";
+    public string Spawned { get; set; } = "";
+    public string ChangedItem { get; set; } = "";
+    public string ChangingGroup { get; set; } = "";
+    public string InteractingDoor { get; set; } = "";
+    public string InteractingElevator { get; set; } = "";
+    public string InteractingLocker { get; set; } = "";
+    public string TriggeringTesla { get; set; } = "";
+    public string UnlockingGenerator { get; set; } = "";
+    public string OpeningGenerator { get; set; } = "";
+    public string ClosingGenerator { get; set; } = "";
+    public string ActivatingGenerator { get; set; } = "";
+    public string StoppingGenerator { get; set; } = "";
+    public string ReceivingEffect { get; set; } = "";
+    public string IssuingMute { get; set; } = "";
+    public string RevokingMute { get; set; } = "";
+    public string UsingRadioBattery { get; set; } = "";
+    public string ChangingRadioPreset { get; set; } = "";
+    public string ChangingMicroHIDState { get; set; } = "";
+    public string UsingMicroHIDEnergy { get; set; } = "";
+    public string DroppedAmmo { get; set; } = "";
+    public string InteractingShootingTarget { get; set; } = "";
+    public string DamagingShootingTarget { get; set; } = "";
+    public string FlippingCoin { get; set; } = "";
+    public string TogglingFlashlight { get; set; } = "";
+    public string UnloadingWeapon { get; set; } = "";
+    public string AimingDownSight { get; set; } = "";
+    public string TogglingWeaponFlashlight { get; set; } = "";
+    public string DryfiringWeapon { get; set; } = "";
+    public string VoiceChatting { get; set; } = "";
+    public string MakingNoise { get; set; } = "";
+    public string Jumping { get; set; } = "";
+    public string Landing { get; set; } = "";
+    public string Transmitting { get; set; } = "";
+    public string ChangingMoveState { get; set; } = "";
+    public string ChangingSpectatedPlayer { get; set; } = "";
+    public string TogglingNoClip { get; set; } = "";
+    public string TogglingOverwatch { get; set; } = "";
+    public string TogglingRadio { get; set; } = "";
+    public string SearchingPickup { get; set; } = "";
+    public string SendingAdminChatMessage { get; set; } = "";
+    public string PlayerDamageWindow { get; set; } = "";
+    public string DamagingDoor { get; set; } = "";
+    public string ItemAdded { get; set; } = "";
+    public string ItemRemoved { get; set; } = "";
+    public string EnteringEnvironmentalHazard { get; set; } = "";
+    public string StayingOnEnvironmentalHazard { get; set; } = "";
+    public string ExitingEnvironmentalHazard { get; set; } = "";
+    public string ChangingNickname { get; set; } = "";
+}
