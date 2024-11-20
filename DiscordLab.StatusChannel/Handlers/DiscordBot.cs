@@ -38,7 +38,7 @@ public class DiscordBot : IRegisterable
         players ??= Player.List.ToList();
         IEnumerable<Player> playerList = players.ToList();
         string playersString = string.Join("\n", playerList.Select(p => Translation.PlayersList.Replace("{player}", p.Nickname).Replace("{playerid}", p.UserId)));
-        string fullDescription = playerList.Any() ? 
+        string fullDescription = !playerList.Any() ? 
             Translation.EmbedNoPlayers
                 .Replace("{max}", Server.MaxPlayerCount.ToString())
             : Translation.EmbedDescription
