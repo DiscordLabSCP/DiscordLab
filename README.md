@@ -49,11 +49,11 @@ You should always bind stuff to the `Guild` property for sending messages or fin
 use the `Client` property sometimes too, like for the `Ready` event. When doing the Ready event, you can just add the
 event on like a normal event, so usually it would be like this:
 
-```cs
+```csharp
 DiscordLab.Bot.Handlers.DiscordBot.Instance.Client.Ready += OnReady;
 ```
 
-```cs
+```csharp
 private async Task OnReady()
 {
     // Do stuff here
@@ -66,3 +66,65 @@ event too, so it may not be available straight away.
 Also, you can just do any event that Discord.Net supports, not just Ready.
 
 Last thing, make sure channels are always text channels if you plan on sending/receiving messages, `Guild.GetTextChannel` is a good method to use.
+
+### Make a simple module that creates a command to show how many members are in the server
+
+First off, you should have your project and a .csproj file setup referencing `DiscordLab.Bot` as a dependency.
+You will also need `Discord.Net.Core` and `Discord.Net.WebSocket` as dependencies too.
+
+After that you should get the `Client` instance from `DiscordLab.Bot.Handlers.DiscordBot.Instance.Client`
+and then bind to the `Ready` event like displayed above in the last section. After that start by making
+your command, I would recommend using the
+[Discord.Net Guide](https://docs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html)
+for making commands.
+
+Once you have your SlashCommandBuilder setup, run `Timing.CallDelayed` with a 1-second delay
+(we need to wait for the Guild to be fetched) and then bind your command to `Guild` by doing:
+```csharp
+Guild.CreateApplicationCommandAsync(command.Build());
+```
+
+Make sure you also add a try catch block around it so there is no errors when the command is created.
+
+After that, the command should appear inside the Discord server, but will most likely do nothing.
+
+Now this is where we make the command functionality, luckily in Discord.Net, they have an easy event
+to bind to called `SlashCommandExecuted`. This event is called when a slash command is executed, hence
+the name. You should bind to this event by making a method like so:
+
+```csharp
+private async Task SlashCommandHandler(SocketSlashCommand command)
+{
+    // Do stuff here
+}
+```
+
+Inside your command handler, you should check that the command name is the correct one you set inside the
+`SlashCommandBuilder` you made earlier, you can check this by doing `command.Data.Name`. Check if the
+command name is the same as the one you set. For this I will reference players as the name of the
+command.
+
+For my case the command name is `players`, so I would do:
+```csharp
+if (command.Data.Name == "players")
+{
+    // Do stuff here
+}
+```
+
+Inside the if statement, I will get the amount of players in the server by doing:
+```csharp
+int playerCount = Server.PlayerCount;
+```
+and then do something like:
+```csharp
+string message = $"There are {playerCount} players in the server.";
+await command.RespondAsync(message);
+```
+
+This pretty much creates a string to respond with using the server's player count and responds with
+that message. Pretty simple. I won't teach you the ins and outs with Discord.Net and Exiled so check
+out their relevant resources for more information and don't be afraid to ask Google for answers, they
+tend to know every answer.
+
+[Discord.Net Documentation](https://docs.discordnet.dev/guides/introduction/intro.html)
