@@ -2,6 +2,7 @@
 using Discord.WebSocket;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Bot.API.Modules;
 using Exiled.API.Features;
 
 namespace DiscordLab.Bot.Handlers
@@ -43,6 +44,7 @@ namespace DiscordLab.Bot.Handlers
             Client = new(config);
             Client.Log += DiscLog;
             Client.Ready += Ready;
+            Client.SlashCommandExecuted += SlashCommandHandler;
             await Client.LoginAsync(TokenType.Bot, Plugin.Instance.Config.Token);
             await Client.StartAsync();
         }
@@ -56,7 +58,26 @@ namespace DiscordLab.Bot.Handlers
         private async Task Ready()
         {
             Guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
+            foreach (ISlashCommand command in SlashCommandLoader.Commands)
+            {
+                try
+                {
+                    await Guild.CreateApplicationCommandAsync(command.Data.Build());
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Failed to create guild command '{command.Data.Name}': {e}");
+                }
+            }
             await Task.CompletedTask;
+        }
+
+        private async Task SlashCommandHandler(SocketSlashCommand command)
+        {
+            List<ISlashCommand> commands = SlashCommandLoader.Commands;
+            ISlashCommand cmd = commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
+            if (cmd == null) return;
+            await cmd.Run(command);
         }
     }
 }

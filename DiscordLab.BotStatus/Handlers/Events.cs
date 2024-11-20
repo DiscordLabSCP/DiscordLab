@@ -26,13 +26,22 @@ public class Events : IRegisterable
     private void OnPlayerVerified(VerifiedEventArgs ev)
     {
         if(Round.InProgress) DiscordBot.Instance.SetStatus();
-        else QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerVerified", () => DiscordBot.Instance.SetStatus());
+        else QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerVerified", () => 
+            DiscordBot.Instance.SetStatus()
+        );
     }
     
     private void OnPlayerLeave(LeftEventArgs ev)
     {
-        if(Round.InProgress) DiscordBot.Instance.SetStatus(Player.List.Count(p => p != ev.Player));
-        else QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerLeave", () => DiscordBot.Instance.SetStatus(Player.List.Count(p => p != ev.Player)));
+        int players = Player.List.Count(p => p != ev.Player);
+        if(Round.InProgress || players == 0) 
+            DiscordBot.Instance.SetStatus(
+                players
+            );
+        else 
+            QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerLeave", () => 
+                DiscordBot.Instance.SetStatus()
+            );
     }
 
     private void OnRoundStarted()

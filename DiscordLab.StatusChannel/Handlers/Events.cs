@@ -35,13 +35,24 @@ public class Events : IRegisterable
     
     private void OnPlayerVerified(VerifiedEventArgs ev)
     {
-        if(Round.InProgress) DiscordBot.Instance.SetStatusMessage();
-        else QueueSystem.QueueRun("DiscordLab.StatusChannel.OnPlayerVerified", () => DiscordBot.Instance.SetStatusMessage());
+        if(Round.InProgress) 
+            DiscordBot.Instance.SetStatusMessage();
+        else 
+            QueueSystem.QueueRun("DiscordLab.StatusChannel.OnPlayerVerified", () => 
+                DiscordBot.Instance.SetStatusMessage()
+            );
     }
     
     private void OnPlayerLeave(LeftEventArgs ev)
     {
-        if(Round.InProgress) DiscordBot.Instance.SetStatusMessage(Player.List.Where(p => p != ev.Player));
-        else QueueSystem.QueueRun("DiscordLab.StatusChannel.OnPlayerLeave", () => DiscordBot.Instance.SetStatusMessage(Player.List.Where(p => p != ev.Player)));
+        List<Player> players = Player.List.Where(p => p != ev.Player).ToList();
+        if(Round.InProgress || !players.Any()) 
+            DiscordBot.Instance.SetStatusMessage(
+            players
+            );
+        else
+            QueueSystem.QueueRun("DiscordLab.StatusChannel.OnPlayerLeave", () => 
+                DiscordBot.Instance.SetStatusMessage()
+            );
     }
 }
