@@ -1,5 +1,4 @@
-﻿using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Bot.API.Modules;
+﻿using DiscordLab.Bot.API.Modules;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 

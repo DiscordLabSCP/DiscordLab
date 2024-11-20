@@ -41,6 +41,14 @@ If the module is something that interacts with another plugin, please link the p
 
 You should really only reference DiscordLab.Bot in your project, unless you need to hook to another module for their Channel or whatever.
 
+With DiscordLab.Bot, it has some methods that you can use to instantly start up your module. There is 2 interfaces which can be used, IRegisterable and ISlashCommand.
+
+IRegisterable is used for registering Handlers, such as Discord bot related stuff and events, and ISlashCommand is used for registering Slash Commands.
+
+If you use both interfaces on your classes, this allows for you to easily register your module with the bot. All you need to do is get `DiscordLab.Bot.API.Modules.HandlerLoader` and make a new instance of it, then in
+`OnEnabled` call `HandlerLoader.Load()` and inside the Load method, pass in `Assembly`. This will then load all the handlers and slash commands within your module. Also don't forget to remove the handlers in the `OnDisabled`
+method, you can do this by calling `HandlerLoader.Unload()`, no need for `Assembly` in this one though.
+
 In `DiscordLab.Bot.Handlers` there is a `DiscordBot` class which you can use to interact with the bot which is logged in.
 This class has an `Instance` property which means you can just do `DiscordLab.Bot.Handlers.DiscordBot.Instance` to get the bot instance. This has
 a `Client` property which is the main Discord client and a `Guild` property which is the guild the main bot has referenced in the config.
@@ -67,64 +75,21 @@ Also, you can just do any event that Discord.Net supports, not just Ready.
 
 Last thing, make sure channels are always text channels if you plan on sending/receiving messages, `Guild.GetTextChannel` is a good method to use.
 
-### Make a simple module that creates a command to show how many members are in the server
-
-First off, you should have your project and a .csproj file setup referencing `DiscordLab.Bot` as a dependency.
-You will also need `Discord.Net.Core` and `Discord.Net.WebSocket` as dependencies too.
-
-After that you should get the `Client` instance from `DiscordLab.Bot.Handlers.DiscordBot.Instance.Client`
-and then bind to the `Ready` event like displayed above in the last section. After that start by making
-your command, I would recommend using the
-[Discord.Net Guide](https://docs.discordnet.dev/guides/int_basics/application-commands/slash-commands/creating-slash-commands.html)
-for making commands.
-
-Once you have your SlashCommandBuilder setup, run `Timing.CallDelayed` with a 1-second delay
-(we need to wait for the Guild to be fetched) and then bind your command to `Guild` by doing:
-```csharp
-Guild.CreateApplicationCommandAsync(command.Build());
-```
-
-Make sure you also add a try catch block around it so there is no errors when the command is created.
-
-After that, the command should appear inside the Discord server, but will most likely do nothing.
-
-Now this is where we make the command functionality, luckily in Discord.Net, they have an easy event
-to bind to called `SlashCommandExecuted`. This event is called when a slash command is executed, hence
-the name. You should bind to this event by making a method like so:
+### Example Slash Command
 
 ```csharp
-private async Task SlashCommandHandler(SocketSlashCommand command)
+public class Players : ISlashCommand
 {
-    // Do stuff here
-}
-```
+    public SlashCommandBuilder Data { get; } = new()
+    {
+        Name = "players",
+        Description = "Get the list of players on the server"
+    };
 
-Inside your command handler, you should check that the command name is the correct one you set inside the
-`SlashCommandBuilder` you made earlier, you can check this by doing `command.Data.Name`. Check if the
-command name is the same as the one you set. For this I will reference players as the name of the
-command.
+    public async Task Run(SocketSlashCommand command)
+    {
+        string players = string.Join("\n", Player.List.Select(player => player.Nickname));
+        await command.RespondAsync(players);
+    }
+}```
 
-For my case the command name is `players`, so I would do:
-```csharp
-if (command.Data.Name == "players")
-{
-    // Do stuff here
-}
-```
-
-Inside the if statement, I will get the amount of players in the server by doing:
-```csharp
-int playerCount = Server.PlayerCount;
-```
-and then do something like:
-```csharp
-string message = $"There are {playerCount} players in the server.";
-await command.RespondAsync(message);
-```
-
-This pretty much creates a string to respond with using the server's player count and responds with
-that message. Pretty simple. I won't teach you the ins and outs with Discord.Net and Exiled so check
-out their relevant resources for more information and don't be afraid to ask Google for answers, they
-tend to know every answer.
-
-[Discord.Net Documentation](https://docs.discordnet.dev/guides/introduction/intro.html)
