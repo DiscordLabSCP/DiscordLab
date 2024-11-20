@@ -91,5 +91,6 @@ public class Players : ISlashCommand
         string players = string.Join("\n", Player.List.Select(player => player.Nickname));
         await command.RespondAsync(players);
     }
-}```
+}
+```
 
