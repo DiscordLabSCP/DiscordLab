@@ -8,10 +8,7 @@ public static class GenerateEvent
 {
     public static void Event(object ev, SocketTextChannel channel, string content, IEnumerable<string> nullables)
     {
-        foreach (string nullable in nullables)
-        {
-            if (ev.GetType().GetProperty(nullable)?.GetValue(ev) == null) return;
-        }
+        if (nullables.Any(nullable => ev.GetType().GetProperty(nullable)?.GetValue(ev) == null)) return;
 
         Regex regex = new (@"\{([^\}]+)\}");
         MatchCollection matches = regex.Matches(content);
