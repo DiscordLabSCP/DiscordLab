@@ -4,6 +4,9 @@ using DiscordLab.AdvancedLogging.API.Features;
 using DiscordLab.AdvancedLogging.API.Modules;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
+using Exiled.API.Interfaces;
+using Exiled.Events.EventArgs.Interfaces;
+using Exiled.Events.Features;
 using Newtonsoft.Json.Linq;
 using Log = Exiled.API.Features.Log;
 
@@ -15,12 +18,12 @@ public class DiscordBot : IRegisterable
     
     private List<ChannelType> Channels { get; set; }
     
-    private List<(EventInfo EventInfo, Delegate HandlerDelegate)> _eventHandlers;
+    private readonly List<Tuple<EventInfo, Delegate>> _dynamicHandlers = new ();
+    private bool _isHandlerAdded = false;
     
     public void Init()
     {
         Instance = this;
-        _eventHandlers = new ();
         Bot.Handlers.DiscordBot.Instance.Client.ModalSubmitted += OnModalSubmitted;
         Bot.Handlers.DiscordBot.Instance.Client.Ready += OnReady;
         Channels = new ();
@@ -28,13 +31,33 @@ public class DiscordBot : IRegisterable
     
     public void Unregister()
     {
+        RemoveEventHandlers();
         Channels = null;
-        foreach ((EventInfo eventInfo, Delegate handlerDelegate) in _eventHandlers)
-        {
-            eventInfo.RemoveEventHandler(null, handlerDelegate);
-        }
+    }
+    
+    private void RemoveEventHandlers()
+    {
+        if(!_isHandlerAdded) return;
 
-        _eventHandlers = null;
+        for (int i = 0; i < _dynamicHandlers.Count; i++)
+        {
+            Tuple<EventInfo, Delegate> tuple = _dynamicHandlers[i];
+            EventInfo eventInfo = tuple.Item1;
+            Delegate handler = tuple.Item2;
+
+            if (eventInfo.DeclaringType != null)
+            {
+                MethodInfo removeMethod = eventInfo.DeclaringType.GetMethod($"remove_{eventInfo.Name}", BindingFlags.Instance | BindingFlags.NonPublic)!;
+                removeMethod.Invoke(null, new object[] { handler });
+            }
+            else
+            {
+                MethodInfo removeMethod = eventInfo.GetRemoveMethod(true);
+                removeMethod.Invoke(null, new object[] { handler });
+            }
+            _dynamicHandlers.Remove(tuple);
+        }
+        _isHandlerAdded = false;
     }
 
     private SocketTextChannel GetChannel(ulong channelId)
@@ -42,19 +65,15 @@ public class DiscordBot : IRegisterable
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         if(Channels.Exists(c => c.ChannelId == channelId)) return Channels.First(c => c.ChannelId == channelId).Channel;
         SocketTextChannel channel = Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(channelId);
-        if(channel == null)
-        {
-            Log.Error("Either the guild is null or the channel is null. So the status message has failed to send.");
-            return null;
-        }
-
-        return channel;
+        if (channel != null) return channel;
+        Log.Error("Either the guild is null or the channel is null. So the status message has failed to send.");
+        return null;
     }
 
     private void GetChannelAndBind(string handler, string @event, ulong channelId)
     {
         SocketTextChannel channel = GetChannel(channelId);
-        Channels.Add(new ChannelType
+        Channels.Add(new ()
         {
             Handler = handler,
             Event = @event,
@@ -65,13 +84,7 @@ public class DiscordBot : IRegisterable
 
     private async Task OnReady()
     {
-        JToken logs = WriteableConfig.GetConfig()["AdvancedLogging"];
-        if (logs == null)
-        {
-            WriteableConfig.WriteConfigOption("AdvancedLogging", new JArray());
-            return;
-        }
-        IEnumerable<API.Features.Log> logList = logs.ToObject<IEnumerable<API.Features.Log>>();
+        IEnumerable<API.Features.Log> logList = GetLogs();
         foreach (API.Features.Log log in logList)
         {
             GetChannelAndBind(log.Handler, log.Event, log.ChannelId);
@@ -80,31 +93,89 @@ public class DiscordBot : IRegisterable
         await Task.CompletedTask;
     }
 
+    private IEnumerable<API.Features.Log> GetLogs()
+    {
+        JToken logs = WriteableConfig.GetConfig()["AdvancedLogging"];
+        if (logs == null)
+        {
+            WriteableConfig.WriteConfigOption("AdvancedLogging", new JArray());
+            return [];
+        }
+        return logs.ToObject<IEnumerable<API.Features.Log>>();
+    }
+
     private void BindEvent(API.Features.Log log)
     {
-        Type handlerType = Type.GetType($"Exiled.Events.Handlers.{log.Handler}");
-        if (handlerType == null)
+        IPlugin<IConfig> eventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
+        if (eventsAssembly == null)
+        {
+            Log.Error("Could not create any events due to Exiled.Events not being loaded.");
+            return;
+        }
+
+        Type eventType = eventsAssembly.Assembly.GetTypes().FirstOrDefault(x => x.Namespace == "Exiled.Events.Handlers" && x.Name == log.Handler);
+        if (eventType == null)
         {
             Log.Error($"Handler type 'Exiled.Events.Handlers.{log.Handler}' not found.");
             return;
         }
 
-        EventInfo eventInfo = handlerType.GetEvent(log.Event);
-        if (eventInfo == null)
+        Delegate handler = null;
+        PropertyInfo propertyInfo = eventType.GetProperty(log.Event);
+        
+        if (propertyInfo == null)
         {
             Log.Error($"Event '{log.Event}' not found in handler '{log.Handler}'.");
             return;
         }
-
-        Action<object> action = (ev) => OnEventTriggered(ev, log);
-        Delegate handlerDelegate = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
-        eventInfo.AddEventHandler(null, handlerDelegate);
         
-        _eventHandlers.Add((eventInfo, handlerDelegate));
+        EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1))!;
+
+        if (propertyInfo.PropertyType == typeof(Event))
+        {
+            handler = new CustomEventHandler(() => OnEventTriggeredNoEv(log));
+
+            MethodInfo addMethod = eventInfo.AddMethod.DeclaringType!.GetMethod(
+            $"add_{eventInfo.Name}", 
+        BindingFlags.Instance | BindingFlags.NonPublic
+            )!;
+            addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
+        }
+        else if (propertyInfo.PropertyType.IsGenericType &&
+                 propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
+        {
+            MethodInfo eventTriggered = typeof(DiscordBot).GetMethod(nameof(OnEventTriggered), BindingFlags.Instance | BindingFlags.NonPublic);
+            MethodInfo genericEventTriggered = eventTriggered!.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments);
+            handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, this, genericEventTriggered);
+
+            MethodInfo addMethod = eventInfo.GetAddMethod(true);
+            addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
+        }
+        else
+        {
+            Log.Error($"Failed to load event handler for Exiled.Events.Handlers.{log.Handler}.{log.Event}.");
+        }
+        
+        _dynamicHandlers.Add(new (eventInfo, handler));
+        
+        _isHandlerAdded = true;
     }
 
-    private void OnEventTriggered(object ev, API.Features.Log log)
+    private void OnEventTriggeredNoEv(API.Features.Log log)
     {
+        GenerateEvent.Event(new (), GetChannel(log.ChannelId), log.Content, (log.Nullables ?? "").Split(','));
+    }
+    
+    private void OnEventTriggered<T>(T ev) where T : IExiledEvent
+    {
+        string typePath = typeof(T).FullName;
+        string[] parts = typePath!.Split('.');
+        string handler = parts[parts.Length - 2];
+        string @event = parts[parts.Length - 1].Replace("EventArgs", "");
+        IEnumerable<API.Features.Log> logs = GetLogs();
+        API.Features.Log log = logs.FirstOrDefault(x => x.Handler == handler && x.Event == @event);
+        if (log == null) return;
+        
         GenerateEvent.Event(ev, GetChannel(log.ChannelId), log.Content, (log.Nullables ?? "").Split(','));
     }
 
@@ -127,7 +198,7 @@ public class DiscordBot : IRegisterable
         {
             await modal.RespondAsync("Either the guild is null or the channel is null. So I couldn't find the channel you linked.", ephemeral:true);
         }
-        Channels.Add(new ChannelType
+        Channels.Add(new ()
         {
             Handler = handler,
             Event = @event,
