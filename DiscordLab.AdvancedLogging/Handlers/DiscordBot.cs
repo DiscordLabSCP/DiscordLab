@@ -15,9 +15,12 @@ public class DiscordBot : IRegisterable
     
     private List<ChannelType> Channels { get; set; }
     
+    private List<(EventInfo EventInfo, Delegate HandlerDelegate)> _eventHandlers;
+    
     public void Init()
     {
         Instance = this;
+        _eventHandlers = new ();
         Bot.Handlers.DiscordBot.Instance.Client.ModalSubmitted += OnModalSubmitted;
         Bot.Handlers.DiscordBot.Instance.Client.Ready += OnReady;
         Channels = new ();
@@ -26,9 +29,15 @@ public class DiscordBot : IRegisterable
     public void Unregister()
     {
         Channels = null;
+        foreach ((EventInfo eventInfo, Delegate handlerDelegate) in _eventHandlers)
+        {
+            eventInfo.RemoveEventHandler(null, handlerDelegate);
+        }
+
+        _eventHandlers = null;
     }
 
-    public SocketTextChannel GetChannel(ulong channelId)
+    private SocketTextChannel GetChannel(ulong channelId)
     {
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         if(Channels.Exists(c => c.ChannelId == channelId)) return Channels.First(c => c.ChannelId == channelId).Channel;
@@ -42,7 +51,7 @@ public class DiscordBot : IRegisterable
         return channel;
     }
 
-    public void GetChannelAndBind(string handler, string @event, ulong channelId)
+    private void GetChannelAndBind(string handler, string @event, ulong channelId)
     {
         SocketTextChannel channel = GetChannel(channelId);
         Channels.Add(new ChannelType
@@ -90,6 +99,8 @@ public class DiscordBot : IRegisterable
         Action<object> action = (ev) => OnEventTriggered(ev, log);
         Delegate handlerDelegate = Delegate.CreateDelegate(eventInfo.EventHandlerType, action.Target, action.Method);
         eventInfo.AddEventHandler(null, handlerDelegate);
+        
+        _eventHandlers.Add((eventInfo, handlerDelegate));
     }
 
     private void OnEventTriggered(object ev, API.Features.Log log)
