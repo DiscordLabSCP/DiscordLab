@@ -12,6 +12,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.DeathLogs", "Dis
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.XPSystem", "DiscordLab.XPSystem\DiscordLab.XPSystem.csproj", "{6D392968-BD8E-4449-A8EA-E09576F211E4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.AdvancedLogging", "DiscordLab.AdvancedLogging\DiscordLab.AdvancedLogging.csproj", "{43B91E66-9585-46C0-86AB-0DE55EF8D141}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,5 +44,9 @@ Global
 		{6D392968-BD8E-4449-A8EA-E09576F211E4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6D392968-BD8E-4449-A8EA-E09576F211E4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6D392968-BD8E-4449-A8EA-E09576F211E4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{43B91E66-9585-46C0-86AB-0DE55EF8D141}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{43B91E66-9585-46C0-86AB-0DE55EF8D141}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{43B91E66-9585-46C0-86AB-0DE55EF8D141}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{43B91E66-9585-46C0-86AB-0DE55EF8D141}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
