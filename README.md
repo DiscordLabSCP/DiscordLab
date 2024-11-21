@@ -94,3 +94,5 @@ public class Players : ISlashCommand
 }
 ```
 
+For more things relating to the SlashCommandBuilder object, go to the [Discord.Net documentation page](https://docs.discordnet.dev/api/Discord.SlashCommandBuilder.html) where it has every single thing you can instantiate SlashCommandBuilder with.
+
