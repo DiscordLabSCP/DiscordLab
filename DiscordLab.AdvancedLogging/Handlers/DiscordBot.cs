@@ -93,7 +93,7 @@ public class DiscordBot : IRegisterable
         await Task.CompletedTask;
     }
 
-    private IEnumerable<API.Features.Log> GetLogs()
+    public IEnumerable<API.Features.Log> GetLogs()
     {
         JToken logs = WriteableConfig.GetConfig()["AdvancedLogging"];
         if (logs == null)
