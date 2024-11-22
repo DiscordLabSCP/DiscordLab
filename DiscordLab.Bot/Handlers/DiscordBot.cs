@@ -1,6 +1,5 @@
 ﻿using Discord;
 using Discord.WebSocket;
-using DiscordLab.Bot;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
 using Exiled.API.Features;

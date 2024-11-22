@@ -3,27 +3,33 @@ using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using XPSystem.API;
 
-namespace DiscordLab.XPSystem.Handlers;
-
-public class Events : IRegisterable
+namespace DiscordLab.XPSystem.Handlers
 {
-    public void Init()
+
+    public class Events : IRegisterable
     {
-        XPAPI.PlayerLevelUp += OnPlayerLevelUp;
-    }
-    
-    public void Unregister()
-    {
-        XPAPI.PlayerLevelUp -= OnPlayerLevelUp;
-    }
-    
-    private void OnPlayerLevelUp(XPPlayer player, int newLevel, int _)
-    {
-        SocketTextChannel channel = DiscordBot.Instance.GetChannel();
-        if (channel == null)
+        public void Init()
         {
-            Log.Error("Either the channel or guild could not be found. So the XPSystem level up message has failed to send.");
+            XPAPI.PlayerLevelUp += OnPlayerLevelUp;
         }
-        DiscordBot.Instance.GetChannel().SendMessageAsync(Plugin.Instance.Translation.LevelUp.Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId).Replace("{level}", newLevel.ToString()));
+
+        public void Unregister()
+        {
+            XPAPI.PlayerLevelUp -= OnPlayerLevelUp;
+        }
+
+        private void OnPlayerLevelUp(XPPlayer player, int newLevel, int _)
+        {
+            SocketTextChannel channel = DiscordBot.Instance.GetChannel();
+            if (channel == null)
+            {
+                Log.Error(
+                    "Either the channel or guild could not be found. So the XPSystem level up message has failed to send.");
+            }
+
+            DiscordBot.Instance.GetChannel().SendMessageAsync(Plugin.Instance.Translation.LevelUp
+                .Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId)
+                .Replace("{level}", newLevel.ToString()));
+        }
     }
 }

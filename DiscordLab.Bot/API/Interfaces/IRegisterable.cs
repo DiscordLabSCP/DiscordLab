@@ -1,7 +1,8 @@
-﻿namespace DiscordLab.Bot.API.Interfaces;
-
-public interface IRegisterable
+﻿namespace DiscordLab.Bot.API.Interfaces
 {
-    public void Init();
-    public void Unregister();
+    public interface IRegisterable
+    {
+        public void Init();
+        public void Unregister();
+    }
 }

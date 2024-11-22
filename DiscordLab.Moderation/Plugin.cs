@@ -1,7 +1,6 @@
 ﻿using DiscordLab.Bot.API.Modules;
 using Exiled.API.Enums;
 using Exiled.API.Features;
-using Exiled.API.Interfaces;
 using Exiled.Loader;
 
 namespace DiscordLab.Moderation

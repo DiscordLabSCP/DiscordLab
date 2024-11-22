@@ -6,41 +6,42 @@ using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
 using Newtonsoft.Json.Linq;
 
-namespace DiscordLab.AdvancedLogging.Commands;
-
-public class RemoveLog : ISlashCommand
+namespace DiscordLab.AdvancedLogging.Commands
 {
-    public SlashCommandBuilder Data { get; } = new()
+    public class RemoveLog : ISlashCommand
     {
-        Name = "removelog",
-        Description = "Removes a log from the list of logs.",
-        DefaultMemberPermissions = GuildPermission.ManageGuild,
-        Options = new()
+        public SlashCommandBuilder Data { get; } = new()
         {
-            new()
+            Name = "removelog",
+            Description = "Removes a log from the list of logs.",
+            DefaultMemberPermissions = GuildPermission.ManageGuild,
+            Options = new()
             {
-                Name = "log",
-                Description = "e.g. Player.Died",
-                Type = ApplicationCommandOptionType.String
+                new()
+                {
+                    Name = "log",
+                    Description = "e.g. Player.Died",
+                    Type = ApplicationCommandOptionType.String
+                }
             }
-        }
-    };
+        };
 
-    public async Task Run(SocketSlashCommand command)
-    {
-        List<Log> logs = DiscordBot.Instance.GetLogs().ToList();
-        string log = command.Data.Options.First().Value.ToString();
-        Log logToRemove = logs.FirstOrDefault(l => l.Handler == log.Split('.')[0] && l.Event == log.Split('.')[1]);
-        if (logToRemove == null)
+        public async Task Run(SocketSlashCommand command)
         {
-            await command.RespondAsync("Log not found.", ephemeral:true);
-            return;
+            List<Log> logs = DiscordBot.Instance.GetLogs().ToList();
+            string log = command.Data.Options.First().Value.ToString();
+            Log logToRemove = logs.FirstOrDefault(l => l.Handler == log.Split('.')[0] && l.Event == log.Split('.')[1]);
+            if (logToRemove == null)
+            {
+                await command.RespondAsync("Log not found.", ephemeral: true);
+                return;
+            }
+
+            logs.Remove(logToRemove);
+
+            WriteableConfig.WriteConfigOption("AdvancedLogging", JArray.FromObject(logs));
+
+            await command.RespondAsync("Log removed.", ephemeral: true);
         }
-
-        logs.Remove(logToRemove);
-
-        WriteableConfig.WriteConfigOption("AdvancedLogging", JArray.FromObject(logs));
-        
-        await command.RespondAsync("Log removed.", ephemeral:true);
     }
 }

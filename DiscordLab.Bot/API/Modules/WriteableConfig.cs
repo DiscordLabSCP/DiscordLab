@@ -2,27 +2,29 @@
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
-namespace DiscordLab.Bot.API.Modules;
-
-public static class WriteableConfig
+namespace DiscordLab.Bot.API.Modules
 {
-    private static string Path = System.IO.Path.Combine(System.IO.Path.Combine(Paths.Configs, "DiscordLab"), "config.json");
-    
-    public static JObject GetConfig()
+    public static class WriteableConfig
     {
-        if (!File.Exists(Path))
+        private static string Path =
+            System.IO.Path.Combine(System.IO.Path.Combine(Paths.Configs, "DiscordLab"), "config.json");
+
+        public static JObject GetConfig()
         {
-            Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Path)!);
-            File.WriteAllText(Path, "{}");
+            if (!File.Exists(Path))
+            {
+                Directory.CreateDirectory(System.IO.Path.GetDirectoryName(Path)!);
+                File.WriteAllText(Path, "{}");
+            }
+
+            return JObject.Parse(File.ReadAllText(Path));
         }
 
-        return JObject.Parse(File.ReadAllText(Path));
-    }
-
-    public static void WriteConfigOption(string key, JToken value)
-    {
-        JObject config = GetConfig();
-        config[key] = value;
-        File.WriteAllText(Path, JsonConvert.SerializeObject(config));
+        public static void WriteConfigOption(string key, JToken value)
+        {
+            JObject config = GetConfig();
+            config[key] = value;
+            File.WriteAllText(Path, JsonConvert.SerializeObject(config));
+        }
     }
 }

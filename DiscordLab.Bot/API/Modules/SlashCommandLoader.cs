@@ -3,27 +3,28 @@ using Discord;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.Handlers;
 
-namespace DiscordLab.Bot.API.Modules;
-
-public static class SlashCommandLoader
+namespace DiscordLab.Bot.API.Modules
 {
-    public static List<ISlashCommand> Commands = new();
-    
-    public static void LoadCommands(Assembly assembly)
+    public static class SlashCommandLoader
     {
-        Type registerType = typeof(ISlashCommand);
-        foreach (Type type in assembly.GetTypes())
+        public static List<ISlashCommand> Commands = new();
+
+        public static void LoadCommands(Assembly assembly)
         {
-            if (type.IsAbstract || !registerType.IsAssignableFrom(type))
-                continue;
+            Type registerType = typeof(ISlashCommand);
+            foreach (Type type in assembly.GetTypes())
+            {
+                if (type.IsAbstract || !registerType.IsAssignableFrom(type))
+                    continue;
 
-            ISlashCommand init = Activator.CreateInstance(type) as ISlashCommand;
-            Commands.Add(init);
+                ISlashCommand init = Activator.CreateInstance(type) as ISlashCommand;
+                Commands.Add(init);
+            }
         }
-    }
 
-    public static void ClearCommands()
-    {
-        Commands = new ();
+        public static void ClearCommands()
+        {
+            Commands = new();
+        }
     }
 }

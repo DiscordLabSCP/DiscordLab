@@ -1,31 +1,32 @@
 ﻿using System.Reflection;
 using DiscordLab.Bot.API.Interfaces;
 
-namespace DiscordLab.Bot.API.Modules;
-
-public class HandlerLoader
+namespace DiscordLab.Bot.API.Modules
 {
-    private readonly List<IRegisterable> _inits = new();
-    
-    public void Load(Assembly assembly)
+    public class HandlerLoader
     {
-        Type registerType = typeof(IRegisterable);
-        foreach (Type type in assembly.GetTypes())
-        {
-            if (type.IsAbstract || !registerType.IsAssignableFrom(type))
-                continue;
+        private readonly List<IRegisterable> _inits = new();
 
-            IRegisterable init = Activator.CreateInstance(type) as IRegisterable;
-            _inits.Add(init);
-            init!.Init();
+        public void Load(Assembly assembly)
+        {
+            Type registerType = typeof(IRegisterable);
+            foreach (Type type in assembly.GetTypes())
+            {
+                if (type.IsAbstract || !registerType.IsAssignableFrom(type))
+                    continue;
+
+                IRegisterable init = Activator.CreateInstance(type) as IRegisterable;
+                _inits.Add(init);
+                init!.Init();
+            }
+
+            SlashCommandLoader.LoadCommands(assembly);
         }
 
-        SlashCommandLoader.LoadCommands(assembly);
-    }
-
-    public void Unload()
-    {
-        foreach (IRegisterable init in _inits)
-            init.Unregister();
+        public void Unload()
+        {
+            foreach (IRegisterable init in _inits)
+                init.Unregister();
+        }
     }
 }
