@@ -1,4 +1,5 @@
-﻿using DiscordLab.Bot.API.Interfaces;
+﻿using Discord;
+using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 
 namespace DiscordLab.BotStatus.Handlers;
@@ -27,6 +28,14 @@ public class DiscordBot : IRegisterable
         if (Bot.Handlers.DiscordBot.Instance.Client.Activity?.ToString().Trim() == status) return;
         try
         {
+            if (count == 0 && Plugin.Instance.Config.IdleOnEmpty)
+            {
+                Bot.Handlers.DiscordBot.Instance.Client.SetStatusAsync(UserStatus.Idle);
+            } else if (Bot.Handlers.DiscordBot.Instance.Client.Status == UserStatus.Idle && count > 0)
+            {
+                Bot.Handlers.DiscordBot.Instance.Client.SetStatusAsync(UserStatus.Online);
+            }
+
             Bot.Handlers.DiscordBot.Instance.Client.SetCustomStatusAsync(status);
         }
         catch (Exception e)
