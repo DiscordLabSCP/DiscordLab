@@ -19,11 +19,11 @@ public class Events : IRegisterable
 
     private void OnPlayerDying(DyingEventArgs ev)
     {
-        if (ev.Player == ev.Attacker) return;
         SocketTextChannel channel;
         bool isCuffed = ev.Player.IsCuffed;
         
         if (ev.Attacker == null) isCuffed = false;
+        if(ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type && ev.Attacker != ev.Player) isCuffed = false;
         
         if (isCuffed)
         {
@@ -36,9 +36,12 @@ public class Events : IRegisterable
         } 
         else
         {
-            if(ev.Attacker != null)
+            if(ev.Attacker != null && ev.Attacker != ev.Player)
                 channel = DiscordBot.Instance.GetChannel();
-            else channel = DiscordBot.Instance.GetSelfChannel();
+            else if(ev.Attacker.Role.Type == ev.Player.Role.Type)
+                channel = DiscordBot.Instance.GetTeamKillChannel();
+            else
+                channel = DiscordBot.Instance.GetSelfChannel();
         }
 
         if (channel == null)
@@ -47,16 +50,21 @@ public class Events : IRegisterable
             return;
         }
 
-        string message =
-            (isCuffed ? Plugin.Instance.Translation.CuffedPlayerDeath :
-                ev.Attacker != null ? Plugin.Instance.Translation.PlayerDeath :
-                Plugin.Instance.Translation.PlayerDeathSelf)
-            .Replace("{player}", ev.Player.Nickname)
-            .Replace("{playerrole}", ev.Player.Role.Name);
+        string message;
+        
+        if(isCuffed) message = Plugin.Instance.Translation.CuffedPlayerDeath;
+        else if(ev.Attacker != null) message = Plugin.Instance.Translation.PlayerDeath;
+        else if (ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type) message = Plugin.Instance.Translation.TeamKill;
+        else message = Plugin.Instance.Translation.PlayerDeathSelf;
         
         if(ev.Attacker != null) message = message
             .Replace("{attacker}", ev.Attacker.Nickname)
             .Replace("{attackerrole}", ev.Attacker.Role.Name);
+
+        message = message
+            .Replace("{player}", ev.Player.Nickname)
+            .Replace("{playerrole}", ev.Player.Role.Name)
+            .Replace("{role}", ev.Player.Role.Name);
         
         channel.SendMessageAsync(message);
     }

@@ -13,4 +13,6 @@ public class Config : IConfig
     public ulong CuffedChannelId { get; set; } = new ();
     [Description("The channel where logs will be sent when a player dies by their own actions, or just they died because of something else.")]
     public ulong SelfChannelId { get; set; } = new ();
+    [Description("The channel where logs will be sent when a player dies by a teamkill.")]
+    public ulong TeamKillChannelId { get; set; } = new ();
 }

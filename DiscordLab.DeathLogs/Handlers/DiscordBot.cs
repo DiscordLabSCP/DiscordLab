@@ -10,6 +10,7 @@ public class DiscordBot : IRegisterable
     private SocketTextChannel Channel { get; set; }
     private SocketTextChannel CuffedChannel { get; set; }
     private SocketTextChannel SelfChannel { get; set; }
+    private SocketTextChannel TeamKillChannel { get; set; }
     
     public void Init()
     {
@@ -19,6 +20,9 @@ public class DiscordBot : IRegisterable
     public void Unregister()
     {
         Channel = null;
+        CuffedChannel = null;
+        SelfChannel = null;
+        TeamKillChannel = null;
     }
 
     public SocketTextChannel GetChannel()
@@ -40,5 +44,12 @@ public class DiscordBot : IRegisterable
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         if(Plugin.Instance.Config.SelfChannelId == 0) return null;
         return SelfChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
+    }
+    
+    public SocketTextChannel GetTeamKillChannel()
+    {
+        if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.TeamKillChannelId == 0) return null;
+        return TeamKillChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.TeamKillChannelId);
     }
 }
