@@ -18,6 +18,7 @@ public class DiscordBot : IRegisterable
     private SocketTextChannel MuteChannel { get; set; }
     private SocketTextChannel UnmuteChannel { get; set; }
     private SocketTextChannel AdminChatChannel { get; set; }
+    private SocketTextChannel ReportChannel { get; set; }
     
     public void Init()
     {
@@ -32,6 +33,7 @@ public class DiscordBot : IRegisterable
         MuteChannel = null;
         UnmuteChannel = null;
         AdminChatChannel = null;
+        ReportChannel = null;
     }
     
     public SocketTextChannel GetBanChannel()
@@ -74,6 +76,13 @@ public class DiscordBot : IRegisterable
         if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
         if(Plugin.Instance.Config.AdminChatChannelId == 0) return null;
         return AdminChatChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.AdminChatChannelId);
+    }
+    
+    public SocketTextChannel GetReportChannel()
+    {
+        if(Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+        if(Plugin.Instance.Config.ReportChannelId == 0) return null;
+        return ReportChannel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ReportChannelId);
     }
     
     

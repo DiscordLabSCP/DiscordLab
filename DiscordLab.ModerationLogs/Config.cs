@@ -31,4 +31,8 @@ public class Config : IConfig
     public ulong AdminChatChannelId { get; set; } = new();
     [Description("The hex color code of the admin chat embed. Do not add the #.")]
     public string AdminChatColor { get; set; } = "3498DB";
+    [Description("The channel where reports will be sent.")]
+    public ulong ReportChannelId { get; set; } = new();
+    [Description("The hex color code of the report embed. Do not add the #.")]
+    public string ReportColor { get; set; } = "3498DB";
 }

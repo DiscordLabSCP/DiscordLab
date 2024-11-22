@@ -9,6 +9,10 @@ public class Translation : ITranslation
     public string Reason { get; set; } = "Reason";
     public string Issuer { get; set; } = "Issuer";
     public string IssuerId { get; set; } = "Issuer ID";
+    public string Target { get; set; } = "Target";
+    public string TargetId { get; set; } = "Target ID";
+    public string Reporter { get; set; } = "Reporter";
+    public string ReporterId { get; set; } = "Reporter ID";
     public string Duration { get; set; } = "Duration";
     public string PlayerBanned { get; set; } = "Player banned";
     public string PlayerKicked { get; set; } = "Player kicked";

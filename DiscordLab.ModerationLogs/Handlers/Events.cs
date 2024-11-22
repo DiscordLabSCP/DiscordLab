@@ -20,6 +20,7 @@ public class Events : IRegisterable
         Exiled.Events.Handlers.Player.IssuingMute += OnIssuingMute;
         Exiled.Events.Handlers.Player.RevokingMute += OnIssuingUnmute;
         Exiled.Events.Handlers.Player.SendingAdminChatMessage += OnSendingAdminChatMessage;
+        Exiled.Events.Handlers.Server.LocalReporting += OnLocalReporting;
     }
     
     public void Unregister()
@@ -30,6 +31,28 @@ public class Events : IRegisterable
         Exiled.Events.Handlers.Player.IssuingMute -= OnIssuingMute;
         Exiled.Events.Handlers.Player.RevokingMute -= OnIssuingUnmute;
         Exiled.Events.Handlers.Player.SendingAdminChatMessage -= OnSendingAdminChatMessage;
+        Exiled.Events.Handlers.Server.LocalReporting -= OnLocalReporting;
+    }
+    
+    private void OnLocalReporting(LocalReportingEventArgs ev)
+    {
+        if(!ev.IsAllowed) return;
+        SocketTextChannel channel = DiscordBot.Instance.GetKickChannel();
+        if (channel == null)
+        {
+            if (Plugin.Instance.Config.KickChannelId == 0) return;
+            Log.Error("Either the guild is null or the channel is null. So the kick message has failed to send.");
+            return;
+        }
+        EmbedBuilder embed = new();
+        embed.WithTitle(Translation.PlayerKicked);
+        embed.WithColor(Plugin.GetColor(Plugin.Instance.Config.KickColor));
+        embed.AddField(Translation.Target, ev.Target.Nickname);
+        embed.AddField(Translation.TargetId, ev.Target.UserId);
+        embed.AddField(Translation.Reason, ev.Reason);
+        embed.AddField(Translation.Reporter, ev.Player.Nickname);
+        embed.AddField(Translation.ReporterId, ev.Player.UserId);
+        channel.SendMessageAsync(embed: embed.Build());
     }
 
     private void OnBanning(BanningEventArgs ev)
