@@ -23,7 +23,7 @@ public class DiscordBot : IRegisterable
     public void SetStatus(int? count = null)
     {
         count ??= Server.PlayerCount;
-        string status = Translation.StatusMessage.Replace("{current}", count.ToString())
+        string status = (count != 0 ? Translation.StatusMessage : Translation.EmptyServer).Replace("{current}", count.ToString())
             .Replace("{max}", Server.MaxPlayerCount.ToString());
         if (Bot.Handlers.DiscordBot.Instance.Client.Activity?.ToString().Trim() == status) return;
         try
