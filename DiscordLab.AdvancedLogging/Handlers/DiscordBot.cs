@@ -101,23 +101,23 @@ public class DiscordBot : IRegisterable
             WriteableConfig.WriteConfigOption("AdvancedLogging", new JArray());
             return [];
         }
-        return logs.ToObject<IEnumerable<API.Features.Log>>();
+        return logs.ToObject<IEnumerable<API.Features.Log>>() ?? [];
     }
 
-    private void BindEvent(API.Features.Log log)
+    private bool BindEvent(API.Features.Log log)
     {
         IPlugin<IConfig> eventsAssembly = Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
         if (eventsAssembly == null)
         {
             Log.Error("Could not create any events due to Exiled.Events not being loaded.");
-            return;
+            return false;
         }
 
         Type eventType = eventsAssembly.Assembly.GetTypes().FirstOrDefault(x => x.Namespace == "Exiled.Events.Handlers" && x.Name == log.Handler);
         if (eventType == null)
         {
             Log.Error($"Handler type 'Exiled.Events.Handlers.{log.Handler}' not found.");
-            return;
+            return false;
         }
 
         Delegate handler = null;
@@ -126,7 +126,7 @@ public class DiscordBot : IRegisterable
         if (propertyInfo == null)
         {
             Log.Error($"Event '{log.Event}' not found in handler '{log.Handler}'.");
-            return;
+            return false;
         }
         
         EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1))!;
@@ -159,6 +159,7 @@ public class DiscordBot : IRegisterable
         _dynamicHandlers.Add(new (eventInfo, handler));
         
         _isHandlerAdded = true;
+        return true;
     }
 
     private void OnEventTriggeredNoEv(API.Features.Log log)
@@ -211,7 +212,7 @@ public class DiscordBot : IRegisterable
             WriteableConfig.WriteConfigOption("AdvancedLogging", new JArray());
             logs = WriteableConfig.GetConfig()["AdvancedLogging"]!;
         }
-        JArray logList = logs.ToObject<JArray>();
+        JArray logList = logs.ToObject<JArray>() ?? new ();
         API.Features.Log log = new()
         {
             Handler = handler,
@@ -220,9 +221,16 @@ public class DiscordBot : IRegisterable
             Nullables = nullables ?? "",
             ChannelId = channelId
         };
-        logList.Add(JObject.FromObject(log));
-        WriteableConfig.WriteConfigOption("AdvancedLogging", logList);
-        BindEvent(log);
-        await modal.RespondAsync("Log added", ephemeral:true);
+        bool eventResponse = BindEvent(log);
+        if (eventResponse)
+        {
+            logList.Add(JObject.FromObject(log));
+            WriteableConfig.WriteConfigOption("AdvancedLogging", logList);
+            await modal.RespondAsync("Log added", ephemeral:true);
+        }
+        else
+        {
+            await modal.RespondAsync("Failed to add log, check server console for more info", ephemeral: true);
+        }
     }
 }

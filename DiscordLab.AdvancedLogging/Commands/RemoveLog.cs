@@ -38,8 +38,8 @@ public class RemoveLog : ISlashCommand
         }
 
         logs.Remove(logToRemove);
-        
-        WriteableConfig.WriteConfigOption("AdvancedLogging", new JArray(logs));
+
+        WriteableConfig.WriteConfigOption("AdvancedLogging", JArray.FromObject(logs));
         
         await command.RespondAsync("Log removed.", ephemeral:true);
     }
