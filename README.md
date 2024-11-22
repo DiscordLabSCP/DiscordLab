@@ -33,7 +33,7 @@ After you have configured the bot, start your server and the bot should start up
 about this in the [Advanced Logging](#advanced-logging) section.
 - `DiscordLab.Moderation.dll` - Allows you to ban and unban people directly from the Discord bot. This is useful for when you are not near your server and need to ban someone, requires `DiscordLab.ModerationLogs` to log out
 any information.
--  `DiscordLab.ModerationLogs.dll` - Logs all moderation actions done on the SCP server into your chosen Discord channels, including admin chat logs. 
+-  `DiscordLab.ModerationLogs.dll` - Logs all moderation actions done on the SCP server into your chosen Discord channels, including admin chat logs and reporting. 
 
 ## Requesting modules
 
