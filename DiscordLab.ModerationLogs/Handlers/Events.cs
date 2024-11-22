@@ -37,16 +37,16 @@ public class Events : IRegisterable
     private void OnLocalReporting(LocalReportingEventArgs ev)
     {
         if(!ev.IsAllowed) return;
-        SocketTextChannel channel = DiscordBot.Instance.GetKickChannel();
+        SocketTextChannel channel = DiscordBot.Instance.GetReportChannel();
         if (channel == null)
         {
-            if (Plugin.Instance.Config.KickChannelId == 0) return;
+            if (Plugin.Instance.Config.ReportChannelId == 0) return;
             Log.Error("Either the guild is null or the channel is null. So the kick message has failed to send.");
             return;
         }
         EmbedBuilder embed = new();
         embed.WithTitle(Translation.PlayerKicked);
-        embed.WithColor(Plugin.GetColor(Plugin.Instance.Config.KickColor));
+        embed.WithColor(Plugin.GetColor(Plugin.Instance.Config.ReportColor));
         embed.AddField(Translation.Target, ev.Target.Nickname);
         embed.AddField(Translation.TargetId, ev.Target.UserId);
         embed.AddField(Translation.Reason, ev.Reason);
@@ -57,7 +57,7 @@ public class Events : IRegisterable
 
     private void OnBanning(BanningEventArgs ev)
     {
-        if (!ev.IsAllowed || ev.Target == null) return;
+        if (!ev.IsAllowed || ev.Target == null || ev.Duration == 0) return;
         DiscordBot.Instance.SendBanMessage(ev.Target.Nickname, 
             ev.Target.UserId, 
             ev.Reason, 
