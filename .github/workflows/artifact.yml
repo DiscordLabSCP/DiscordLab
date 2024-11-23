@@ -30,7 +30,7 @@ jobs:
         shell: pwsh
         run: |
           $response = Invoke-RestMethod -Uri ${{ env.XP_SYSTEM_URL }}
-          $asset = $response.assets | Where-Object { $_.name -eq 'XPSystem-EXILED.dll' }
+          $asset = $response.assets | Where-Object { $_.name -eq 'XPSystem-EXILED.dll' } | Select-Object -First 1
           $url = $asset.browser_download_url
           Invoke-WebRequest -Uri $url -OutFile ${{ env.EXILED_REFERENCES }}/XPSystem.dll
       - name: Restore packages
