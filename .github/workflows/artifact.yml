@@ -40,15 +40,13 @@ jobs:
       - name: Move DLLs to single directory
         run: |
           mkdir ${{ github.workspace }}/output
-          cp ${{ github.workspace }}/DiscordLab.AdvancedLogging/bin/Debug/net48/DiscordLab.AdvancedLogging.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.Bot/bin/Debug/net48/DiscordLab.Bot.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.BotStatus/bin/Debug/net48/DiscordLab.BotStatus.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.ConnectionLogs/bin/Debug/net48/DiscordLab.ConnectionLogs.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.DeathLogs/bin/Debug/net48/DiscordLab.DeathLogs.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.Moderation/bin/Debug/net48/DiscordLab.Moderation.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.ModerationLogs/bin/Debug/net48/DiscordLab.ModerationLogs.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.StatusChannel/bin/Debug/net48/DiscordLab.StatusChannel.dll ${{ github.workspace }}/output/
-          cp ${{ github.workspace }}/DiscordLab.XPSystem/bin/Debug/net48/DiscordLab.XPSystem.dll ${{ github.workspace }}/output/
+          Get-ChildItem -Path ${{ github.workspace }} -Directory | ForEach-Object {
+            $folderName = $_.Name
+            $dllPath = "$_.FullName/bin/Debug/net48/$folderName.dll"
+            if (Test-Path $dllPath) {
+              Copy-Item -Path $dllPath -Destination ${{ github.workspace }}/output/
+            }
+          }
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
