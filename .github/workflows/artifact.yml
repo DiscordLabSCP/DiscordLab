@@ -40,12 +40,15 @@ jobs:
       - name: Move DLLs to single directory
         shell: pwsh
         run: |
-          mkdir ${{ github.workspace }}/output
+          $outputDir = "${{ github.workspace }}/output"
+          if (-Not (Test-Path -Path $outputDir)) {
+            New-Item -ItemType Directory -Path $outputDir
+          }
           Get-ChildItem -Path ${{ github.workspace }} -Directory | ForEach-Object {
             $folderName = $_.Name
-            $dllPath = "$_.FullName/bin/Debug/net48/$folderName.dll"
-            if (Test-Path $dllPath) {
-              Copy-Item -Path $dllPath -Destination ${{ github.workspace }}/output/
+            $dllPath = Join-Path -Path $_.FullName -ChildPath "bin/Debug/net48/$folderName.dll"
+            if (Test-Path -Path $dllPath) {
+              Copy-Item -Path $dllPath -Destination $outputDir
             }
           }
       - name: Publish Artifact
