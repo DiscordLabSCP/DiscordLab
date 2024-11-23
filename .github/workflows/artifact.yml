@@ -38,6 +38,7 @@ jobs:
       - name: Build
         run: msbuild.exe ${{ github.workspace }}/DiscordLab.sln /p:Configuration=Debug /p:Platform="Any CPU"
       - name: Move DLLs to single directory
+        shell: pwsh
         run: |
           mkdir ${{ github.workspace }}/output
           Get-ChildItem -Path ${{ github.workspace }} -Directory | ForEach-Object {
