@@ -5,6 +5,7 @@ on:
 
 env:
   EXILED_REFERENCES_URL: https://misaka-zerotwo.github.io/SL-References/Dev.zip
+  XP_SYSTEM_URL: https://api.github.com/repos/RowpannSCP/XP/releases
   EXILED_REFERENCES: ${{ github.workspace }}/refs
 
 jobs:
@@ -25,6 +26,13 @@ jobs:
         run: |
           Invoke-WebRequest -Uri ${{ env.EXILED_REFERENCES_URL }} -OutFile ${{ github.workspace }}/References.zip
           Expand-Archive -Path References.zip -DestinationPath ${{ env.EXILED_REFERENCES }} -Force
+      - name: Get XP System
+        shell: pwsh
+        run: |
+          $response = Invoke-RestMethod -Uri ${{ env.XP_SYSTEM_URL }}
+          $asset = $response.assets | Where-Object { $_.name -eq 'XPSystem-EXILED.dll' }
+          $url = $asset.browser_download_url
+          Invoke-WebRequest -Uri $url -OutFile ${{ env.EXILED_REFERENCES }}/XPSystem.dll
       - name: Restore packages
         run: nuget restore ${{ github.workspace }}/DiscordLab.sln
       - name: Build

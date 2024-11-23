@@ -49,7 +49,7 @@ namespace DiscordLab.XPSystem.Commands
                 },
                 Color = new Color(uint.Parse(Plugin.Instance.Config.Color, NumberStyles.HexNumber))
             };
-            await command.RespondAsync(null, [embed.Build()]);
+            await command.RespondAsync(embed:embed.Build());
         }
     }
 }

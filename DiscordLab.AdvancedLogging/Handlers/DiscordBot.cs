@@ -104,10 +104,10 @@ namespace DiscordLab.AdvancedLogging.Handlers
             if (logs == null)
             {
                 WriteableConfig.WriteConfigOption("AdvancedLogging", new JArray());
-                return [];
+                return new List<API.Features.Log>();
             }
 
-            return logs.ToObject<IEnumerable<API.Features.Log>>() ?? [];
+            return logs.ToObject<IEnumerable<API.Features.Log>>() ?? new List<API.Features.Log>();
         }
 
         private bool BindEvent(API.Features.Log log)
