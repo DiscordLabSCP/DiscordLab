@@ -25,6 +25,13 @@ namespace DiscordLab.DeathLogs.Handlers
             if (ev.Attacker == null) isCuffed = false;
             if (ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type && ev.Attacker != ev.Player)
                 isCuffed = false;
+            if (ev.Attacker != null)
+            {
+                if (ev.Attacker.IsScp && Plugin.Instance.Config.ScpIgnoreCuffed)
+                {
+                    isCuffed = false;
+                }
+            }
 
             if (isCuffed)
             {
@@ -39,7 +46,7 @@ namespace DiscordLab.DeathLogs.Handlers
             {
                 if (ev.Attacker != null && ev.Attacker != ev.Player)
                     channel = DiscordBot.Instance.GetChannel();
-                else if (ev.Attacker.Role.Type == ev.Player.Role.Type)
+                else if (ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type)
                     channel = DiscordBot.Instance.GetTeamKillChannel();
                 else
                     channel = DiscordBot.Instance.GetSelfChannel();
