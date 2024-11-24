@@ -76,7 +76,7 @@ namespace DiscordLab.Bot.API.Modules
                 }
                 if (status.Version > plugin.Version)
                 {
-                    Log.Warn($"There is a new version of {status.ModuleName} available! Download it from {status.Url}");
+                    Log.Warn($"There is a new version of {status.ModuleName} available, version {status.Version}, you are currently on {plugin.Version}! Download it from {status.Url}");
                 }
             }
         }

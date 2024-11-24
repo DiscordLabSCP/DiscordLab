@@ -11,7 +11,7 @@ namespace DiscordLab.XPSystem
         public override string Name => "DiscordLab.XPSystem";
         public override string Author => "JayXTQ";
         public override string Prefix => "DL.XPSystem";
-        public override Version Version => new (1, 3, 0);
+        public override Version Version => new (1, 3, 1);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Low;
 

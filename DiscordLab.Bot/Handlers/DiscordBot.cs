@@ -17,6 +17,15 @@ namespace DiscordLab.Bot.Handlers
         public void Init()
         {
             Instance = this;
+            DiscordSocketConfig config = new()
+            {
+                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
+                LogLevel = Plugin.Instance.Config.Debug ? LogSeverity.Debug : LogSeverity.Warning
+            };
+            Client = new(config);
+            Client.Log += DiscLog;
+            Client.Ready += Ready;
+            Client.SlashCommandExecuted += SlashCommandHandler;
             Task.Run(StartClient);
         }
 
@@ -34,16 +43,7 @@ namespace DiscordLab.Bot.Handlers
 
         private async Task StartClient()
         {
-            Log.Debug("Starting Discord client...");
-            DiscordSocketConfig config = new()
-            {
-                GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
-                LogLevel = Plugin.Instance.Config.Debug ? LogSeverity.Debug : LogSeverity.Warning
-            };
-            Client = new(config);
-            Client.Log += DiscLog;
-            Client.Ready += Ready;
-            Client.SlashCommandExecuted += SlashCommandHandler;
+            Log.Debug("Starting Discord bot...");
             await Client.LoginAsync(TokenType.Bot, Plugin.Instance.Config.Token);
             await Client.StartAsync();
         }

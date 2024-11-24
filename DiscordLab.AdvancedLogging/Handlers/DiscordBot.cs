@@ -7,6 +7,7 @@ using DiscordLab.Bot.API.Modules;
 using Exiled.API.Interfaces;
 using Exiled.Events.EventArgs.Interfaces;
 using Exiled.Events.Features;
+using MEC;
 using Newtonsoft.Json.Linq;
 using Log = Exiled.API.Features.Log;
 
@@ -19,14 +20,14 @@ namespace DiscordLab.AdvancedLogging.Handlers
         private List<ChannelType> Channels { get; set; }
 
         private readonly List<Tuple<EventInfo, Delegate>> _dynamicHandlers = new();
-        private bool _isHandlerAdded = false;
+        private bool _isHandlerAdded;
 
         public void Init()
         {
             Instance = this;
+            Channels = new();
             Bot.Handlers.DiscordBot.Instance.Client.ModalSubmitted += OnModalSubmitted;
             Bot.Handlers.DiscordBot.Instance.Client.Ready += OnReady;
-            Channels = new();
         }
 
         public void Unregister()
