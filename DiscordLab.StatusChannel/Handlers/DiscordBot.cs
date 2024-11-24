@@ -36,7 +36,7 @@ namespace DiscordLab.StatusChannel.Handlers
 
         public void SetStatusMessage(IEnumerable<Player> players = null)
         {
-            players ??= Player.List.ToList();
+            players ??= Player.List.Where(p => !p.IsNPC).ToList();
             IEnumerable<Player> playerList = players.ToList();
             string playersString = string.Join("\n",
                 playerList.Select(p =>

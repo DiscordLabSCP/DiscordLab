@@ -45,7 +45,7 @@ namespace DiscordLab.StatusChannel.Handlers
 
         private void OnPlayerLeave(LeftEventArgs ev)
         {
-            List<Player> players = Player.List.Where(p => p != ev.Player).ToList();
+            List<Player> players = Player.List.Where(p => p != ev.Player && !p.IsNPC).ToList();
             if (Round.InProgress || !players.Any())
                 DiscordBot.Instance.SetStatusMessage(
                     players
