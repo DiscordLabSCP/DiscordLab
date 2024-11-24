@@ -9,74 +9,104 @@ namespace DiscordLab.DeathLogs.Handlers
     {
         public void Init()
         {
-            Exiled.Events.Handlers.Player.Dying += OnPlayerDying;
+            Exiled.Events.Handlers.Player.Dying += OnTeamKillDeath;
+            Exiled.Events.Handlers.Player.Dying += OnCuffKillDeath;
+            Exiled.Events.Handlers.Player.Dying += OnNormalDeath;
+            Exiled.Events.Handlers.Player.Dying += OnSuicide;
         }
 
         public void Unregister()
         {
-            Exiled.Events.Handlers.Player.Dying -= OnPlayerDying;
+            Exiled.Events.Handlers.Player.Dying -= OnTeamKillDeath;
+            Exiled.Events.Handlers.Player.Dying -= OnCuffKillDeath;
+            Exiled.Events.Handlers.Player.Dying -= OnNormalDeath;
+            Exiled.Events.Handlers.Player.Dying -= OnSuicide;
         }
 
-        private void OnPlayerDying(DyingEventArgs ev)
+        private void OnTeamKillDeath(DyingEventArgs ev)
         {
-            SocketTextChannel channel;
-            bool isCuffed = ev.Player.IsCuffed;
-
-            if (ev.Attacker == null) isCuffed = false;
-            if (ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type && ev.Attacker != ev.Player)
-                isCuffed = false;
-            if (ev.Attacker != null)
-            {
-                if (ev.Attacker.IsScp && Plugin.Instance.Config.ScpIgnoreCuffed)
-                {
-                    isCuffed = false;
-                }
-            }
-
-            if (isCuffed)
-            {
-                channel = DiscordBot.Instance.GetCuffedChannel();
-                if (channel == null)
-                {
-                    isCuffed = false;
-                    channel = DiscordBot.Instance.GetChannel();
-                }
-            }
-            else
-            {
-                if (ev.Attacker != null && ev.Attacker != ev.Player)
-                    channel = DiscordBot.Instance.GetChannel();
-                else if (ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type)
-                    channel = DiscordBot.Instance.GetTeamKillChannel();
-                else
-                    channel = DiscordBot.Instance.GetSelfChannel();
-            }
-
+            if (ev.Attacker == null) return;
+            if (ev.Attacker.Role.Type != ev.Player.Role.Type) return;
+            if(Plugin.Instance.Config.TeamKillChannelId == 0) return;
+            SocketTextChannel channel = DiscordBot.Instance.GetTeamKillChannel();
             if (channel == null)
             {
                 Log.Error("Either the guild is null or the channel is null. So the death message has failed to send.");
                 return;
             }
 
-            string message;
-
-            if (isCuffed) message = Plugin.Instance.Translation.CuffedPlayerDeath;
-            else if (ev.Attacker != null) message = Plugin.Instance.Translation.PlayerDeath;
-            else if (ev.Attacker != null && ev.Attacker.Role.Type == ev.Player.Role.Type)
-                message = Plugin.Instance.Translation.TeamKill;
-            else message = Plugin.Instance.Translation.PlayerDeathSelf;
-
-            if (ev.Attacker != null)
-                message = message
+            channel.SendMessageAsync(
+                Plugin.Instance.Translation.TeamKill
+                    .Replace("{player}", ev.Player.Nickname)
                     .Replace("{attacker}", ev.Attacker.Nickname)
-                    .Replace("{attackerrole}", ev.Attacker.Role.Name);
+                    .Replace("{role}",ev.Player.Role.Name)
+            );
+        }
 
-            message = message
-                .Replace("{player}", ev.Player.Nickname)
-                .Replace("{playerrole}", ev.Player.Role.Name)
-                .Replace("{role}", ev.Player.Role.Name);
+        private void OnCuffKillDeath(DyingEventArgs ev)
+        {
+            if(ev.Attacker == null) return;
+            if(ev.Attacker == ev.Player) return;
+            if(ev.Attacker.IsScp && Plugin.Instance.Config.ScpIgnoreCuffed) return;
+            if(!ev.Player.IsCuffed) return;
+            if (Plugin.Instance.Config.CuffedChannelId == 0)
+            {
+                ev.Player.Cuffer = null;
+                OnNormalDeath(ev);
+                return;
+            }
+            SocketTextChannel channel = DiscordBot.Instance.GetCuffedChannel();
+            if (channel == null)
+            {
+                Log.Error("Either the guild is null or the channel is null. So the death message has failed to send.");
+                return;
+            }
 
-            channel.SendMessageAsync(message);
+            channel.SendMessageAsync(
+                Plugin.Instance.Translation.CuffedPlayerDeath
+                    .Replace("{player}", ev.Player.Nickname)
+                    .Replace("{attacker}", ev.Attacker.Nickname)
+                    .Replace("{playerrole}", ev.Player.Role.Name)
+                    .Replace("{attackerrole}", ev.Attacker.Role.Name)
+            );
+
+        }
+
+        private void OnNormalDeath(DyingEventArgs ev)
+        {
+            if(ev.Attacker == null) return;
+            if(ev.Attacker == ev.Player) return;
+            if (Plugin.Instance.Config.ChannelId == 0) return;
+            SocketTextChannel channel = DiscordBot.Instance.GetChannel();
+            if (channel == null)
+            {
+                Log.Error("Either the guild is null or the channel is null. So the death message has failed to send.");
+                return;
+            }
+            channel.SendMessageAsync(
+                Plugin.Instance.Translation.PlayerDeath
+                    .Replace("{player}", ev.Player.Nickname)
+                    .Replace("{attacker}", ev.Attacker.Nickname)
+                    .Replace("{playerrole}", ev.Player.Role.Name)
+                    .Replace("{attackerrole}", ev.Attacker.Role.Name)
+            );
+        }
+
+        private void OnSuicide(DyingEventArgs ev)
+        {
+            if (ev.Attacker != null && ev.Attacker != ev.Player) return;
+            if (Plugin.Instance.Config.SelfChannelId == 0) return;
+            SocketTextChannel channel = DiscordBot.Instance.GetSelfChannel();
+            if (channel == null)
+            {
+                Log.Error("Either the guild is null or the channel is null. So the death message has failed to send.");
+                return;
+            }
+            channel.SendMessageAsync(
+                Plugin.Instance.Translation.PlayerDeathSelf
+                    .Replace("{player}", ev.Player.Nickname)
+                    .Replace("{playerrole}", ev.Player.Role.Name)
+            );
         }
     }
 }
