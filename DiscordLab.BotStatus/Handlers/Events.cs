@@ -34,7 +34,7 @@ namespace DiscordLab.BotStatus.Handlers
 
         private void OnPlayerLeave(LeftEventArgs ev)
         {
-            int players = Player.List.Count(p => p != ev.Player);
+            int players = Player.List.Count(p => p != ev.Player && !p.IsNPC);
             if (Round.InProgress || players == 0)
                 DiscordBot.Instance.SetStatus(
                     players
