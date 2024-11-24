@@ -22,7 +22,7 @@ namespace DiscordLab.BotStatus.Handlers
 
         public void SetStatus(int? count = null)
         {
-            count ??= Server.PlayerCount;
+            count ??= Player.List.Count(p => !p.IsNPC);
             string status = (count != 0 ? Translation.StatusMessage : Translation.EmptyServer)
                 .Replace("{current}", count.ToString())
                 .Replace("{max}", Server.MaxPlayerCount.ToString());
