@@ -1,6 +1,8 @@
 ﻿using Newtonsoft.Json;
 using System.Net.Http;
 using Exiled.API.Features;
+using Exiled.API.Interfaces;
+using Exiled.Loader;
 using UnityEngine;
 
 namespace DiscordLab.Bot.API.Modules
@@ -31,9 +33,7 @@ namespace DiscordLab.Bot.API.Modules
     
     public class UpdateStatus
     {
-        private static readonly HttpClient client = new HttpClient();
-        
-        public static event Action<List<API.Features.UpdateStatus>> OnUpdateStatus = delegate { };
+        private static readonly HttpClient client = new ();
 
         public static async Task GetStatus()
         {
@@ -54,18 +54,31 @@ namespace DiscordLab.Bot.API.Modules
                     List<API.Features.UpdateStatus> moduleStatuses = statuses.Where(s => s.ModuleName == status.ModuleName).ToList();
                     if (moduleStatuses.Any(s => s.Version < status.Version))
                     {
-                        Log.Info("Removing old version...");
                         statuses.RemoveAll(s => s.ModuleName == status.ModuleName);
                         statuses.Add(status);
                     }
                     else if (!moduleStatuses.Any())
                     {
-                        Log.Info("Adding new version...");
                         statuses.Add(status);
                     }
                 }
             }
-            OnUpdateStatus.Invoke(statuses);
+
+            List<IPlugin<IConfig>> plugins = Loader.Plugins.Where(x => x.Name.StartsWith("DiscordLab.")).ToList();
+            plugins.Add(Loader.Plugins.First(x => x.Name == Plugin.Instance.Name));
+            foreach (IPlugin<IConfig> plugin in plugins)
+            {
+                API.Features.UpdateStatus status = statuses.FirstOrDefault(x => x.ModuleName == plugin.Name);
+                if (status == null)
+                {
+                    if(plugin.Name == Plugin.Instance.Name) status = statuses.First(x => x.ModuleName == "DiscordLab.Bot");
+                    else continue;
+                }
+                if (status.Version > plugin.Version)
+                {
+                    Log.Warn($"There is a new version of {status.ModuleName} available! Download it from {status.Url}");
+                }
+            }
         }
     }
 }

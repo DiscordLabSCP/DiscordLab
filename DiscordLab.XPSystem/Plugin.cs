@@ -33,8 +33,6 @@ namespace DiscordLab.XPSystem
             
             _handlerLoader.Load(Assembly);
             
-            UpdateStatus.OnUpdateStatus += OnUpdateStatus;
-            
             base.OnEnabled();
         }
         
@@ -44,22 +42,7 @@ namespace DiscordLab.XPSystem
 
             _handlerLoader = null;
             
-            UpdateStatus.OnUpdateStatus -= OnUpdateStatus;
-            
             base.OnDisabled();
-        }
-
-        private void OnUpdateStatus(List<Bot.API.Features.UpdateStatus> statuses)
-        {
-            Bot.API.Features.UpdateStatus status = statuses.FirstOrDefault(x => x.ModuleName == Name);
-            if (status == null)
-            {
-                return;
-            }
-            if(status.Version > Version)
-            {
-                Log.Warn($"There is a new version of {Name} available! Download it from {status.Url}");
-            }
         }
     }
 }

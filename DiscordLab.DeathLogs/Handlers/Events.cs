@@ -26,6 +26,7 @@ namespace DiscordLab.DeathLogs.Handlers
         private void OnTeamKillDeath(DyingEventArgs ev)
         {
             if (ev.Attacker == null) return;
+            if (ev.Attacker == ev.Player) return;
             if (ev.Attacker.Role.Type != ev.Player.Role.Type) return;
             if(Plugin.Instance.Config.TeamKillChannelId == 0) return;
             SocketTextChannel channel = DiscordBot.Instance.GetTeamKillChannel();
