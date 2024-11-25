@@ -34,7 +34,13 @@ namespace DiscordLab.Bot.API.Modules
     public class UpdateStatus
     {
         private static readonly HttpClient client = new ();
-
+        
+        /// <summary>
+        /// This will check the GitHub API for the latest version of the modules and plugins.
+        /// </summary>
+        /// <remarks>
+        /// Should only be run once via the main bot, otherwise you'll just be doing unnecessary requests.
+        /// </remarks>
         public static async Task GetStatus()
         {
             client.DefaultRequestHeaders.UserAgent.ParseAdd("request");

@@ -11,10 +11,10 @@ namespace DiscordLab.Bot.API.Interfaces
         SlashCommandBuilder Data { get; }
 
         /// <summary>
-        /// Here is where your slash command runs
+        /// Here is where your slash command runs.
         /// </summary>
         /// <remarks>
-        /// This type contains information about the command that was executed
+        /// This type contains information about the command that was executed.
         /// </remarks>
         Task Run(SocketSlashCommand command);
     }
