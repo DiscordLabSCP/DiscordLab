@@ -41,6 +41,8 @@ namespace DiscordLab.DeathLogs.Handlers
                     .Replace("{player}", ev.Player.Nickname)
                     .Replace("{attacker}", ev.Attacker.Nickname)
                     .Replace("{role}",ev.Player.Role.Name)
+                    .Replace("{playerid}", ev.Player.UserId)
+                    .Replace("{attackerid}", ev.Attacker.UserId)
             );
         }
 
@@ -69,6 +71,8 @@ namespace DiscordLab.DeathLogs.Handlers
                     .Replace("{attacker}", ev.Attacker.Nickname)
                     .Replace("{playerrole}", ev.Player.Role.Name)
                     .Replace("{attackerrole}", ev.Attacker.Role.Name)
+                    .Replace("{playerid}", ev.Player.UserId)
+                    .Replace("{attackerid}", ev.Attacker.UserId)
             );
 
         }
@@ -92,6 +96,8 @@ namespace DiscordLab.DeathLogs.Handlers
                     .Replace("{attacker}", ev.Attacker.Nickname)
                     .Replace("{playerrole}", ev.Player.Role.Name)
                     .Replace("{attackerrole}", ev.Attacker.Role.Name)
+                    .Replace("{playerid}", ev.Player.UserId)
+                    .Replace("{attackerid}", ev.Attacker.UserId)
             );
         }
 
@@ -109,6 +115,7 @@ namespace DiscordLab.DeathLogs.Handlers
                 Plugin.Instance.Translation.PlayerDeathSelf
                     .Replace("{player}", ev.Player.Nickname)
                     .Replace("{playerrole}", ev.Player.Role.Name)
+                    .Replace("{playerid}", ev.Player.UserId)
             );
         }
     }
