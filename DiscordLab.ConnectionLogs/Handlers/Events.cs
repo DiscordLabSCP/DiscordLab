@@ -58,7 +58,9 @@ namespace DiscordLab.ConnectionLogs.Handlers
                 Log.Error("Either the guild is null or the channel is null. So the round start message has failed to send.");
                 return;
             }
-            string players = string.Join("\n", Player.List.Select(player => Plugin.Instance.Translation.RoundStartPlayers.Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId).Replace("{ip}", player.IPAddress)));
+
+            List<Player> playerList = Player.List.Where(p => !p.IsNPC).ToList();
+            string players = string.Join("\n", playerList.Select(player => Plugin.Instance.Translation.RoundStartPlayers.Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId).Replace("{ip}", player.IPAddress)));
             channel.SendMessageAsync(message.Replace("{players}", players));
         }
     }
