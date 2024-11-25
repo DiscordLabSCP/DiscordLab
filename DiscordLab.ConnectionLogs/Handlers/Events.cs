@@ -53,12 +53,13 @@ namespace DiscordLab.ConnectionLogs.Handlers
         {
             string message = Plugin.Instance.Translation.RoundStart;
             SocketTextChannel channel = DiscordBot.Instance.GetRoundStartChannel();
-            if (channel != null)
-                channel.SendMessageAsync(message +
-                                         $"\n```{string.Join("\n", Player.List.Select(player => $"{player.Nickname} ({player.UserId})"))}```");
-            else
-                Log.Error(
-                    "Either the guild is null or the channel is null. So the round start message has failed to send.");
+            if (channel == null)
+            {
+                Log.Error("Either the guild is null or the channel is null. So the round start message has failed to send.");
+                return;
+            }
+            string players = string.Join("\n", Player.List.Select(player => Plugin.Instance.Translation.RoundStartPlayers.Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId).Replace("{ip}", player.IPAddress)));
+            channel.SendMessageAsync(message.Replace("{players}", players));
         }
     }
 }
