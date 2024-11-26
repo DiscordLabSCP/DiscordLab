@@ -23,16 +23,18 @@ body:
       placeholder: I'm always frustrated when...
 
   - type: textarea
+    validations:
+      required: true
     attributes: 
       label: Describe the solution you'd like
       description: A clear and concise description of what you want to happen.
-      required: true
 
   - type: textarea
+    validations:
+      required: true
     attributes: 
       label: Describe alternatives you've considered
       description: A clear and concise description of any alternative solutions or features you've considered.
-      required: true
 
   - type: input
     attributes: 
