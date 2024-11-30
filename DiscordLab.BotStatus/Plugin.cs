@@ -10,7 +10,7 @@ namespace DiscordLab.BotStatus
         public override string Name => "DiscordLab.BotStatus";
         public override string Author => "JayXTQ";
         public override string Prefix => "DL.BotStatus";
-        public override Version Version => new (1, 3, 1);
+        public override Version Version => new (1, 3, 2);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Default;
 
