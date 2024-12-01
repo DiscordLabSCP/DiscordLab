@@ -19,5 +19,10 @@ namespace DiscordLab.Moderation
         public string UnbanCommandUserOptionDescription { get; set; } = "The player to unban.";
         public string UnbanCommandSuccess { get; set; } = "Successfully unbanned `{player}`.";
         public string FailedExecuteCommand { get; set; } = "Failed to execute the command. Here is the reason the server gave back: \n```{reason}```";
+        public string SendCommandName { get; set; } = "sendcommand";
+        public string SendCommandDescription { get; set; } = "Sends a command to the server.";
+        public string SendCommandCommandOptionName { get; set; } = "command";
+        public string SendCommandCommandOptionDescription { get; set; } = "The command to send to the server.";
+        public string SendCommandResponse { get; set; } = "Successfully sent the command to the server. Here is the response the server gave back: \n```{response}```";
     }
 }
