@@ -129,5 +129,3 @@ then the message will not be sent.
 `Copy ID`. There is a tutorial on how to get IDs in the [Get started](#get-started) section.
 
 After running this /addlog command, you shouldn't need to restart your server.
-
-Nightly builds contain all modules and the main bot for you to just copy and paste easily, no need to go scanning the releases page.
