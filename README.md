@@ -130,8 +130,4 @@ then the message will not be sent.
 
 After running this /addlog command, you shouldn't need to restart your server.
 
-## Nightly builds
-
-You can get the latest nightly build from [nightly.link](https://nightly.link/JayXTQ/DiscordLab/workflows/artifact/main/DiscordLab.zip). This will always be the latest build, but it may not be stable, so use at your own risk.
-
 Nightly builds contain all modules and the main bot for you to just copy and paste easily, no need to go scanning the releases page.
