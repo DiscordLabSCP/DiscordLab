@@ -19,6 +19,7 @@ namespace DiscordLab.Bot.API.Modules
         /// </remarks>
         public void Load(Assembly assembly)
         {
+            if (Plugin.Instance.Config.Token is "token" or "") return;
             Type registerType = typeof(IRegisterable);
             foreach (Type type in assembly.GetTypes())
             {

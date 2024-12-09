@@ -19,6 +19,12 @@ namespace DiscordLab.Bot
 
         public override void OnEnabled()
         {
+            if(Config.Token is "token" or "")
+            {
+                Log.Error("Please set the bot token in the config file.");
+                return;
+            }
+            
             Instance = this;
             
             _handlerLoader = new ();
