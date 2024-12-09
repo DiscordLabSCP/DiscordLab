@@ -27,7 +27,7 @@ namespace DiscordLab.DeathLogs.Handlers
         
         public SocketGuild GetGuild()
         {
-            return Bot.Handlers.DiscordBot.Instance.Client.GetGuild(Plugin.Instance.Config.GuildId);
+            return Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
         }
 
         public SocketTextChannel GetChannel()
