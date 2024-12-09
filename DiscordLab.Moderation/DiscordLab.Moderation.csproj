@@ -27,6 +27,5 @@
     </ItemGroup>
     <ItemGroup>
         <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj" />
-        <ProjectReference Include="..\DiscordLab.ModerationLogs\DiscordLab.ModerationLogs.csproj" />
     </ItemGroup>
 </Project>

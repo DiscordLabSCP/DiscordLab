@@ -10,13 +10,14 @@ namespace DiscordLab.Moderation
         public override string Name => "DiscordLab.Moderation";
         public override string Author => "JayXTQ";
         public override string Prefix => "DL.Moderation";
-        public override Version Version => new (1, 4, 0);
+        public override Version Version => new (1, 4, 1);
         public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        public override PluginPriority Priority => PluginPriority.Low;
 
         public static Plugin Instance { get; private set; }
         
         private bool ModerationLogsEnabled { get; set; }
+        private object ModerationLogsHandler { get; set; }
         
         private HandlerLoader _handlerLoader;
 
@@ -36,15 +37,6 @@ namespace DiscordLab.Moderation
             _handlerLoader = null;
             
             base.OnDisabled();
-        }
-
-        public bool CheckModerationLogsEnabled()
-        {
-            if (!ModerationLogsEnabled)
-            {
-                ModerationLogsEnabled = Loader.Plugins.FirstOrDefault(p => p.Name == "DiscordLab.ModerationLogs" && p.Config.IsEnabled) != null;
-            }
-            return ModerationLogsEnabled;
         }
     }
 }

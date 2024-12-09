@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Moderation.Handlers;
 using Exiled.API.Features;
-using RemoteAdmin;
 
 namespace DiscordLab.Moderation.Commands
 {
@@ -43,9 +43,12 @@ namespace DiscordLab.Moderation.Commands
             else
             {
                 await command.RespondAsync(Translation.UnbanCommandSuccess.Replace("{player}", user), ephemeral: true);
-                if (Plugin.Instance.CheckModerationLogsEnabled())
+                if (ModerationLogsHandler.Instance.IsEnabled)
                 {
-                    ModerationLogs.Handlers.DiscordBot.Instance.SendUnbanMessage(user);
+                    ModerationLogsHandler.Instance.SendUnbanLogMethod.Invoke(
+                        ModerationLogsHandler.Instance.HandlerInstance, 
+                        new object[] { user }
+                    );
                 }
             }
         }

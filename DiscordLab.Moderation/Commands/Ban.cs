@@ -1,8 +1,8 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Moderation.Handlers;
 using Exiled.API.Features;
-using RemoteAdmin;
 
 namespace DiscordLab.Moderation.Commands
 {
@@ -61,10 +61,12 @@ namespace DiscordLab.Moderation.Commands
             else
             {
                 await command.RespondAsync(Translation.BanCommandSuccess.Replace("{player}", user), ephemeral: true);
-                if (Plugin.Instance.CheckModerationLogsEnabled())
+                if (ModerationLogsHandler.Instance.IsEnabled)
                 {
-                    ModerationLogs.Handlers.DiscordBot.Instance.SendBanMessage(null, user, reason,
-                        $"<@{command.User.Id}>", null, duration);
+                    ModerationLogsHandler.Instance.SendBanLogMethod.Invoke(
+                        ModerationLogsHandler.Instance.HandlerInstance, 
+                        new object[] { null, user, reason, $"<@{command.User.Id}>", null, duration }
+                    );
                 }
             }
         }
