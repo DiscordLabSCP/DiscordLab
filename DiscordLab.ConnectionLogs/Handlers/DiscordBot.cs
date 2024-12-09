@@ -26,29 +26,37 @@ namespace DiscordLab.ConnectionLogs.Handlers
             LeaveChannel = null;
             RoundStartChannel = null;
         }
+        
+        public SocketGuild GetGuild()
+        {
+            return Bot.Handlers.DiscordBot.Instance.Client.GetGuild(Plugin.Instance.Config.GuildId);
+        }
 
         public SocketTextChannel GetJoinChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
             if (Plugin.Instance.Config.JoinChannelId == 0) return null;
             return JoinChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.JoinChannelId);
+                guild.GetTextChannel(Plugin.Instance.Config.JoinChannelId);
         }
 
         public SocketTextChannel GetLeaveChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
             if (Plugin.Instance.Config.LeaveChannelId == 0) return null;
             return LeaveChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.LeaveChannelId);
+                guild.GetTextChannel(Plugin.Instance.Config.LeaveChannelId);
         }
 
         public SocketTextChannel GetRoundStartChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
             if (Plugin.Instance.Config.RoundStartChannelId == 0) return null;
             return RoundStartChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.RoundStartChannelId);
+               guild.GetTextChannel(Plugin.Instance.Config.RoundStartChannelId);
         }
     }
 }

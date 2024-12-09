@@ -25,6 +25,8 @@ namespace DiscordLab.AdvancedLogging.Commands
                 }
             }
         };
+        
+        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
 
         public async Task Run(SocketSlashCommand command)
         {

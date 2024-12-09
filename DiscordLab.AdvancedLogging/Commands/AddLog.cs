@@ -12,6 +12,8 @@ namespace DiscordLab.AdvancedLogging.Commands
             Description = "Add your own custom logger, check the documentation for more info",
             DefaultMemberPermissions = GuildPermission.ManageGuild
         };
+        
+        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
 
         public async Task Run(SocketSlashCommand command)
         {

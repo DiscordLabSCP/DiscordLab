@@ -26,13 +26,15 @@ namespace DiscordLab.Moderation.Commands
                 }
             }
         };
+        
+        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
 
         public async Task Run(SocketSlashCommand command)
         {
             string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
                 .Value.ToString();
 
-            string response = Server.ExecuteCommand($"unban id {user}");
+            string response = Server.ExecuteCommand($"/unban id {user}");
             if (!response.Contains("Done"))
             {
                 await command.RespondAsync(Translation.FailedExecuteCommand.Replace("{reason}", response),

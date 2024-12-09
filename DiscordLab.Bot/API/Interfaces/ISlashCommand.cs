@@ -8,7 +8,12 @@ namespace DiscordLab.Bot.API.Interfaces
         /// <summary>
         /// Here you create your <see cref="SlashCommandBuilder"/> with the data of your command.
         /// </summary>
-        SlashCommandBuilder Data { get; }
+        public SlashCommandBuilder Data { get; }
+        
+        /// <summary>
+        /// Set the GuildId where the command should be created here, you should reference Config.GuildId.
+        /// </summary>
+        public ulong GuildId { get; set; }
 
         /// <summary>
         /// Here is where your slash command runs.
@@ -16,6 +21,6 @@ namespace DiscordLab.Bot.API.Interfaces
         /// <remarks>
         /// This type contains information about the command that was executed.
         /// </remarks>
-        Task Run(SocketSlashCommand command);
+        public Task Run(SocketSlashCommand command);
     }
 }

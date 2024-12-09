@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Interfaces;
 
 namespace DiscordLab.DeathLogs
 {
-    public class Config : IConfig
+    public class Config : IConfig, IDLConfig
     {
+        [Description(DescriptionConstants.IsEnabled)]
         public bool IsEnabled { get; set; } = true;
+        [Description(DescriptionConstants.Debug)]
         public bool Debug { get; set; } = false;
 
         [Description("The channel where the normal death logs will be sent.")]
@@ -24,5 +28,8 @@ namespace DiscordLab.DeathLogs
         
         [Description("If this is true, then the plugin will ignore the cuff state of the player and send the death logs to the normal death logs channel.")]
         public bool ScpIgnoreCuffed { get; set; } = true;
+        
+        [Description(DescriptionConstants.GuildId)]
+        public ulong GuildId { get; set; }
     }
 }

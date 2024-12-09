@@ -1,11 +1,15 @@
 ﻿using System.ComponentModel;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Interfaces;
 
 namespace DiscordLab.ModerationLogs
 {
-    public class Config : IConfig
+    public class Config : IConfig, IDLConfig
     {
+        [Description(DescriptionConstants.IsEnabled)]
         public bool IsEnabled { get; set; } = true;
+        [Description(DescriptionConstants.Debug)]
         public bool Debug { get; set; } = false;
 
         [Description("The channel where the ban logs will be sent.")]
@@ -49,5 +53,8 @@ namespace DiscordLab.ModerationLogs
 
         [Description("The hex color code of the report embed. Do not add the #.")]
         public string ReportColor { get; set; } = "3498DB";
+        
+        [Description(DescriptionConstants.GuildId)]
+        public ulong GuildId { get; set; }
     }
 }

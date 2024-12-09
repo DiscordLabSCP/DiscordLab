@@ -28,10 +28,11 @@ namespace DiscordLab.StatusChannel.Handlers
 
         private SocketTextChannel GetChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
+            if (guild == null) return null;
             if (Plugin.Instance.Config.ChannelId == 0) return null;
             return StatusChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
+                guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
         }
 
         public void SetStatusMessage(IEnumerable<Player> players = null)

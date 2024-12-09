@@ -40,6 +40,8 @@ namespace DiscordLab.Moderation.Commands
                 }
             }
         };
+        
+        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
 
         public async Task Run(SocketSlashCommand command)
         {
@@ -50,7 +52,7 @@ namespace DiscordLab.Moderation.Commands
             string duration = command.Data.Options
                 .First(option => option.Name == Translation.BanCommandDurationOptionName).Value.ToString();
 
-            string response = Server.ExecuteCommand($"oban {user} {duration} {reason}");
+            string response = Server.ExecuteCommand($"/oban {user} {duration} {reason}");
             if (!response.Contains("has been banned"))
             {
                 await command.RespondAsync(Translation.FailedExecuteCommand.Replace("{reason}", response),

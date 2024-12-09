@@ -20,6 +20,8 @@ namespace DiscordLab.ModerationLogs.Handlers
         private SocketTextChannel AdminChatChannel { get; set; }
         private SocketTextChannel ReportChannel { get; set; }
 
+        private SocketGuild Guild { get; set; }
+
         public void Init()
         {
             Instance = this;
@@ -36,60 +38,65 @@ namespace DiscordLab.ModerationLogs.Handlers
             ReportChannel = null;
         }
 
+        private SocketGuild GetGuild()
+        {
+            return Guild ??= Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
+        }
+
         public SocketTextChannel GetBanChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.BanChannelId == 0) return null;
             return BanChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.BanChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.BanChannelId);
         }
 
         public SocketTextChannel GetUnbanChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.UnbanChannelId == 0) return null;
             return UnbanChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.UnbanChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.UnbanChannelId);
         }
 
         public SocketTextChannel GetKickChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.KickChannelId == 0) return null;
             return KickChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.KickChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.KickChannelId);
         }
 
         public SocketTextChannel GetMuteChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.MuteChannelId == 0) return null;
             return MuteChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.MuteChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.MuteChannelId);
         }
 
         public SocketTextChannel GetUnmuteChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.UnmuteChannelId == 0) return null;
             return UnmuteChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.UnmuteChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.UnmuteChannelId);
         }
 
         public SocketTextChannel GetAdminChatChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.AdminChatChannelId == 0) return null;
             return AdminChatChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.AdminChatChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.AdminChatChannelId);
         }
 
         public SocketTextChannel GetReportChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.ReportChannelId == 0) return null;
             return ReportChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ReportChannelId);
+                Guild.GetTextChannel(Plugin.Instance.Config.ReportChannelId);
         }
 
 

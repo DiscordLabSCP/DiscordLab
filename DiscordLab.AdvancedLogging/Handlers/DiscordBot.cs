@@ -66,10 +66,11 @@ namespace DiscordLab.AdvancedLogging.Handlers
 
         private SocketTextChannel GetChannel(ulong channelId)
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
+            if (guild == null) return null;
             if (Channels.Exists(c => c.ChannelId == channelId))
                 return Channels.First(c => c.ChannelId == channelId).Channel;
-            SocketTextChannel channel = Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(channelId);
+            SocketTextChannel channel = guild.GetTextChannel(channelId);
             if (channel != null) return channel;
             Log.Error("Either the guild is null or the channel is null. So the status message has failed to send.");
             return null;

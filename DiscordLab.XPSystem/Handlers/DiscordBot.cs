@@ -24,9 +24,10 @@ namespace DiscordLab.XPSystem.Handlers
 
         public SocketTextChannel GetChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
+            if (Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId) == null) return null;
             if (Plugin.Instance.Config.ChannelId == 0) return null;
-            return Channel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
+            return Channel ??= guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
         }
     }
 }

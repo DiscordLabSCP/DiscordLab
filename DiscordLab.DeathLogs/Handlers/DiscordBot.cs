@@ -24,36 +24,45 @@ namespace DiscordLab.DeathLogs.Handlers
             SelfChannel = null;
             TeamKillChannel = null;
         }
+        
+        public SocketGuild GetGuild()
+        {
+            return Bot.Handlers.DiscordBot.Instance.Client.GetGuild(Plugin.Instance.Config.GuildId);
+        }
 
         public SocketTextChannel GetChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.ChannelId == 0) return null;
-            return Channel ??= Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
+            return Channel ??= guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
         }
 
         public SocketTextChannel GetCuffedChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
             if (Plugin.Instance.Config.CuffedChannelId == 0) return null;
             return CuffedChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
+                guild.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
         }
 
         public SocketTextChannel GetSelfChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
             if (Plugin.Instance.Config.SelfChannelId == 0) return null;
             return SelfChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
+                guild.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
         }
 
         public SocketTextChannel GetTeamKillChannel()
         {
-            if (Bot.Handlers.DiscordBot.Instance.Guild == null) return null;
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
             if (Plugin.Instance.Config.TeamKillChannelId == 0) return null;
             return TeamKillChannel ??=
-                Bot.Handlers.DiscordBot.Instance.Guild.GetTextChannel(Plugin.Instance.Config.TeamKillChannelId);
+                guild.GetTextChannel(Plugin.Instance.Config.TeamKillChannelId);
         }
     }
 }

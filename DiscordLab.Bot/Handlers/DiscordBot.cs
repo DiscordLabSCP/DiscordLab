@@ -12,7 +12,7 @@ namespace DiscordLab.Bot.Handlers
         
         public DiscordSocketClient Client { get; private set; }
 
-        public SocketGuild Guild;
+        private SocketGuild _guild;
 
         public void Init()
         {
@@ -54,14 +54,20 @@ namespace DiscordLab.Bot.Handlers
             await Client.StopAsync();
         }
 
+        public SocketGuild GetGuild(ulong id)
+        {
+            return id == 0 ? _guild : Client.GetGuild(id);
+        }
+
         private async Task Ready()
         {
-            Guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
+            _guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
             foreach (ISlashCommand command in SlashCommandLoader.Commands)
             {
                 try
                 {
-                    await Guild.CreateApplicationCommandAsync(command.Data.Build());
+                    SocketGuild guild = GetGuild(command.GuildId);
+                    await guild.CreateApplicationCommandAsync(command.Data.Build());
                 }
                 catch (Exception e)
                 {

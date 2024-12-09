@@ -26,6 +26,8 @@ namespace DiscordLab.Moderation.Commands
             }
         };
         
+        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
+        
         public async Task Run(SocketSlashCommand command)
         {
             string commandToExecute = command.Data.Options.First(option => option.Name == Translation.SendCommandCommandOptionName)

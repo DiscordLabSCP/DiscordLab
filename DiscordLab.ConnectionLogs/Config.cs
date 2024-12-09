@@ -1,11 +1,16 @@
 ﻿using System.ComponentModel;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Interfaces;
 
 namespace DiscordLab.ConnectionLogs
 {
-    public class Config : IConfig
+    public class Config : IConfig, IDLConfig
     {
+        [Description(DescriptionConstants.IsEnabled)]
         public bool IsEnabled { get; set; } = true;
+        
+        [Description(DescriptionConstants.Debug)]
         public bool Debug { get; set; } = false;
 
         [Description("The channel where the join logs will be sent.")]
@@ -16,5 +21,8 @@ namespace DiscordLab.ConnectionLogs
 
         [Description("The channel where the round start logs will be sent.")]
         public ulong RoundStartChannelId { get; set; } = new();
+        
+        [Description(DescriptionConstants.GuildId)]
+        public ulong GuildId { get; set; }
     }
 }
