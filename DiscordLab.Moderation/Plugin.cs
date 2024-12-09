@@ -10,7 +10,7 @@ namespace DiscordLab.Moderation
         public override string Name => "DiscordLab.Moderation";
         public override string Author => "JayXTQ";
         public override string Prefix => "DL.Moderation";
-        public override Version Version => new (1, 3, 2);
+        public override Version Version => new (1, 4, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Default;
 
