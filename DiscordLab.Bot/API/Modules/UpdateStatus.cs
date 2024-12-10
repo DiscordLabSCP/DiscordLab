@@ -43,7 +43,7 @@ namespace DiscordLab.Bot.API.Modules
         /// <param name="name">The name of the plugin, without .dll</param>
         private static void WritePlugin(byte[] bytes, string name)
         {
-            string pluginPath = Path + name + ".dll";
+            string pluginPath = System.IO.Path.Combine(Path, name + ".dll");
             File.WriteAllBytes(pluginPath, bytes);
         }
         
@@ -84,7 +84,7 @@ namespace DiscordLab.Bot.API.Modules
 
             List<IPlugin<IConfig>> plugins = Loader.Plugins.Where(x => x.Name.StartsWith("DiscordLab.")).ToList();
             plugins.Add(Loader.Plugins.First(x => x.Name == Plugin.Instance.Name));
-            bool restartServer = false;
+            List<string> pluginsToUpdate = new();
             foreach (IPlugin<IConfig> plugin in plugins)
             {
                 API.Features.UpdateStatus status = statuses.FirstOrDefault(x => x.ModuleName == plugin.Name);
@@ -97,7 +97,7 @@ namespace DiscordLab.Bot.API.Modules
                 if (status.Version <= plugin.Version) continue;
                 if (Plugin.Instance.Config.AutoUpdate)
                 {
-                    restartServer = true;
+                    pluginsToUpdate.Add(status.ModuleName);
                     byte[] pluginData = await Client.GetByteArrayAsync(status.Url);
                     WritePlugin(pluginData, status.ModuleName);
                 }
@@ -107,10 +107,10 @@ namespace DiscordLab.Bot.API.Modules
                 }
             }
 
-            if (restartServer)
+            if (pluginsToUpdate.Any())
             {
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
-                Log.Info("Server will restart next round for updates.");
+                Log.Info("Server will restart next round for updates. Updating plugins: " + string.Join(", ", pluginsToUpdate));
             }
         }
     }
