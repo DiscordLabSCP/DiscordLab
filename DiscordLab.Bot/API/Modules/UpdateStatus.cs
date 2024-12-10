@@ -110,7 +110,8 @@ namespace DiscordLab.Bot.API.Modules
 
             if (restartServer)
             {
-                Server.ExecuteCommand("rnr");
+                ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
+                Log.Info("Server will restart next round for updates.");
             }
         }
     }
