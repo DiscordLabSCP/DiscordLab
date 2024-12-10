@@ -20,6 +20,8 @@ namespace DiscordLab.ModerationLogs
         public string PlayerMuted { get; set; } = "Player muted";
         public string PlayerMuteRevoked { get; set; } = "Player mute revoked";
         public string AdminChatMessage { get; set; } = "Admin chat message";
+        public string RemoteAdminCommand { get; set; } = "Remote admin command";
+        public string Command { get; set; } = "Command";
         public string Message { get; set; } = "Message";
     }
 }

@@ -2,6 +2,7 @@
 using DiscordLab.Bot.API.Modules;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using HarmonyLib;
 
 namespace DiscordLab.ModerationLogs
 {
@@ -18,13 +19,25 @@ namespace DiscordLab.ModerationLogs
         
         private HandlerLoader _handlerLoader;
 
+        private Harmony harmony;
+
         public override void OnEnabled()
         {
             Instance = this;
             
             _handlerLoader = new ();
             _handlerLoader.Load(Assembly);
-            
+
+            try
+            {
+                harmony = new($"discordlab.moderationlogs.{DateTime.Now.Ticks}");
+                harmony.PatchAll();
+            }
+            catch (Exception e)
+            {
+                Log.Error($"An error occurred while patching: {e}");
+            }
+
             base.OnEnabled();
         }
         
@@ -32,6 +45,9 @@ namespace DiscordLab.ModerationLogs
         {
             _handlerLoader.Unload();
             _handlerLoader = null;
+            
+            harmony?.UnpatchAll(harmony.Id);
+            harmony = null;
             
             base.OnDisabled();
         }

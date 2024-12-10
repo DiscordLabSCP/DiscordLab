@@ -54,6 +54,12 @@ namespace DiscordLab.ModerationLogs
         [Description("The hex color code of the report embed. Do not add the #.")]
         public string ReportColor { get; set; } = "3498DB";
         
+        [Description("The channel where remote admin logs will be sent.")]
+        public ulong RemoteAdminChannelId { get; set; } = new();
+        
+        [Description("The hex color code of the remote admin embed. Do not add the #.")]
+        public string RemoteAdminColor { get; set; } = "3498DB";
+        
         [Description(DescriptionConstants.GuildId)]
         public ulong GuildId { get; set; }
     }

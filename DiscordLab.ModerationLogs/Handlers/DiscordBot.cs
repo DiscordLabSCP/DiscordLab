@@ -98,6 +98,13 @@ namespace DiscordLab.ModerationLogs.Handlers
             return ReportChannel ??=
                 Guild.GetTextChannel(Plugin.Instance.Config.ReportChannelId);
         }
+        
+        public SocketTextChannel GetRemoteAdminChannel()
+        {
+            if (GetGuild() == null) return null;
+            if (Plugin.Instance.Config.RemoteAdminChannelId == 0) return null;
+            return Guild.GetTextChannel(Plugin.Instance.Config.RemoteAdminChannelId);
+        }
 
 
         // These 2 functions are here, and public because they are used in DiscordLab.Moderation when the ban commands are used.
