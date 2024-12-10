@@ -93,18 +93,17 @@ namespace DiscordLab.Bot.API.Modules
                     if(plugin.Name == Plugin.Instance.Name) status = statuses.First(x => x.ModuleName == "DiscordLab.Bot");
                     else continue;
                 }
-                if (status.Version > plugin.Version)
+
+                if (status.Version <= plugin.Version) continue;
+                if (Plugin.Instance.Config.AutoUpdate)
                 {
-                    if (Plugin.Instance.Config.AutoUpdate)
-                    {
-                        restartServer = true;
-                        byte[] pluginData = await Client.GetByteArrayAsync(status.Url);
-                        WritePlugin(pluginData, status.ModuleName);
-                    }
-                    else
-                    {
-                        Log.Warn($"There is a new version of {status.ModuleName} available, version {status.Version}, you are currently on {plugin.Version}! Download it from {status.Url}");
-                    }
+                    restartServer = true;
+                    byte[] pluginData = await Client.GetByteArrayAsync(status.Url);
+                    WritePlugin(pluginData, status.ModuleName);
+                }
+                else
+                {
+                    Log.Warn($"There is a new version of {status.ModuleName} available, version {status.Version}, you are currently on {plugin.Version}! Download it from {status.Url}");
                 }
             }
 
