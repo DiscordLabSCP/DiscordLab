@@ -3,7 +3,6 @@ using System.Net.Http;
 using Exiled.API.Features;
 using Exiled.API.Interfaces;
 using Exiled.Loader;
-using UnityEngine;
 
 namespace DiscordLab.Bot.API.Modules
 {
@@ -31,9 +30,22 @@ namespace DiscordLab.Bot.API.Modules
         public string DownloadUrl { get; set; }
     }
     
-    public class UpdateStatus
+    public static class UpdateStatus
     {
-        private static readonly HttpClient client = new ();
+        private static readonly HttpClient Client = new ();
+
+        private static readonly string Path = Paths.Plugins;
+
+        /// <summary>
+        /// This will write a plugin to the Plugins folder.
+        /// </summary>
+        /// <param name="bytes">The response from a download via <see cref="HttpClient"/></param>
+        /// <param name="name">The name of the plugin, without .dll</param>
+        private static void WritePlugin(byte[] bytes, string name)
+        {
+            string pluginPath = Path + name + ".dll";
+            File.WriteAllBytes(pluginPath, bytes);
+        }
         
         /// <summary>
         /// This will check the GitHub API for the latest version of the modules and plugins.
@@ -43,8 +55,8 @@ namespace DiscordLab.Bot.API.Modules
         /// </remarks>
         public static async Task GetStatus()
         {
-            client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
-            string response = await client.GetStringAsync("https://api.github.com/repos/JayXTQ/DiscordLab/releases");
+            Client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
+            string response = await Client.GetStringAsync("https://api.github.com/repos/JayXTQ/DiscordLab/releases");
             List<API.Features.UpdateStatus> statuses = new();
             List<GitHubRelease> releases = JsonConvert.DeserializeObject<List<GitHubRelease>>(response);
             foreach (GitHubRelease release in releases)
@@ -72,6 +84,7 @@ namespace DiscordLab.Bot.API.Modules
 
             List<IPlugin<IConfig>> plugins = Loader.Plugins.Where(x => x.Name.StartsWith("DiscordLab.")).ToList();
             plugins.Add(Loader.Plugins.First(x => x.Name == Plugin.Instance.Name));
+            bool restartServer = false;
             foreach (IPlugin<IConfig> plugin in plugins)
             {
                 API.Features.UpdateStatus status = statuses.FirstOrDefault(x => x.ModuleName == plugin.Name);
@@ -82,8 +95,22 @@ namespace DiscordLab.Bot.API.Modules
                 }
                 if (status.Version > plugin.Version)
                 {
-                    Log.Warn($"There is a new version of {status.ModuleName} available, version {status.Version}, you are currently on {plugin.Version}! Download it from {status.Url}");
+                    if (Plugin.Instance.Config.AutoUpdate)
+                    {
+                        restartServer = true;
+                        byte[] pluginData = await Client.GetByteArrayAsync(status.Url);
+                        WritePlugin(pluginData, status.ModuleName);
+                    }
+                    else
+                    {
+                        Log.Warn($"There is a new version of {status.ModuleName} available, version {status.Version}, you are currently on {plugin.Version}! Download it from {status.Url}");
+                    }
                 }
+            }
+
+            if (restartServer)
+            {
+                Server.ExecuteCommand("rnr");
             }
         }
     }
