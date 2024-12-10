@@ -26,6 +26,7 @@ namespace DiscordLab.Bot.Handlers
             Client.Log += DiscLog;
             Client.Ready += Ready;
             Client.SlashCommandExecuted += SlashCommandHandler;
+            Client.AutocompleteExecuted += AutoCompleteHandler;
             Task.Run(StartClient);
         }
 
@@ -83,6 +84,22 @@ namespace DiscordLab.Bot.Handlers
             ISlashCommand cmd = commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
             if (cmd == null) return;
             await cmd.Run(command);
+        }
+        
+        private async Task AutoCompleteHandler(SocketAutocompleteInteraction autocomplete)
+        {
+            List<ISlashCommand> commands = SlashCommandLoader.Commands;
+            ISlashCommand cmd = commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName);
+            if (cmd == null) return;
+            if (cmd.Data.Name == "discordlab")
+            {
+                await autocomplete.RespondAsync(result: UpdateStatus.Statuses
+                    .Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => new AutocompleteResult
+                    {
+                        Name = s.ModuleName,
+                        Value = s.ModuleName
+                    }));
+            }
         }
     }
 }

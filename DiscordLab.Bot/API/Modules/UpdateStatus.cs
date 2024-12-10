@@ -35,6 +35,8 @@ namespace DiscordLab.Bot.API.Modules
         private static readonly HttpClient Client = new ();
 
         private static readonly string Path = Paths.Plugins;
+        
+        public static List<API.Features.UpdateStatus> Statuses { get; private set; }
 
         /// <summary>
         /// This will write a plugin to the Plugins folder.
@@ -45,6 +47,16 @@ namespace DiscordLab.Bot.API.Modules
         {
             string pluginPath = System.IO.Path.Combine(Path, name + ".dll");
             File.WriteAllBytes(pluginPath, bytes);
+        }
+
+        /// <summary>
+        /// This will download a plugin using <see cref="HttpClient"/>
+        /// </summary>
+        /// <param name="status">The <see cref="API.Features.UpdateStatus"/></param>
+        public static async Task DownloadPlugin(API.Features.UpdateStatus status)
+        {
+            byte[] pluginData = await Client.GetByteArrayAsync(status.Url);
+            WritePlugin(pluginData, status.ModuleName);
         }
         
         /// <summary>
@@ -81,6 +93,8 @@ namespace DiscordLab.Bot.API.Modules
                     }
                 }
             }
+            
+            Statuses = statuses;
 
             List<IPlugin<IConfig>> plugins = Loader.Plugins.Where(x => x.Name.StartsWith("DiscordLab.")).ToList();
             plugins.Add(Loader.Plugins.First(x => x.Name == Plugin.Instance.Name));
@@ -98,8 +112,7 @@ namespace DiscordLab.Bot.API.Modules
                 if (Plugin.Instance.Config.AutoUpdate)
                 {
                     pluginsToUpdate.Add(status.ModuleName);
-                    byte[] pluginData = await Client.GetByteArrayAsync(status.Url);
-                    WritePlugin(pluginData, status.ModuleName);
+                    await DownloadPlugin(status);
                 }
                 else
                 {
