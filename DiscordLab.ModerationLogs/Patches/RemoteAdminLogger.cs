@@ -34,12 +34,16 @@ namespace DiscordLab.ModerationLogs.Patches
 
         private static void SendCommand(string query, CommandSender sender)
         {
+            if (Plugin.Instance.Config.RemoteAdminChannelId == 0) return;
+            
+            string[] args = query.Trim().Split(QueryProcessor.SpaceArray, 512, StringSplitOptions.RemoveEmptyEntries);
+            if (args[0].StartsWith("$"))
+                return;
+            
             Player player = sender is PlayerCommandSender commandSender
                 ? Player.Get(commandSender)
                 : Server.Host;
             if (player == null || string.IsNullOrEmpty(player.UserId)) return;
-
-            if (Plugin.Instance.Config.RemoteAdminChannelId == 0) return;
 
             SocketTextChannel channel = DiscordBot.Instance.GetRemoteAdminChannel();
             if (channel == null)
