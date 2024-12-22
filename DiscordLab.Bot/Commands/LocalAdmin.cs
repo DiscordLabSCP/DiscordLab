@@ -22,11 +22,21 @@ namespace DiscordLab.Bot.Commands
             switch (arguments.FirstOrDefault())
             {
                 case "list":
+                    if (UpdateStatus.Statuses == null)
+                    {
+                        response = "No modules available. Please wait for your server to fully start.";
+                        return false;
+                    }
                     string modules = string.Join("\n", UpdateStatus.Statuses.Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => s.ModuleName));
                     response =
                         $"Available modules:\n{modules}";
                     return true;
                 case "install":
+                    if (UpdateStatus.Statuses == null)
+                    {
+                        response = "No modules available. Please wait for your server to fully start.";
+                        return false;
+                    }
                     string module = arguments.ElementAtOrDefault(1);
                     if(string.IsNullOrWhiteSpace(module))
                     {

@@ -47,27 +47,38 @@ namespace DiscordLab.Bot.Commands
             string subcommand = command.Data.Options.First().Name;
             if (subcommand == "list")
             {
+                if (UpdateStatus.Statuses == null)
+                {
+                    await command.RespondAsync("No modules available as of current, please wait for your server to fully start.");
+                    return;
+                }
                 string modules = string.Join("\n", UpdateStatus.Statuses.Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => s.ModuleName));
                 await command.RespondAsync("List of available DiscordLab modules:\n\n" + modules, ephemeral:true);
             }
             else if (subcommand == "install")
             {
+                if (UpdateStatus.Statuses == null)
+                {
+                    await command.RespondAsync("No modules available as of current, please wait for your server to fully start.");
+                    return;
+                }
+                await command.DeferAsync(true);
                 string module = command.Data.Options.First().Options.First().Value.ToString();
                 if(string.IsNullOrWhiteSpace(module))
                 {
-                    await command.RespondAsync("Please provide a module name.", ephemeral: true);
+                    await command.ModifyOriginalResponseAsync(m => m.Content = "Please provide a module name.");
                     return;
                 }
                 API.Features.UpdateStatus status = UpdateStatus.Statuses.FirstOrDefault(s => s.ModuleName == module);
                 if (status == null)
                 {
-                    await command.RespondAsync("Module not found.", ephemeral: true);
+                    await command.ModifyOriginalResponseAsync(m => m.Content = "Module not found.");
                     return;
                 }
 
                 await UpdateStatus.DownloadPlugin(status);
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
-                await command.RespondAsync("Downloaded module. Server will restart next round.", ephemeral:true);
+                await command.ModifyOriginalResponseAsync(m => m.Content = "Downloaded module. Server will restart next round.");
             }
         }
     }

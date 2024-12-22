@@ -93,6 +93,11 @@ namespace DiscordLab.Bot.Handlers
             if (cmd == null) return;
             if (cmd.Data.Name == "discordlab")
             {
+                if (UpdateStatus.Statuses == null)
+                {
+                    await autocomplete.RespondAsync([]);
+                    return;
+                }
                 await autocomplete.RespondAsync(result: UpdateStatus.Statuses
                     .Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => new AutocompleteResult
                     {
