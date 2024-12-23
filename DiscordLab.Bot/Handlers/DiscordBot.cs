@@ -95,7 +95,7 @@ namespace DiscordLab.Bot.Handlers
             {
                 if (UpdateStatus.Statuses == null)
                 {
-                    await autocomplete.RespondAsync([]);
+                    await autocomplete.RespondAsync(new List<AutocompleteResult>());
                     return;
                 }
                 await autocomplete.RespondAsync(result: UpdateStatus.Statuses
