@@ -67,6 +67,7 @@ namespace DiscordLab.Bot.API.Modules
         /// </remarks>
         public static async Task GetStatus()
         {
+            Statuses = new();
             Client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
             string response = await Client.GetStringAsync("https://api.github.com/repos/JayXTQ/DiscordLab/releases");
             List<API.Features.UpdateStatus> statuses = new();
