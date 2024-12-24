@@ -7,7 +7,7 @@ namespace DiscordLab.Bot
     public class Plugin : Plugin<Config>
     {
         public override string Name => "DiscordLab";
-        public override string Author => "JayXTQ";
+        public override string Author => "LumiFae";
         public override string Prefix => "DiscordLab";
         public override Version Version => new (1, 4, 2);
         public override Version RequiredExiledVersion => new (8, 11, 0);

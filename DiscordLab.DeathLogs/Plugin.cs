@@ -8,7 +8,7 @@ namespace DiscordLab.DeathLogs
     public class Plugin : Plugin<Config, Translation>
     {
         public override string Name => "DiscordLab.DeathLogs";
-        public override string Author => "JayXTQ";
+        public override string Author => "LumiFae";
         public override string Prefix => "DL.DeathLogs";
         public override Version Version => new (1, 4, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);

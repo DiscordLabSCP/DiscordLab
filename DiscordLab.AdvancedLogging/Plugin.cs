@@ -7,7 +7,7 @@ namespace DiscordLab.AdvancedLogging
     public class Plugin : Plugin<Config>
     {
         public override string Name => "DiscordLab.AdvancedLogging";
-        public override string Author => "JayXTQ";
+        public override string Author => "LumiFae";
         public override string Prefix => "DL.AdvancedLogging";
         public override Version Version => new (1, 4, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);

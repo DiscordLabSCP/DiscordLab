@@ -8,7 +8,7 @@ namespace DiscordLab.ConnectionLogs
     public class Plugin : Plugin<Config, Translation>
     {
         public override string Name => "DiscordLab.ConnectionLogs";
-        public override string Author => "JayXTQ";
+        public override string Author => "LumiFae";
         public override string Prefix => "DL.ConnectionLogs";
         public override Version Version => new (1, 4, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);
