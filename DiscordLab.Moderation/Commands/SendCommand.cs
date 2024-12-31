@@ -30,12 +30,12 @@ namespace DiscordLab.Moderation.Commands
         
         public async Task Run(SocketSlashCommand command)
         {
+            await command.DeferAsync(true);
             string commandToExecute = command.Data.Options.First(option => option.Name == Translation.SendCommandCommandOptionName)
                 .Value.ToString();
 
             string response = Server.ExecuteCommand(commandToExecute);
-            await command.RespondAsync(Translation.SendCommandResponse.Replace("{response}", response),
-                ephemeral: true);
+            await command.ModifyOriginalResponseAsync(m => m.Content = Translation.SendCommandResponse.Replace("{response}", response));
         }
     }
 }

@@ -30,12 +30,13 @@ namespace DiscordLab.AdvancedLogging.Commands
 
         public async Task Run(SocketSlashCommand command)
         {
+            await command.DeferAsync(true);
             List<Log> logs = DiscordBot.Instance.GetLogs().ToList();
             string log = command.Data.Options.First().Value.ToString();
             Log logToRemove = logs.FirstOrDefault(l => l.Handler == log.Split('.')[0] && l.Event == log.Split('.')[1]);
             if (logToRemove == null)
             {
-                await command.RespondAsync("Log not found.", ephemeral: true);
+                await command.ModifyOriginalResponseAsync(m => m.Content = "Log not found.");
                 return;
             }
 
@@ -43,7 +44,7 @@ namespace DiscordLab.AdvancedLogging.Commands
 
             WriteableConfig.WriteConfigOption("AdvancedLogging", JArray.FromObject(logs));
 
-            await command.RespondAsync("Log removed.", ephemeral: true);
+            await command.ModifyOriginalResponseAsync(m => m.Content = "Log removed.");
         }
     }
 }

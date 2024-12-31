@@ -31,18 +31,18 @@ namespace DiscordLab.Moderation.Commands
 
         public async Task Run(SocketSlashCommand command)
         {
+            await command.DeferAsync(true);
             string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
                 .Value.ToString();
 
             string response = Server.ExecuteCommand($"/unban id {user}");
             if (!response.Contains("Done"))
             {
-                await command.RespondAsync(Translation.FailedExecuteCommand.Replace("{reason}", response),
-                    ephemeral: true);
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.Replace("{reason}", response));
             }
             else
             {
-                await command.RespondAsync(Translation.UnbanCommandSuccess.Replace("{player}", user), ephemeral: true);
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.UnbanCommandSuccess.Replace("{player}", user));
                 if (ModerationLogsHandler.Instance.IsEnabled)
                 {
                     ModerationLogsHandler.Instance.SendUnbanLogMethod.Invoke(

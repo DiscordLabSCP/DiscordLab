@@ -44,25 +44,25 @@ namespace DiscordLab.Bot.Commands
         
         public async Task Run(SocketSlashCommand command)
         {
+            await command.DeferAsync(true);
             string subcommand = command.Data.Options.First().Name;
             if (subcommand == "list")
             {
                 if (UpdateStatus.Statuses == null)
                 {
-                    await command.RespondAsync("No modules available as of current, please wait for your server to fully start.");
+                    await command.ModifyOriginalResponseAsync(m => m.Content = "No modules available as of current, please wait for your server to fully start.");
                     return;
                 }
                 string modules = string.Join("\n", UpdateStatus.Statuses.Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => s.ModuleName));
-                await command.RespondAsync("List of available DiscordLab modules:\n\n" + modules, ephemeral:true);
+                await command.ModifyOriginalResponseAsync(m => m.Content = "List of available DiscordLab modules:\n\n" + modules);
             }
             else if (subcommand == "install")
             {
                 if (UpdateStatus.Statuses == null)
                 {
-                    await command.RespondAsync("No modules available as of current, please wait for your server to fully start.");
+                    await command.ModifyOriginalResponseAsync(m => m.Content = "No modules available as of current, please wait for your server to fully start.");
                     return;
                 }
-                await command.DeferAsync(true);
                 string module = command.Data.Options.First().Options.First().Value.ToString();
                 if(string.IsNullOrWhiteSpace(module))
                 {

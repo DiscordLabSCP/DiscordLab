@@ -45,6 +45,7 @@ namespace DiscordLab.Moderation.Commands
 
         public async Task Run(SocketSlashCommand command)
         {
+            await command.DeferAsync(true);
             string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
                 .Value.ToString();
             string reason = command.Data.Options.First(option => option.Name == Translation.BanCommandReasonOptionName)
@@ -55,12 +56,11 @@ namespace DiscordLab.Moderation.Commands
             string response = Server.ExecuteCommand($"/oban {user} {duration} {reason}");
             if (!response.Contains("has been banned"))
             {
-                await command.RespondAsync(Translation.FailedExecuteCommand.Replace("{reason}", response),
-                    ephemeral: true);
+                await command.ModifyOriginalResponseAsync(m=> m.Content = Translation.FailedExecuteCommand.Replace("{reason}", response));
             }
             else
             {
-                await command.RespondAsync(Translation.BanCommandSuccess.Replace("{player}", user), ephemeral: true);
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.BanCommandSuccess.Replace("{player}", user));
                 if (ModerationLogsHandler.Instance.IsEnabled)
                 {
                     ModerationLogsHandler.Instance.SendBanLogMethod.Invoke(
