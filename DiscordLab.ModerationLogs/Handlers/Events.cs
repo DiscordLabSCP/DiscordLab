@@ -14,7 +14,7 @@ namespace DiscordLab.ModerationLogs.Handlers
 
         public void Init()
         {
-            Exiled.Events.Handlers.Player.Banning += OnBanning;
+            Exiled.Events.Handlers.Player.Banned += OnBanned;
             Exiled.Events.Handlers.Server.Unbanned += OnUnbanned;
             Exiled.Events.Handlers.Player.Kicking += OnKicking;
             Exiled.Events.Handlers.Player.IssuingMute += OnIssuingMute;
@@ -25,7 +25,7 @@ namespace DiscordLab.ModerationLogs.Handlers
 
         public void Unregister()
         {
-            Exiled.Events.Handlers.Player.Banning -= OnBanning;
+            Exiled.Events.Handlers.Player.Banned -= OnBanned;
             Exiled.Events.Handlers.Server.Unbanned -= OnUnbanned;
             Exiled.Events.Handlers.Player.Kicking -= OnKicking;
             Exiled.Events.Handlers.Player.IssuingMute -= OnIssuingMute;
@@ -46,7 +46,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             }
 
             EmbedBuilder embed = new();
-            embed.WithTitle(Translation.PlayerKicked);
+            embed.WithTitle(Translation.PlayerReported);
             embed.WithColor(Plugin.GetColor(Plugin.Instance.Config.ReportColor));
             embed.AddField(Translation.Target, ev.Target.Nickname);
             embed.AddField(Translation.TargetId, ev.Target.UserId);
@@ -56,15 +56,14 @@ namespace DiscordLab.ModerationLogs.Handlers
             channel.SendMessageAsync(embed: embed.Build());
         }
 
-        private void OnBanning(BanningEventArgs ev)
+        private void OnBanned(BannedEventArgs ev)
         {
-            if (!ev.IsAllowed || ev.Target == null || ev.Duration == 0) return;
-            DiscordBot.Instance.SendBanMessage(ev.Target.Nickname,
-                ev.Target.UserId,
-                ev.Reason,
+            DiscordBot.Instance.SendBanMessage(ev.Details.OriginalName,
+                ev.Details.Id,
+                ev.Details.Reason,
                 ev.Player.Nickname,
                 ev.Player.UserId,
-                ev.Duration.ToString()
+                ev.Details.IssuanceTime.ToString()
             );
         }
 

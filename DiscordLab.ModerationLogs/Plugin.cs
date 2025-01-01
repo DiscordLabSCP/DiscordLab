@@ -11,7 +11,7 @@ namespace DiscordLab.ModerationLogs
         public override string Name => "DiscordLab.ModerationLogs";
         public override string Author => "LumiFae";
         public override string Prefix => "DL.ModerationLogs";
-        public override Version Version => new (1, 4, 2);
+        public override Version Version => new (1, 4, 3);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Default;
 

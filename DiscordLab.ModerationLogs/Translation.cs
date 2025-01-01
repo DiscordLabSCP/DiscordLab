@@ -15,12 +15,14 @@ namespace DiscordLab.ModerationLogs
         public string ReporterId { get; set; } = "Reporter ID";
         public string Duration { get; set; } = "Duration";
         public string PlayerBanned { get; set; } = "Player banned";
+        public string PlayerReported { get; set; } = "Player reported";
         public string PlayerKicked { get; set; } = "Player kicked";
         public string PlayerUnbanned { get; set; } = "Player unbanned";
         public string PlayerMuted { get; set; } = "Player muted";
         public string PlayerMuteRevoked { get; set; } = "Player mute revoked";
         public string AdminChatMessage { get; set; } = "Admin chat message";
         public string RemoteAdminCommand { get; set; } = "Remote admin command";
+        public string Error { get; set; } = "Error on the server";
         public string Command { get; set; } = "Command";
         public string Message { get; set; } = "Message";
     }

@@ -106,6 +106,12 @@ namespace DiscordLab.ModerationLogs.Handlers
             return Guild.GetTextChannel(Plugin.Instance.Config.RemoteAdminChannelId);
         }
 
+        public SocketTextChannel GetErrorLogsChannel()
+        {
+            if (GetGuild() == null) return null;
+            if (Plugin.Instance.Config.ErrorLogChannelId == 0) return null;
+            return Guild.GetTextChannel(Plugin.Instance.Config.ErrorLogChannelId);
+        }
 
         // These 2 functions are here, and public because they are used in DiscordLab.Moderation when the ban commands are used.
         public void SendBanMessage([CanBeNull] string targetName, string targetId, string reason, string issuerName,

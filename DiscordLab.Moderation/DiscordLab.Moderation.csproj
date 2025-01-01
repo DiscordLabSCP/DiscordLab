@@ -7,9 +7,6 @@
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-        <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
-        <SignAssembly>false</SignAssembly>
-        <DebugType>none</DebugType>
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(EXILED_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="false" />
