@@ -32,7 +32,7 @@ namespace DiscordLab.XPSystem.Commands
         {
             if (command.Data.Options.Count == 0) return;
             string option = command.Data.Options.First().Value.ToString();
-            if (XPAPI.TryParseUserId(option, out IPlayerId<object> playerId) == false)
+            if (XPAPI.TryParseUserId(option, out IPlayerId playerId) == false)
             {
                 await command.RespondAsync(Plugin.Instance.Translation.FailToGetUser);
                 return;
