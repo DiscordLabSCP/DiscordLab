@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
@@ -25,8 +26,8 @@ namespace DiscordLab.ConnectionLogs.Handlers
         {
             if (Round.InProgress && !string.IsNullOrEmpty(ev.Player.Nickname))
             {
-                string message = Plugin.Instance.Translation.PlayerJoin.Replace("{player}", ev.Player.Nickname)
-                    .Replace("{id}", ev.Player.UserId);
+                string message = Plugin.Instance.Translation.PlayerJoin.LowercaseParams().Replace("{player}", ev.Player.Nickname)
+                    .Replace("{id}", ev.Player.UserId).PlayerReplace("player", ev.Player).StaticReplace();
                 SocketTextChannel channel = DiscordBot.Instance.GetJoinChannel();
                 if (channel != null) channel.SendMessageAsync(message);
                 else
@@ -39,8 +40,8 @@ namespace DiscordLab.ConnectionLogs.Handlers
         {
             if (Round.InProgress && !string.IsNullOrEmpty(ev.Player.Nickname))
             {
-                string message = Plugin.Instance.Translation.PlayerLeave.Replace("{player}", ev.Player.Nickname)
-                    .Replace("{id}", ev.Player.UserId);
+                string message = Plugin.Instance.Translation.PlayerLeave.LowercaseParams().Replace("{player}", ev.Player.Nickname)
+                    .Replace("{id}", ev.Player.UserId).PlayerReplace("player", ev.Player).StaticReplace();
                 SocketTextChannel channel = DiscordBot.Instance.GetLeaveChannel();
                 if (channel != null) channel.SendMessageAsync(message);
                 else
@@ -60,7 +61,14 @@ namespace DiscordLab.ConnectionLogs.Handlers
             }
 
             List<Player> playerList = Player.List.Where(p => !p.IsNPC).ToList();
-            string players = string.Join("\n", playerList.Select(player => Plugin.Instance.Translation.RoundStartPlayers.Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId).Replace("{ip}", player.IPAddress)));
+            string players = string.Join("\n", playerList.Select(player => 
+                Plugin.Instance.Translation.RoundStartPlayers.LowercaseParams()
+                    .Replace("{playername}", player.Nickname)
+                    .Replace("{playerid}", player.UserId)
+                    .Replace("{ip}", player.IPAddress)
+                    .PlayerReplace("player", player)
+                    .StaticReplace()
+                ));
             channel.SendMessageAsync(message.Replace("{players}", players));
         }
     }

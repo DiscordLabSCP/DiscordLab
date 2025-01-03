@@ -1,4 +1,5 @@
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using XPSystem.API;
@@ -27,9 +28,9 @@ namespace DiscordLab.XPSystem.Handlers
                     "Either the channel or guild could not be found. So the XPSystem level up message has failed to send.");
             }
 
-            DiscordBot.Instance.GetChannel().SendMessageAsync(Plugin.Instance.Translation.LevelUp
+            DiscordBot.Instance.GetChannel().SendMessageAsync(Plugin.Instance.Translation.LevelUp.LowercaseParams()
                 .Replace("{playername}", player.Nickname).Replace("{playerid}", player.UserId)
-                .Replace("{level}", newLevel.ToString()));
+                .Replace("{level}", newLevel.ToString()).StaticReplace());
         }
     }
 }

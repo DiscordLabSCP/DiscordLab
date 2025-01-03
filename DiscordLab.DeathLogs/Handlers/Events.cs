@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
@@ -37,12 +38,15 @@ namespace DiscordLab.DeathLogs.Handlers
             }
 
             channel.SendMessageAsync(
-                Plugin.Instance.Translation.TeamKill
+                Plugin.Instance.Translation.TeamKill.LowercaseParams()
                     .Replace("{player}", ev.Player.Nickname)
                     .Replace("{attacker}", ev.Attacker.Nickname)
                     .Replace("{role}",ev.Player.Role.Name)
                     .Replace("{playerid}", ev.Player.UserId)
                     .Replace("{attackerid}", ev.Attacker.UserId)
+                    .PlayerReplace("player", ev.Player)
+                    .PlayerReplace("attacker", ev.Attacker)
+                    .StaticReplace()
             );
         }
 
@@ -66,13 +70,16 @@ namespace DiscordLab.DeathLogs.Handlers
             }
 
             channel.SendMessageAsync(
-                Plugin.Instance.Translation.CuffedPlayerDeath
+                Plugin.Instance.Translation.CuffedPlayerDeath.LowercaseParams()
                     .Replace("{player}", ev.Player.Nickname)
                     .Replace("{attacker}", ev.Attacker.Nickname)
                     .Replace("{playerrole}", ev.Player.Role.Name)
                     .Replace("{attackerrole}", ev.Attacker.Role.Name)
                     .Replace("{playerid}", ev.Player.UserId)
                     .Replace("{attackerid}", ev.Attacker.UserId)
+                    .PlayerReplace("player", ev.Player)
+                    .PlayerReplace("attacker", ev.Attacker)
+                    .StaticReplace()
             );
 
         }
@@ -91,13 +98,16 @@ namespace DiscordLab.DeathLogs.Handlers
                 return;
             }
             channel.SendMessageAsync(
-                Plugin.Instance.Translation.PlayerDeath
+                Plugin.Instance.Translation.PlayerDeath.LowercaseParams()
                     .Replace("{player}", ev.Player.Nickname)
                     .Replace("{attacker}", ev.Attacker.Nickname)
                     .Replace("{playerrole}", ev.Player.Role.Name)
                     .Replace("{attackerrole}", ev.Attacker.Role.Name)
                     .Replace("{playerid}", ev.Player.UserId)
                     .Replace("{attackerid}", ev.Attacker.UserId)
+                    .PlayerReplace("player", ev.Player)
+                    .PlayerReplace("attacker", ev.Attacker)
+                    .StaticReplace()
             );
         }
 
@@ -112,10 +122,12 @@ namespace DiscordLab.DeathLogs.Handlers
                 return;
             }
             channel.SendMessageAsync(
-                Plugin.Instance.Translation.PlayerDeathSelf
+                Plugin.Instance.Translation.PlayerDeathSelf.LowercaseParams()
                     .Replace("{player}", ev.Player.Nickname)
                     .Replace("{playerrole}", ev.Player.Role.Name)
                     .Replace("{playerid}", ev.Player.UserId)
+                    .PlayerReplace("player", ev.Player)
+                    .StaticReplace()
             );
         }
     }

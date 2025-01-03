@@ -1,4 +1,5 @@
 ﻿using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Extensions;
 using Exiled.API.Features;
@@ -29,11 +30,13 @@ namespace DiscordLab.SCPSwap.Handlers
                 return;
             }
 
-            channel.SendMessageAsync(Plugin.Instance.Translation.Message
+            channel.SendMessageAsync(Plugin.Instance.Translation.Message.LowercaseParams()
                 .Replace("{player}", ev.Player.Nickname)
                 .Replace("{playerid}", ev.Player.UserId)
                 .Replace("{oldrole}", ev.Player.Role.Name)
                 .Replace("{newrole}", ev.NewRole.GetFullName())
+                .PlayerReplace("player", ev.Player)
+                .StaticReplace()
             );
         }
     }

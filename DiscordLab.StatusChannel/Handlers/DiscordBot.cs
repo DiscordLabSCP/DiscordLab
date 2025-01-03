@@ -2,6 +2,7 @@
 using Discord;
 using Discord.Rest;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Newtonsoft.Json.Linq;
@@ -41,14 +42,15 @@ namespace DiscordLab.StatusChannel.Handlers
             IEnumerable<Player> playerList = players.ToList();
             string playersString = string.Join("\n",
                 playerList.Select(p =>
-                    Translation.PlayersList.Replace("{player}", p.Nickname).Replace("{playerid}", p.UserId)));
+                    Translation.PlayersList.LowercaseParams().Replace("{player}", p.Nickname).Replace("{playerid}", p.UserId).PlayerReplace("player", p).StaticReplace()));
             string fullDescription = !playerList.Any()
-                ? Translation.EmbedNoPlayers
-                    .Replace("{max}", Server.MaxPlayerCount.ToString())
-                : Translation.EmbedDescription
+                ? Translation.EmbedNoPlayers.LowercaseParams()
+                    .Replace("{max}", Server.MaxPlayerCount.ToString()).StaticReplace()
+                : Translation.EmbedDescription.LowercaseParams()
                     .Replace("{players}", playersString)
                     .Replace("{current}", playerList.Count().ToString())
-                    .Replace("{max}", Server.MaxPlayerCount.ToString());
+                    .Replace("{max}", Server.MaxPlayerCount.ToString())
+                    .StaticReplace();
             EmbedBuilder embed = new EmbedBuilder()
                 .WithTitle(Translation.EmbedTitle)
                 .WithColor(uint.Parse(Plugin.Instance.Config.Color, NumberStyles.HexNumber))

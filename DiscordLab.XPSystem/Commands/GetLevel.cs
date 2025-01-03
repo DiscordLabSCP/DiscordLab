@@ -1,6 +1,7 @@
 ﻿using System.Globalization;
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using XPSystem.API;
 using XPSystem.API.StorageProviders;
@@ -42,12 +43,12 @@ namespace DiscordLab.XPSystem.Commands
             EmbedBuilder embed = new()
             {
                 Title = Plugin.Instance.Translation.EmbedTitle,
-                Description = Plugin.Instance.Translation.EmbedDescription.Replace("{level}", info.Level.ToString())
-                    .Replace("{currentxp}", info.XP.ToString()).Replace("{neededxp}", info.NeededXPCurrent.ToString()),
+                Description = Plugin.Instance.Translation.EmbedDescription.LowercaseParams().Replace("{level}", info.Level.ToString())
+                    .Replace("{currentxp}", info.XP.ToString()).Replace("{neededxp}", info.NeededXPCurrent.ToString()).StaticReplace(),
                 Footer = new()
                 {
-                    Text = Plugin.Instance.Translation.EmbedFooter.Replace("{user}", info.Nickname)
-                        .Replace("{userid}", option)
+                    Text = Plugin.Instance.Translation.EmbedFooter.LowercaseParams().Replace("{user}", info.Nickname)
+                        .Replace("{userid}", option).StaticReplace()
                 },
                 Color = new Color(uint.Parse(Plugin.Instance.Config.Color, NumberStyles.HexNumber))
             };

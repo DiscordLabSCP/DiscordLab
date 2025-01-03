@@ -30,14 +30,50 @@ namespace DiscordLab.Bot.API.Extensions
             new("isdecontenabled", () => Map.IsDecontaminationEnabled.ToString()),
             
             // Round Replacers
-            new("kills", () => Round.Kills.ToString())
+            new("killcount", () => Round.Kills.ToString()),
+            new("alivesides", () => string.Join(", ", Round.AliveSides.Select(s => s.ToString()))),
+            new("alivesidescount", () => Round.AliveSides.Count().ToString()),
+            new("elapsedtime", () => Round.ElapsedTime.ToString()),
+            new("elapsedtimerelative", () => $"<t:{CurrentUnix-Round.ElapsedTime.TotalSeconds}:R>"),
+            new("roundstart", () => $"<t:{CurrentUnix-Round.ElapsedTime.TotalSeconds}:T>"),
+            new("roundcount", () => Round.UptimeRounds.ToString()),
+            new("escapedscientistscount", () => Round.EscapedScientists.ToString()),
+            new("inprogress", () => Round.InProgress.ToString()),
+            new("isended", () => Round.IsEnded.ToString()),
+            new("isstarted", () => Round.IsStarted.ToString()),
+            new("islocked", () => Round.IsLocked.ToString()),
+            new("islobby", () => Round.IsLobby.ToString()),
+            new("changedintozombiescount", () => Round.ChangedIntoZombies.ToString()),
+            new("escapeddclassescount", () => Round.EscapedDClasses.ToString()),
+            new("islobbylocker", () => Round.IsLobbyLocked.ToString()),
+            new("scpkillcount", () => Round.KillsByScp.ToString()),
+            new("alivescpcount", () => Round.SurvivingSCPs.ToString()),
+            
+            // Server Replacers
+            new("maxplayers", () => Server.MaxPlayerCount.ToString()),
+            new("name", () => Server.Name),
+            new("nameparsed", () =>
+            {
+                const string tagRemoveRegex = @"<[^>]+>";
+                const string uselessTextRemove = @"<color=#00000000>(.*?)<\/color>";
+
+                string result = Regex.Replace(Server.Name, uselessTextRemove, string.Empty);
+                result = Regex.Replace(result, tagRemoveRegex, string.Empty);
+
+                return result;
+            }),
+            new("port", () => Server.Port.ToString()),
+            new("ip", () => Server.IpAddress),
+            new("playercount", () => Server.PlayerCount.ToString()),
+            new("playercountnonpcs", () => Player.List.Count(p => !p.IsNPC).ToString()),
+            new("tps", () => Server.Tps.ToString(CultureInfo.CurrentCulture)),
         ];
 
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
         public static List<Tuple<string, Func<Player, string>>> PlayerReplacers =
         [
-            new("nickname", player => player.Nickname),
+            new("nickname", player => player.Nickname.Replace("@", "\\@")),
             new("id", player => player.UserId),
             new("ip", player => player.IPAddress),
             new("userid", player => player.Id.ToString()),

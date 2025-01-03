@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 
@@ -35,7 +36,7 @@ namespace DiscordLab.Moderation.Commands
                 .Value.ToString();
 
             string response = Server.ExecuteCommand(commandToExecute);
-            await command.ModifyOriginalResponseAsync(m => m.Content = Translation.SendCommandResponse.Replace("{response}", response));
+            await command.ModifyOriginalResponseAsync(m => m.Content = Translation.SendCommandResponse.LowercaseParams().Replace("{response}", response));
         }
     }
 }

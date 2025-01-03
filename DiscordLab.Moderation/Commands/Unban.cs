@@ -1,5 +1,6 @@
 ﻿using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Moderation.Handlers;
 using Exiled.API.Features;
@@ -38,11 +39,11 @@ namespace DiscordLab.Moderation.Commands
             string response = Server.ExecuteCommand($"/unban id {user}");
             if (!response.Contains("Done"))
             {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.Replace("{reason}", response));
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
             }
             else
             {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.UnbanCommandSuccess.Replace("{player}", user));
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.UnbanCommandSuccess.LowercaseParams().Replace("{player}", user));
                 if (ModerationLogsHandler.Instance.IsEnabled)
                 {
                     ModerationLogsHandler.Instance.SendUnbanLogMethod.Invoke(
