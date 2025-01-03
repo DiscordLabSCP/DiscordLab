@@ -79,6 +79,7 @@ namespace DiscordLab.DeathLogs.Handlers
                     .Replace("{attackerid}", ev.Attacker.UserId)
                     .PlayerReplace("player", ev.Player)
                     .PlayerReplace("attacker", ev.Attacker)
+                    .PlayerReplace("cuffer", ev.Player.Cuffer)
                     .StaticReplace()
             );
 
