@@ -1,4 +1,5 @@
 ﻿using System.Globalization;
+using System.Text;
 using System.Text.RegularExpressions;
 using Exiled.API.Features;
 
@@ -101,30 +102,30 @@ namespace DiscordLab.Bot.API.Extensions
                 str, 
                 pattern, 
                 m => 
-                m.Groups[1].Success ? m.Groups[1].Value.ToLower() : m.Groups[2].Value
+                m.Groups[1].Success ? $"{{{m.Groups[1].Value.ToLower()}}}" : m.Groups[2].Value
             );
         }
 
         public static string StaticReplace(this string str)
         {
-            string ret = str;
+            StringBuilder builder = new(str);
             foreach ((string placeholder, Func<string> replaceWith) in StaticReplacers)
             {
-                ret = str.Replace($"{{{placeholder}}}", replaceWith());
+                builder.Replace($"{{{placeholder}}}", replaceWith());
             }
 
-            return ret;
+            return builder.ToString();
         }
 
         public static string PlayerReplace(this string str, string prefix, Player player)
         {
-            string ret = str;
+            StringBuilder builder = new(str);
             foreach ((string placeholder, Func<Player, string> replaceWith) in PlayerReplacers)
             {
-                ret = str.Replace($"{{{prefix}{placeholder}}}", replaceWith(player));
+                builder.Replace($"{{{prefix}{placeholder}}}", replaceWith(player));
             }
 
-            return ret;
+            return builder.ToString();
         }
     }
 }

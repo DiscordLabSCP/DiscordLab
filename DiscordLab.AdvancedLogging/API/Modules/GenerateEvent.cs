@@ -1,6 +1,7 @@
 using System.Reflection;
 using System.Text.RegularExpressions;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using Exiled.API.Features;
 
 namespace DiscordLab.AdvancedLogging.API.Modules
@@ -40,7 +41,7 @@ namespace DiscordLab.AdvancedLogging.API.Modules
                 }
             }
 
-            channel.SendMessageAsync(content);
+            channel.SendMessageAsync(content.LowercaseParams().StaticReplace());
         }
     }
 }
