@@ -10,7 +10,7 @@ namespace DiscordLab.ConnectionLogs
         public override string Name => "DiscordLab.ConnectionLogs";
         public override string Author => "LumiFae";
         public override string Prefix => "DL.ConnectionLogs";
-        public override Version Version => new (1, 4, 0);
+        public override Version Version => new (1, 5, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Default;
 
