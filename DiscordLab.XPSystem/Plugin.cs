@@ -31,7 +31,7 @@ namespace DiscordLab.XPSystem
             
             _handlerLoader = new ();
             
-            _handlerLoader.Load(Assembly);
+            if(!_handlerLoader.Load(Assembly)) return;
             
             base.OnEnabled();
         }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Reflection;
 using Discord.WebSocket;
 using DiscordLab.AdvancedLogging.API.Features;
@@ -9,6 +10,7 @@ using Exiled.Events.EventArgs.Interfaces;
 using Exiled.Events.Features;
 using MEC;
 using Newtonsoft.Json.Linq;
+using Utf8Json.Internal;
 using Log = Exiled.API.Features.Log;
 
 namespace DiscordLab.AdvancedLogging.Handlers
@@ -18,9 +20,6 @@ namespace DiscordLab.AdvancedLogging.Handlers
         public static DiscordBot Instance { get; private set; }
 
         private List<ChannelType> Channels { get; set; }
-
-        private readonly List<Tuple<EventInfo, Delegate>> _dynamicHandlers = new();
-        private bool _isHandlerAdded;
 
         public void Init()
         {
@@ -32,39 +31,10 @@ namespace DiscordLab.AdvancedLogging.Handlers
 
         public void Unregister()
         {
-            RemoveEventHandlers();
             Channels = null;
         }
 
-        private void RemoveEventHandlers()
-        {
-            if (!_isHandlerAdded) return;
-
-            for (int i = 0; i < _dynamicHandlers.Count; i++)
-            {
-                Tuple<EventInfo, Delegate> tuple = _dynamicHandlers[i];
-                EventInfo eventInfo = tuple.Item1;
-                Delegate handler = tuple.Item2;
-
-                if (eventInfo.DeclaringType != null)
-                {
-                    MethodInfo removeMethod = eventInfo.DeclaringType.GetMethod($"remove_{eventInfo.Name}",
-                        BindingFlags.Instance | BindingFlags.NonPublic)!;
-                    removeMethod.Invoke(null, new object[] { handler });
-                }
-                else
-                {
-                    MethodInfo removeMethod = eventInfo.GetRemoveMethod(true);
-                    removeMethod.Invoke(null, new object[] { handler });
-                }
-
-                _dynamicHandlers.Remove(tuple);
-            }
-
-            _isHandlerAdded = false;
-        }
-
-        private SocketTextChannel GetChannel(ulong channelId)
+        internal SocketTextChannel GetChannel(ulong channelId)
         {
             SocketGuild guild = Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
             if (guild == null) return null;
@@ -72,12 +42,13 @@ namespace DiscordLab.AdvancedLogging.Handlers
                 return Channels.First(c => c.ChannelId == channelId).Channel;
             SocketTextChannel channel = guild.GetTextChannel(channelId);
             if (channel != null) return channel;
-            Log.Error("Either the guild is null or the channel is null. So the status message has failed to send.");
+            Log.Error("Either the guild is null or the channel is null.");
             return null;
         }
 
         private void GetChannelAndBind(string handler, string @event, ulong channelId)
         {
+            Log.Debug($"Getting channel {channelId} from {handler}.{@event}");
             SocketTextChannel channel = GetChannel(channelId);
             Channels.Add(new()
             {
@@ -94,7 +65,6 @@ namespace DiscordLab.AdvancedLogging.Handlers
             foreach (API.Features.Log log in logList)
             {
                 GetChannelAndBind(log.Handler, log.Event, log.ChannelId);
-                BindEvent(log);
             }
 
             await Task.CompletedTask;
@@ -112,84 +82,16 @@ namespace DiscordLab.AdvancedLogging.Handlers
             return logs.ToObject<IEnumerable<API.Features.Log>>() ?? new List<API.Features.Log>();
         }
 
-        private bool BindEvent(API.Features.Log log)
+        private bool EventExists(string handler, string @event)
         {
             IPlugin<IConfig> eventsAssembly =
                 Exiled.Loader.Loader.Plugins.FirstOrDefault(x => x.Name == "Exiled.Events");
-            if (eventsAssembly == null)
-            {
-                Log.Error("Could not create any events due to Exiled.Events not being loaded.");
-                return false;
-            }
-
+            if (eventsAssembly == null) return false;
             Type eventType = eventsAssembly.Assembly.GetTypes()
-                .FirstOrDefault(x => x.Namespace == "Exiled.Events.Handlers" && x.Name == log.Handler);
-            if (eventType == null)
-            {
-                Log.Error($"Handler type 'Exiled.Events.Handlers.{log.Handler}' not found.");
-                return false;
-            }
-
-            Delegate handler = null;
-            PropertyInfo propertyInfo = eventType.GetProperty(log.Event);
-
-            if (propertyInfo == null)
-            {
-                Log.Error($"Event '{log.Event}' not found in handler '{log.Handler}'.");
-                return false;
-            }
-
-            EventInfo eventInfo = propertyInfo.PropertyType.GetEvent("InnerEvent", (BindingFlags)(-1))!;
-
-            if (propertyInfo.PropertyType == typeof(Event))
-            {
-                handler = new CustomEventHandler(() => OnEventTriggeredNoEv(log));
-
-                MethodInfo addMethod = eventInfo.AddMethod.DeclaringType!.GetMethod(
-                    $"add_{eventInfo.Name}",
-                    BindingFlags.Instance | BindingFlags.NonPublic
-                )!;
-                addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
-            }
-            else if (propertyInfo.PropertyType.IsGenericType &&
-                     propertyInfo.PropertyType.GetGenericTypeDefinition() == typeof(Event<>))
-            {
-                MethodInfo eventTriggered = typeof(DiscordBot).GetMethod(nameof(OnEventTriggered),
-                    BindingFlags.Instance | BindingFlags.NonPublic);
-                MethodInfo genericEventTriggered =
-                    eventTriggered!.MakeGenericMethod(eventInfo.EventHandlerType.GenericTypeArguments);
-                handler = Delegate.CreateDelegate(eventInfo.EventHandlerType, this, genericEventTriggered);
-
-                MethodInfo addMethod = eventInfo.GetAddMethod(true);
-                addMethod.Invoke(propertyInfo.GetValue(null), new object[] { handler });
-            }
-            else
-            {
-                Log.Error($"Failed to load event handler for Exiled.Events.Handlers.{log.Handler}.{log.Event}.");
-            }
-
-            _dynamicHandlers.Add(new(eventInfo, handler));
-
-            _isHandlerAdded = true;
-            return true;
-        }
-
-        private void OnEventTriggeredNoEv(API.Features.Log log)
-        {
-            GenerateEvent.Event(new(), GetChannel(log.ChannelId), log.Content, (log.Nullables ?? "").Split(','));
-        }
-
-        private void OnEventTriggered<T>(T ev) where T : IExiledEvent
-        {
-            string typePath = typeof(T).FullName;
-            string[] parts = typePath!.Split('.');
-            string handler = parts[parts.Length - 2];
-            string @event = parts[parts.Length - 1].Replace("EventArgs", "");
-            IEnumerable<API.Features.Log> logs = GetLogs();
-            API.Features.Log log = logs.FirstOrDefault(x => x.Handler == handler && x.Event == @event);
-            if (log == null) return;
-
-            GenerateEvent.Event(ev, GetChannel(log.ChannelId), log.Content, (log.Nullables ?? "").Split(','));
+                .FirstOrDefault(x => x.Namespace == "Exiled.Events.Handlers" && x.Name == handler);
+            if (eventType == null) return false;
+            PropertyInfo propertyInfo = eventType.GetProperty(@event);
+            return propertyInfo != null;
         }
 
         private async Task OnModalSubmitted(SocketModal modal)
@@ -238,11 +140,12 @@ namespace DiscordLab.AdvancedLogging.Handlers
                 Nullables = nullables ?? "",
                 ChannelId = channelId
             };
-            bool eventResponse = BindEvent(log);
+            bool eventResponse = EventExists(log.Handler, log.Event);
             if (eventResponse)
             {
                 logList.Add(JObject.FromObject(log));
                 WriteableConfig.WriteConfigOption("AdvancedLogging", logList);
+                EventManager.AddEventHandler(log.Handler, log.Event);
                 await modal.RespondAsync("Log added", ephemeral: true);
             }
             else

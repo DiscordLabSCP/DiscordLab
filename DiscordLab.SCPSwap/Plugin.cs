@@ -23,7 +23,7 @@ namespace DiscordLab.SCPSwap
             Instance = this;
             
             _handlerLoader = new ();
-            _handlerLoader.Load(Assembly);
+            if(!_handlerLoader.Load(Assembly)) return;
             
             base.OnEnabled();
         }

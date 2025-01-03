@@ -29,4 +29,18 @@
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
     </ItemGroup>
+    <Target Name="RemoveUnwantedAssemblies" AfterTargets="Build">
+        <ItemGroup>
+            <AssembliesToDelete Include="$(OutDir)\*.dll" />
+        </ItemGroup>
+
+        <Delete Files="@(AssembliesToDelete)" Condition="'%(AssembliesToDelete.Identity)' != '$(OutDir)$(MSBuildProjectName).dll'" />
+    </Target>
+    <Target Name="RemoveUnwantedPdbs" AfterTargets="Build">
+        <ItemGroup>
+            <PdbsToDelete Include="$(OutDir)\*.pdb" />
+        </ItemGroup>
+
+        <Delete Files="@(PdbsToDelete)" />
+    </Target>
 </Project>

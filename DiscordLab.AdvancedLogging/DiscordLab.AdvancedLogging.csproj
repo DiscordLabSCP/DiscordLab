@@ -29,4 +29,18 @@
     <ItemGroup>
         <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj" />
     </ItemGroup>
+    <Target Name="RemoveUnwantedAssemblies" AfterTargets="Build">
+        <ItemGroup>
+            <AssembliesToDelete Include="$(OutDir)\*.dll" />
+        </ItemGroup>
+
+        <Delete Files="@(AssembliesToDelete)" Condition="'%(AssembliesToDelete.Identity)' != '$(OutDir)$(MSBuildProjectName).dll'" />
+    </Target>
+    <Target Name="RemoveUnwantedPdbs" AfterTargets="Build">
+        <ItemGroup>
+            <PdbsToDelete Include="$(OutDir)\*.pdb" />
+        </ItemGroup>
+
+        <Delete Files="@(PdbsToDelete)" />
+    </Target>
 </Project>

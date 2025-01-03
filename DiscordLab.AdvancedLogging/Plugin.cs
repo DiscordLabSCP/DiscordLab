@@ -1,6 +1,10 @@
-﻿using DiscordLab.Bot.API.Modules;
+﻿using DiscordLab.AdvancedLogging.API.Modules;
+using DiscordLab.AdvancedLogging.Handlers;
+using DiscordLab.Bot.API.Modules;
 using Exiled.API.Enums;
 using Exiled.API.Features;
+using UnityEngine;
+using Log = DiscordLab.AdvancedLogging.API.Features.Log;
 
 namespace DiscordLab.AdvancedLogging
 {
@@ -23,7 +27,15 @@ namespace DiscordLab.AdvancedLogging
             
             _handlerLoader = new ();
             
-            _handlerLoader.Load(Assembly);
+            if(!_handlerLoader.Load(Assembly)) return;
+            
+            EventManager.GetHandlers();
+            
+            foreach (Log log in DiscordBot.Instance.GetLogs())
+            {
+                Exiled.API.Features.Log.Debug($"Adding event handler for {log.Handler}.{log.Event}");
+                EventManager.AddEventHandler(log.Handler, log.Event);
+            }
             
             base.OnEnabled();
         }
@@ -33,6 +45,8 @@ namespace DiscordLab.AdvancedLogging
             _handlerLoader.Unload();
 
             _handlerLoader = null;
+            
+            EventManager.RemoveEventHandlers();
             
             base.OnDisabled();
         }

@@ -26,7 +26,7 @@ namespace DiscordLab.ModerationLogs
             Instance = this;
             
             _handlerLoader = new ();
-            _handlerLoader.Load(Assembly);
+            if(!_handlerLoader.Load(Assembly)) return;
 
             try
             {
