@@ -46,7 +46,7 @@ namespace DiscordLab.Bot.API.Extensions
             new("islobby", () => Round.IsLobby.ToString()),
             new("changedintozombiescount", () => Round.ChangedIntoZombies.ToString()),
             new("escapeddclassescount", () => Round.EscapedDClasses.ToString()),
-            new("islobbylocker", () => Round.IsLobbyLocked.ToString()),
+            new("islobbylocked", () => Round.IsLobbyLocked.ToString()),
             new("scpkillcount", () => Round.KillsByScp.ToString()),
             new("alivescpcount", () => Round.SurvivingSCPs.ToString()),
             
