@@ -13,7 +13,7 @@ namespace DiscordLab.AdvancedLogging
         public override string Name => "DiscordLab.AdvancedLogging";
         public override string Author => "LumiFae";
         public override string Prefix => "DL.AdvancedLogging";
-        public override Version Version => new (1, 4, 0);
+        public override Version Version => new (1, 4, 1);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Low;
 
