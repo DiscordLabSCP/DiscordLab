@@ -2,7 +2,6 @@
 using System.Reflection;
 using DiscordLab.AdvancedLogging.Handlers;
 using Exiled.API.Features;
-using Exiled.API.Interfaces;
 using Exiled.Events.EventArgs.Interfaces;
 using Exiled.Events.Features;
 using Exiled.Loader;
@@ -11,8 +10,11 @@ namespace DiscordLab.AdvancedLogging.API.Modules
 {
     public static class EventManager
     {
-        public static Type[] HandlerTypes = [];
-        private static readonly List<Tuple<PropertyInfo, Delegate>> DynamicHandlers = [];
+        // ReSharper disable once UseCollectionExpression
+        // ReSharper disable once MemberCanBePrivate.Global
+        public static Type[] HandlerTypes = new Type[0];
+        // ReSharper disable once UseCollectionExpression
+        private static readonly List<Tuple<PropertyInfo, Delegate>> DynamicHandlers = new ();
 
         internal static void GetHandlers()
         {
@@ -65,6 +67,7 @@ namespace DiscordLab.AdvancedLogging.API.Modules
                 return;
             }
 
+            // ReSharper disable once UseCollectionExpression
             subscribe.Invoke(propertyInfo.GetValue(null), new object[] { @delegate });
             DynamicHandlers.Add(new (propertyInfo, @delegate));
         }
@@ -79,11 +82,14 @@ namespace DiscordLab.AdvancedLogging.API.Modules
 
                 MethodInfo unSubscribe = propertyInfo.PropertyType.GetMethods().First(x => x.Name is "Unsubscribe");
 
+                // ReSharper disable once CoVariantArrayConversion
+                // ReSharper disable once UseCollectionExpression
                 unSubscribe.Invoke(propertyInfo.GetValue(null), new[] { handler });
                 DynamicHandlers.Remove(tuple);
             }
         }
         
+        // ReSharper disable once MemberCanBePrivate.Global
         public static void EventNoArgs()
         {
             StackFrame frame = new(3);
