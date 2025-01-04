@@ -124,7 +124,17 @@ namespace DiscordLab.Bot.API.Extensions
             StringBuilder builder = new(str);
             foreach ((string placeholder, Func<Player, string> replaceWith) in PlayerReplacers)
             {
-                builder.Replace($"{{{prefix}{placeholder}}}", replaceWith(player));
+                string replacement;
+                try
+                {
+                    replacement = replaceWith(player);
+                }
+                catch (NullReferenceException)
+                {
+                    replacement = "Unknown";
+                }
+                if(string.IsNullOrEmpty(replacement)) replacement = "Unknown";
+                builder.Replace($"{{{prefix}{placeholder}}}", replacement);
             }
 
             return builder.ToString();
