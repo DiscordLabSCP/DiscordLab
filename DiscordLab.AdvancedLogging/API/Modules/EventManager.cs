@@ -104,7 +104,7 @@ namespace DiscordLab.AdvancedLogging.API.Modules
             
             Log.Debug("Event triggered, routing to " + log.ChannelId);
             
-            GenerateEvent.Event(null, DiscordBot.Instance.GetChannel(log.ChannelId), log.Content, []);
+            GenerateEvent.Event(null, DiscordBot.Instance.GetChannel(log.ChannelId), log.Content, Array.Empty<string>());
         }
 
         public static void Event<T>(T ev) where T : IExiledEvent
