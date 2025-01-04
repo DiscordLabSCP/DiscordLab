@@ -52,7 +52,7 @@ namespace DiscordLab.ConnectionLogs.Handlers
 
         private void OnRoundStarted()
         {
-            string message = Plugin.Instance.Translation.RoundStart;
+            string message = Plugin.Instance.Translation.RoundStart.LowercaseParams();
             SocketTextChannel channel = DiscordBot.Instance.GetRoundStartChannel();
             if (channel == null)
             {
@@ -69,7 +69,7 @@ namespace DiscordLab.ConnectionLogs.Handlers
                     .PlayerReplace("player", player)
                     .StaticReplace()
                 ));
-            channel.SendMessageAsync(message.Replace("{players}", players));
+            channel.SendMessageAsync(message.Replace("{players}", players).StaticReplace());
         }
     }
 }
