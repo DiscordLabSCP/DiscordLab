@@ -12,8 +12,9 @@ namespace DiscordLab.Bot.API.Extensions
         
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public static List<Tuple<string, Func<string>>> StaticReplacers =
-        [
+        // ReSharper disable once UseCollectionExpression
+        public static List<Tuple<string, Func<string>>> StaticReplacers = new () 
+        {
             // Time Replacers
             new("time", () => $"<t:{CurrentUnix}>"),
             new("timet", () => $"<t:{CurrentUnix}:t>"),
@@ -68,12 +69,13 @@ namespace DiscordLab.Bot.API.Extensions
             new("playercount", () => Server.PlayerCount.ToString()),
             new("playercountnonpcs", () => Player.List.Count(p => !p.IsNPC).ToString()),
             new("tps", () => Server.Tps.ToString(CultureInfo.CurrentCulture)),
-        ];
+        };
 
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
-        public static List<Tuple<string, Func<Player, string>>> PlayerReplacers =
-        [
+        // ReSharper disable once UseCollectionExpression
+        public static List<Tuple<string, Func<Player, string>>> PlayerReplacers = new () 
+        {
             new("nickname", player => player.Nickname.Replace("@", "\\@")),
             new("id", player => player.UserId),
             new("ip", player => player.IPAddress),
@@ -87,7 +89,7 @@ namespace DiscordLab.Bot.API.Extensions
             new("group", player => player.GroupName),
             new("badge", player => player.Group.BadgeText),
             new("badgecolor", player => player.Group.BadgeColor)
-        ];
+        };
         
         /// <summary>
         /// Makes all parameters lowercase and keeps the rest of the translation in its original state.
