@@ -122,6 +122,7 @@ namespace DiscordLab.Bot.API.Extensions
         public static string PlayerReplace(this string str, string prefix, Player player)
         {
             StringBuilder builder = new(str);
+            builder.Replace($"{{{prefix}}}", player.Nickname);
             foreach ((string placeholder, Func<Player, string> replaceWith) in PlayerReplacers)
             {
                 string replacement;
