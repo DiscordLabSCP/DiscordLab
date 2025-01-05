@@ -134,7 +134,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             embed.AddField(Translation.Issuer, issuerName);
             if (issuerId != null) embed.AddField(Translation.IssuerId, issuerId);
             embed.AddField(Translation.Duration, duration);
-            channel.SendMessageAsync(embed: embed.Build());
+            channel.SendMessageAsync(Translation.PlayerBannedContent, embed: embed.Build());
         }
 
         public void SendUnbanMessage(string targetId)
@@ -151,7 +151,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             embed.WithTitle(Translation.PlayerUnbanned);
             embed.WithColor(Plugin.GetColor(Plugin.Instance.Config.UnbanColor));
             embed.AddField(Translation.PlayerId, targetId);
-            channel.SendMessageAsync(embed: embed.Build());
+            channel.SendMessageAsync(Translation.PlayerUnbannedContent, embed: embed.Build());
         }
     }
 }

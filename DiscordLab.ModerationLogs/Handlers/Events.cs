@@ -91,7 +91,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             embed.AddField(Translation.Reason, ev.Reason);
             embed.AddField(Translation.Issuer, ev.Player.Nickname);
             embed.AddField(Translation.IssuerId, ev.Player.UserId);
-            channel.SendMessageAsync(embed: embed.Build());
+            channel.SendMessageAsync(Translation.PlayerKickedContent, embed: embed.Build());
         }
 
         private void OnIssuingMute(IssuingMuteEventArgs ev)
@@ -112,7 +112,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             embed.AddField(Translation.PlayerId, ev.Player.UserId);
             embed.AddField(Translation.Issuer, ev.Player.Nickname);
             embed.AddField(Translation.IssuerId, ev.Player.UserId);
-            channel.SendMessageAsync(embed: embed.Build());
+            channel.SendMessageAsync(Translation.PlayerMutedContent, embed: embed.Build());
         }
 
         private void OnIssuingUnmute(RevokingMuteEventArgs ev)
@@ -133,7 +133,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             embed.AddField(Translation.PlayerId, ev.Player.UserId);
             embed.AddField(Translation.Issuer, ev.Player.Nickname);
             embed.AddField(Translation.IssuerId, ev.Player.UserId);
-            channel.SendMessageAsync(embed: embed.Build());
+            channel.SendMessageAsync(Translation.PlayerMuteRevokedContent, embed: embed.Build());
         }
 
         private void OnSendingAdminChatMessage(SendingAdminChatMessageEventsArgs ev)
