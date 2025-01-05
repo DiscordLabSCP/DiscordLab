@@ -68,6 +68,11 @@ namespace DiscordLab.Bot.Handlers
                 try
                 {
                     SocketGuild guild = GetGuild(command.GuildId);
+                    if (guild == null)
+                    {
+                        Log.Warn($"Command {command.Data.Name} failed to register, couldn't find guild {command.GuildId} (from module) nor {Plugin.Instance.Config.GuildId} (from the bot). Make sure your guild IDs are correct.");
+                        continue;
+                    }
                     await guild.CreateApplicationCommandAsync(command.Data.Build());
                 }
                 catch (Exception e)
