@@ -53,7 +53,7 @@ jobs:
           }
 
           $rolePingString = $rolePings -join " "
-          echo "::set-output name=role_pings::$rolePingString" 
+          echo "role_pings=$rolePingString" >> $GITHUB_OUTPUT
       - name: Notify
         uses: fjogeleit/http-request-action@v1
         with:
