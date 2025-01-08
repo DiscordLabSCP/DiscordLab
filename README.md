@@ -15,4 +15,3 @@ You can find an almost complete documentation here: https://github.com/DiscordLa
 ## Support
 
 Need support? Check out our Discord: https://discord.gg/XBzuGbsNZK
- 
