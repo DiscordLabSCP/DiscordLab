@@ -5,12 +5,11 @@ features you want on your Discord server/bot. This allows you to have a Discord 
 
 ## Get started
 
-To get started, you should follow [our new wiki!](https://github.com/DiscordLabSCP/DiscordLab/wiki/Installation)
+To get started, check out our installation guide: https://discordlab.jxtq.moe/getting-started/installation/
 
 ## API
 
-You can find a guide here: https://github.com/DiscordLabSCP/DiscordLab/wiki/API-Guide
-You can find an almost complete documentation here: https://github.com/DiscordLabSCP/DiscordLab/wiki/API-Documentation
+You can find all information here: https://discordlab.jxtq.moe/api/
 
 ## Support
 
