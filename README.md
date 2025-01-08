@@ -11,3 +11,7 @@ To get started, you should follow [our new wiki!](https://github.com/DiscordLabS
 
 You can find a guide here: https://github.com/DiscordLabSCP/DiscordLab/wiki/API-Guide
 You can find an almost complete documentation here: https://github.com/DiscordLabSCP/DiscordLab/wiki/API-Documentation
+
+## Support
+
+Need support? Check out our Discord: https://discord.gg/XBzuGbsNZK
