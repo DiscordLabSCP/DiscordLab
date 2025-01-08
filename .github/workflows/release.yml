@@ -60,4 +60,4 @@ jobs:
         with:
           url: ${{ secrets.DISCORD_WEBHOOK }}
           method: POST
-          data: '{"content": "New release available! $env:ROLE_PING_STRING\n$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF"}'
+          data: '{"content": "New release available! ${{ env.ROLE_PING_STRING }}\n${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref }}"}'
