@@ -1,9 +1,9 @@
 ﻿name: Notify on release
 
 on:
-    release:
-        types: [published]
-        
+  release:
+    types: [published]
+
 jobs:
   notify:
     runs-on: ubuntu-latest
@@ -26,7 +26,7 @@ jobs:
           foreach ($asset in $assets) {
             $assetUrl = $asset.browser_download_url
             $assetName = $asset.name
-            Invoke-WebRequest -Uri $assetUrl -OutFile "$releasePath/$assetName" -Headers $headers
+            Invoke-WebRequest -Uri $assetUrl -OutFile "$releasePath/$assetName"
           }
 
           $roleMap = @{
@@ -53,11 +53,10 @@ jobs:
           }
 
           $rolePingString = $rolePings -join " "
-          Write-Output "Role pings: $rolePingString"
-          echo "ROLE_PING_STRING=$rolePingString" >> $GITHUB_ENV
+          echo "::set-output name=role_pings::$rolePingString" 
       - name: Notify
         uses: fjogeleit/http-request-action@v1
         with:
           url: ${{ secrets.DISCORD_WEBHOOK }}
           method: POST
-          data: '{"content": "New release available! ${{ env.ROLE_PING_STRING }}\n${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref }}"}'
+          data: '{"content": "New release available! ${{ steps.get_role_pings.outputs.role_pings }}\n${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref }}"}'
