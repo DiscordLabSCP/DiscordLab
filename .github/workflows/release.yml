@@ -1,0 +1,47 @@
+﻿name: Notify on release
+
+on:
+    release:
+        types: [published]
+        
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Get files from release and convert into role pings
+        shell: pwsh
+        run: |
+          $roleMap = @{
+            "DiscordLab.Bot" = "1326565513392033844"
+            "DiscordLab.AdvancedLogging" = "1326565584334225469"
+            "DiscordLab.BotStatus" = "1326565625249660990"
+            "DiscordLab.ConnectionLogs" = "1326565678601212016"
+            "DiscordLab.DeathLogs" = "1326565793856622628"
+            "DiscordLab.Moderation" = "1326565888962596966"
+            "DiscordLab.ModerationLogs" = "1326565923242639492"
+            "DiscordLab.SCPSwap" = "1326565946915295365"
+            "DiscordLab.StatusChannel" = "1326565978125107211"
+            "DiscordLab.XPSystem" = "1326566015861260298"
+          }
+
+          $releaseFiles = Get-ChildItem -Path ${{ github.workspace }}/release
+          $rolePings = @()
+
+          foreach ($file in $releaseFiles) {
+            $fileName = [System.IO.Path]::GetFileNameWithoutExtension($file.Name)
+            if ($roleMap.ContainsKey($fileName)) {
+              $rolePings += "<@&$($roleMap[$fileName])>"
+            }
+          }
+
+          $rolePingString = $rolePings -join " "
+          Write-Output "Role pings: $rolePingString"
+          echo "ROLE_PING_STRING=$rolePingString" >> $GITHUB_ENV
+      - name: Notify
+        uses: fjogeleit/http-request-action@v1
+        with:
+          url: ${{ secrets.DISCORD_WEBHOOK }}
+          method: POST
+          data: '{"content": "New release available! $env:ROLE_PING_STRING\n$GITHUB_SERVER_URL/$GITHUB_REPOSITORY/releases/tag/$GITHUB_REF"}'
