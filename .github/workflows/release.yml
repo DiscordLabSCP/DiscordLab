@@ -13,6 +13,22 @@ jobs:
       - name: Get files from release and convert into role pings
         shell: pwsh
         run: |
+          $releaseId = ${{ github.event.release.id }}
+          $releaseUrl = "https://api.github.com/repos/${{ github.repository }}/releases/$releaseId/assets"
+
+          $assets = Invoke-RestMethod -Uri $releaseUrl
+          $releasePath = "${{ github.workspace }}/release"
+
+          if (-Not (Test-Path -Path $releasePath)) {
+            New-Item -ItemType Directory -Path $releasePath
+          }
+
+          foreach ($asset in $assets) {
+            $assetUrl = $asset.browser_download_url
+            $assetName = $asset.name
+            Invoke-WebRequest -Uri $assetUrl -OutFile "$releasePath/$assetName" -Headers $headers
+          }
+
           $roleMap = @{
             "DiscordLab.Bot" = "1326565513392033844"
             "DiscordLab.AdvancedLogging" = "1326565584334225469"
@@ -26,7 +42,7 @@ jobs:
             "DiscordLab.XPSystem" = "1326566015861260298"
           }
 
-          $releaseFiles = Get-ChildItem -Path ${{ github.workspace }}/release
+          $releaseFiles = Get-ChildItem -Path $releasePath
           $rolePings = @()
 
           foreach ($file in $releaseFiles) {
