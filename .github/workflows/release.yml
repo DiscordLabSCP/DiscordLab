@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get files from release and convert into role pings
+      - name: Get files from release, convert into role pings and notify.
         shell: pwsh
         run: |
           $releaseId = ${{ github.event.release.id }}
@@ -54,9 +54,13 @@ jobs:
 
           $rolePingString = $rolePings -join " "
           echo "role_pings=$rolePingString" >> $GITHUB_OUTPUT
-      - name: Notify
-        uses: fjogeleit/http-request-action@v1
-        with:
-          url: ${{ secrets.DISCORD_WEBHOOK }}
-          method: POST
-          data: '{"content": "New release available! ${{ steps.get_role_pings.outputs.role_pings }}\n${{ github.server_url }}/${{ github.repository }}/releases/tag/${{ github.ref }}"}'
+          $webhookUrl = "${{ secrets.DISCORD_WEBHOOK }}"
+          $releaseTag = "${{ github.ref }}"
+          $repositoryUrl = "${{ github.server_url }}/${{ github.repository }}"
+          $releaseMessage = "New release available! $rolePingString`n$repositoryUrl/releases/tag/$releaseTag"
+
+          $body = @{
+            content = $releaseMessage
+          } | ConvertTo-Json
+
+          Invoke-RestMethod -Uri $webhookUrl -Method Post -Body $body -ContentType "application/json"
