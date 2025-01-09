@@ -14,6 +14,7 @@ namespace DiscordLab.ConnectionLogs.Handlers
         private SocketTextChannel JoinChannel { get; set; }
         private SocketTextChannel LeaveChannel { get; set; }
         private SocketTextChannel RoundStartChannel { get; set; }
+        private SocketTextChannel RoundEndChannel { get; set; }
 
         public void Init()
         {
@@ -25,6 +26,7 @@ namespace DiscordLab.ConnectionLogs.Handlers
             JoinChannel = null;
             LeaveChannel = null;
             RoundStartChannel = null;
+            RoundEndChannel = null;
         }
         
         public SocketGuild GetGuild()
@@ -57,6 +59,15 @@ namespace DiscordLab.ConnectionLogs.Handlers
             if (Plugin.Instance.Config.RoundStartChannelId == 0) return null;
             return RoundStartChannel ??=
                guild.GetTextChannel(Plugin.Instance.Config.RoundStartChannelId);
+        }
+        
+        public SocketTextChannel GetRoundEndChannel()
+        {
+            SocketGuild guild = GetGuild();
+            if (guild == null) return null;
+            if (Plugin.Instance.Config.RoundEndChannelId == 0) return null;
+            return RoundEndChannel ??=
+                guild.GetTextChannel(Plugin.Instance.Config.RoundEndChannelId);
         }
     }
 }

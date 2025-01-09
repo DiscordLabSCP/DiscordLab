@@ -14,7 +14,10 @@ namespace DiscordLab.ConnectionLogs
         [Description("The message that will be sent when the round starts, just before the player list. The players placeholder will be replaced with the list of players using the round start players translation.")]
         public string RoundStart { get; set; } = "Round has started with the following people: \n```{players}\n```";
         
-        [Description("The message that indicates what a player looks like in the round start message. Extra placeholder is ip, but only use that if the channel is private or risk being delisted.")]
-        public string RoundStartPlayers { get; set; } = "{playername} ({playerid})";
+        [Description("The message that will be sent when the round ends, just before the player list. The players placeholder will be replaced with the list of players using the round start players translation.")]
+        public string RoundEnd { get; set; } = "Round has ended with the following people: \n```{players}\n```";
+        
+        [Description("The message that indicates what a player looks like in the round start/end message. Extra placeholder is ip, but only use that if the channel is private or risk being delisted.")]
+        public string RoundPlayers { get; set; } = "{playername} ({playerid})";
     }
 }

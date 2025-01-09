@@ -22,6 +22,9 @@ namespace DiscordLab.ConnectionLogs
         [Description("The channel where the round start logs will be sent.")]
         public ulong RoundStartChannelId { get; set; } = new();
         
+        [Description("The channel where the round end logs will be sent. Optional.")]
+        public ulong RoundEndChannelId { get; set; } = new();
+        
         [Description(DescriptionConstants.GuildId)]
         public ulong GuildId { get; set; }
     }

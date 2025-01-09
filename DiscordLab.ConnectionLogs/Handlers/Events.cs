@@ -3,6 +3,7 @@ using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
+using Exiled.Events.EventArgs.Server;
 
 namespace DiscordLab.ConnectionLogs.Handlers
 {
@@ -13,6 +14,7 @@ namespace DiscordLab.ConnectionLogs.Handlers
             Exiled.Events.Handlers.Player.Verified += OnPlayerVerified;
             Exiled.Events.Handlers.Player.Left += OnPlayerLeave;
             Exiled.Events.Handlers.Server.RoundStarted += OnRoundStarted;
+            Exiled.Events.Handlers.Server.RoundEnded += OnRoundEnded;
         }
 
         public void Unregister()
@@ -20,6 +22,7 @@ namespace DiscordLab.ConnectionLogs.Handlers
             Exiled.Events.Handlers.Player.Verified -= OnPlayerVerified;
             Exiled.Events.Handlers.Player.Left -= OnPlayerLeave;
             Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStarted;
+            Exiled.Events.Handlers.Server.RoundEnded -= OnRoundEnded;
         }
 
         private void OnPlayerVerified(VerifiedEventArgs ev)
@@ -62,13 +65,36 @@ namespace DiscordLab.ConnectionLogs.Handlers
 
             List<Player> playerList = Player.List.Where(p => !p.IsNPC).ToList();
             string players = string.Join("\n", playerList.Select(player => 
-                Plugin.Instance.Translation.RoundStartPlayers.LowercaseParams()
+                Plugin.Instance.Translation.RoundPlayers.LowercaseParams()
                     .Replace("{playername}", player.Nickname)
                     .Replace("{playerid}", player.UserId)
                     .Replace("{ip}", player.IPAddress)
                     .PlayerReplace("player", player)
                     .StaticReplace()
-                ));
+            ));
+            channel.SendMessageAsync(message.Replace("{players}", players).StaticReplace());
+        }
+
+        private void OnRoundEnded(RoundEndedEventArgs _)
+        {
+            string message = Plugin.Instance.Translation.RoundEnd.LowercaseParams();
+            if(Plugin.Instance.Config.RoundEndChannelId == 0) return;
+            SocketTextChannel channel = DiscordBot.Instance.GetRoundEndChannel();
+            if (channel == null)
+            {
+                Log.Error("Either the guild is null or the channel is null. So the round end message has failed to send.");
+                return;
+            }
+
+            List<Player> playerList = Player.List.Where(p => !p.IsNPC).ToList();
+            string players = string.Join("\n", playerList.Select(player =>
+                Plugin.Instance.Translation.RoundPlayers.LowercaseParams()
+                    .Replace("{playername}", player.Nickname)
+                    .Replace("{playerid}", player.UserId)
+                    .Replace("{ip}", player.IPAddress)
+                    .PlayerReplace("player", player)
+                    .StaticReplace()
+            ));
             channel.SendMessageAsync(message.Replace("{players}", players).StaticReplace());
         }
     }
