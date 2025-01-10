@@ -40,6 +40,7 @@ jobs:
             "DiscordLab.SCPSwap" = "1326565946915295365"
             "DiscordLab.StatusChannel" = "1326565978125107211"
             "DiscordLab.XPSystem" = "1326566015861260298"
+            "DiscordLab.AdminLogs" = "1327362549368361000"
           }
 
           $releaseFiles = Get-ChildItem -Path $releasePath
