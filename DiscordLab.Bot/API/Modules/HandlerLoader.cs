@@ -32,6 +32,7 @@ namespace DiscordLab.Bot.API.Modules
                     continue;
 
                 IRegisterable init = Activator.CreateInstance(type) as IRegisterable;
+                if(Plugin.Instance.Config.Debug) Log.Debug($"Loading {type.Name}...");
                 _inits.Add(init);
                 init!.Init();
             }

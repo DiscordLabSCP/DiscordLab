@@ -35,7 +35,6 @@ namespace DiscordLab.ModerationLogs
         public string PlayerMuteRevoked { get; set; } = "Player mute revoked";
         public string AdminChatMessage { get; set; } = "Admin chat message";
         public string RemoteAdminCommand { get; set; } = "Remote admin command";
-        public string Error { get; set; } = "Error on the server";
         public string Command { get; set; } = "Command";
         public string Message { get; set; } = "Message";
     }

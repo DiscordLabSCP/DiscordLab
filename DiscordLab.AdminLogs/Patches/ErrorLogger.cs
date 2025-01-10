@@ -1,13 +1,13 @@
 ﻿using System.Reflection.Emit;
 using Discord;
 using Discord.WebSocket;
-using DiscordLab.ModerationLogs.Handlers;
+using DiscordLab.AdminLogs.Handlers;
 using Exiled.API.Features;
 using HarmonyLib;
 using NorthwoodLib.Pools;
 using static HarmonyLib.AccessTools;
 
-namespace DiscordLab.ModerationLogs.Patches
+namespace DiscordLab.AdminLogs.Patches
 {
     [HarmonyPatch(typeof(Log), nameof(Log.Error), typeof(object))]
     [HarmonyPatch(typeof(Log), nameof(Log.Error), typeof(string))]

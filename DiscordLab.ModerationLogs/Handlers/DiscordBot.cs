@@ -19,6 +19,7 @@ namespace DiscordLab.ModerationLogs.Handlers
         private SocketTextChannel UnmuteChannel { get; set; }
         private SocketTextChannel AdminChatChannel { get; set; }
         private SocketTextChannel ReportChannel { get; set; }
+        private SocketTextChannel RemoteAdminChannel { get; set; }
 
         private SocketGuild Guild { get; set; }
 
@@ -36,6 +37,7 @@ namespace DiscordLab.ModerationLogs.Handlers
             UnmuteChannel = null;
             AdminChatChannel = null;
             ReportChannel = null;
+            RemoteAdminChannel = null;
         }
 
         private SocketGuild GetGuild()
@@ -103,14 +105,8 @@ namespace DiscordLab.ModerationLogs.Handlers
         {
             if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.RemoteAdminChannelId == 0) return null;
-            return Guild.GetTextChannel(Plugin.Instance.Config.RemoteAdminChannelId);
-        }
-
-        public SocketTextChannel GetErrorLogsChannel()
-        {
-            if (GetGuild() == null) return null;
-            if (Plugin.Instance.Config.ErrorLogChannelId == 0) return null;
-            return Guild.GetTextChannel(Plugin.Instance.Config.ErrorLogChannelId);
+            return RemoteAdminChannel ??=
+                Guild.GetTextChannel(Plugin.Instance.Config.RemoteAdminChannelId);
         }
 
         // These 2 functions are here, and public because they are used in DiscordLab.Moderation when the ban commands are used.
