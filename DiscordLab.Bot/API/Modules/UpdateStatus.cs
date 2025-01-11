@@ -45,6 +45,15 @@ namespace DiscordLab.Bot.API.Modules
         /// <param name="name">The name of the plugin, without .dll</param>
         private static void WritePlugin(byte[] bytes, string name)
         {
+            string[] files = Directory.GetFiles(Path);
+
+            string existingPlugin = files.FirstOrDefault(x => x.Contains(name));
+            
+            if (existingPlugin != null)
+            {
+                File.Delete(existingPlugin);
+            }
+            
             string pluginPath = System.IO.Path.Combine(Path, name + ".dll");
             File.WriteAllBytes(pluginPath, bytes);
         }
