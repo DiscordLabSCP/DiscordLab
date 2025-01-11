@@ -11,7 +11,7 @@ namespace DiscordLab.RoundLogs
         public override string Prefix => "DL.RoundLogs";
         public override Version Version => new (1, 0, 0);
         public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Low;
+        public override PluginPriority Priority => PluginPriority.Default;
 
         public static Plugin Instance { get; private set; }
         
