@@ -69,7 +69,7 @@ namespace DiscordLab.Bot.Commands
                     await command.ModifyOriginalResponseAsync(m => m.Content = "Please provide a module name.");
                     return;
                 }
-                API.Features.UpdateStatus status = UpdateStatus.Statuses.FirstOrDefault(s => s.ModuleName == module);
+                API.Features.UpdateStatus status = UpdateStatus.Statuses.FirstOrDefault(s => string.Equals(s.ModuleName, module, StringComparison.CurrentCultureIgnoreCase)) ?? UpdateStatus.Statuses.FirstOrDefault(s => s.ModuleName.Split('.').Last().Equals(module, StringComparison.CurrentCultureIgnoreCase));
                 if (status == null)
                 {
                     await command.ModifyOriginalResponseAsync(m => m.Content = "Module not found.");
