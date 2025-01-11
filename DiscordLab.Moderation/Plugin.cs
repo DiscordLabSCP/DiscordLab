@@ -16,9 +16,6 @@ namespace DiscordLab.Moderation
 
         public static Plugin Instance { get; private set; }
         
-        private bool ModerationLogsEnabled { get; set; }
-        private object ModerationLogsHandler { get; set; }
-        
         private HandlerLoader _handlerLoader;
 
         public override void OnEnabled()
