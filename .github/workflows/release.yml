@@ -41,6 +41,7 @@ jobs:
             "DiscordLab.StatusChannel" = "1326565978125107211"
             "DiscordLab.XPSystem" = "1326566015861260298"
             "DiscordLab.AdminLogs" = "1327362549368361000"
+            "DiscordLab.RoundLogs" = "1327631517769531453"
           }
 
           $releaseFiles = Get-ChildItem -Path $releasePath
