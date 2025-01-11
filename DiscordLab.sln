@@ -22,6 +22,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.SCPSwap", "Disco
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.AdminLogs", "DiscordLab.AdminLogs\DiscordLab.AdminLogs.csproj", "{6BC3940C-7AD6-491C-BDAD-7B8545E643E2}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DiscordLab.RoundLogs", "DiscordLab.RoundLogs\DiscordLab.RoundLogs.csproj", "{4439C1F3-03C6-4D4B-94B3-7A97744C2DE9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -72,5 +74,9 @@ Global
 		{6BC3940C-7AD6-491C-BDAD-7B8545E643E2}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{6BC3940C-7AD6-491C-BDAD-7B8545E643E2}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{6BC3940C-7AD6-491C-BDAD-7B8545E643E2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4439C1F3-03C6-4D4B-94B3-7A97744C2DE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4439C1F3-03C6-4D4B-94B3-7A97744C2DE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4439C1F3-03C6-4D4B-94B3-7A97744C2DE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4439C1F3-03C6-4D4B-94B3-7A97744C2DE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
