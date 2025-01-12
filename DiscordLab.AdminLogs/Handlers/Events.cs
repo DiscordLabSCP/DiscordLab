@@ -25,7 +25,7 @@ namespace DiscordLab.AdminLogs.Handlers
             SocketTextChannel channel = DiscordBot.Instance.GetServerStartChannel();
             if (channel == null)
             {
-                Log.Error("Either the guild is null or the channel is null. So the error logging message has failed to send.");
+                Log.Error("Either the guild is null or the channel is null. So the server started message has failed to send.");
                 return;
             }
 
