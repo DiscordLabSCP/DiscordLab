@@ -15,7 +15,6 @@ namespace DiscordLab.AdminLogs.Handlers
         
         public void Unregister()
         {
-            // unused yippie
         }
 
         private void OnWaitingForPlayers()
