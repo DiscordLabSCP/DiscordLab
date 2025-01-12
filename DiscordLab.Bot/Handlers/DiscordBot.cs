@@ -37,8 +37,19 @@ namespace DiscordLab.Bot.Handlers
 
         private Task DiscLog(LogMessage msg)
         {
-            if(msg.Severity == LogSeverity.Error || msg.Severity == LogSeverity.Critical) Log.Error(msg);
-            else Log.Info(msg);
+            switch (msg.Severity)
+            {
+                case LogSeverity.Error or LogSeverity.Critical:
+                    Log.Error(msg);
+                    break;
+                case LogSeverity.Warning:
+                    Log.Warn(msg);
+                    break;
+                default:
+                    Log.Info(msg);
+                    break;
+            }
+
             return Task.CompletedTask;
         }
 

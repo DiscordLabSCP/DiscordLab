@@ -32,7 +32,6 @@ namespace DiscordLab.Moderation.Handlers
             
             HandlerType = assembly.GetType("DiscordLab.ModerationLogs.Handlers.DiscordBot");
             HandlerInstance = HandlerType.GetProperty("Instance")!.GetValue(null);
-            Log.Info(HandlerInstance);
             SendBanLogMethod = HandlerType.GetMethod("SendBanMessage")!;
             SendUnbanLogMethod = HandlerType.GetMethod("SendUnbanMessage")!;
         }
