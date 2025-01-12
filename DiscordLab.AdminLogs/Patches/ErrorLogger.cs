@@ -34,8 +34,8 @@ namespace DiscordLab.AdminLogs.Patches
 
         public static void LogError(string message)
         {
-            if (message ==
-                "Either the guild is null or the channel is null. So the error logging message has failed to send.")
+            if (message.Contains(
+                "Either the guild is null or the channel is null. So the error logging message has failed to send."))
                 return;
             if (Plugin.Instance.Config.ErrorLogChannelId == 0) return;
             SocketTextChannel channel = DiscordBot.Instance.GetErrorLogsChannel();
