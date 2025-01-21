@@ -1,6 +1,7 @@
 ﻿using System.Reflection;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
+using JetBrains.Annotations;
 
 namespace DiscordLab.Bot.API.Modules
 {
@@ -13,13 +14,14 @@ namespace DiscordLab.Bot.API.Modules
         /// It also grabs your <see cref="ISlashCommand"/> classes and registers them. You will need to do no command handling on your side. DiscordLab does it all.
         /// </summary>
         /// <param name="assembly">
-        /// Your plugin's <see cref="Assembly"/>.
+        /// Your plugin's <see cref="Assembly"/>. Defaults to <see cref="Assembly.GetCallingAssembly"/>.
         /// </param>
         /// <remarks>
         /// If you use this function, you are required to call <see cref="Unload"/> when your plugin is about to be disabled. No need to pass in any params though.
         /// </remarks>
-        public bool Load(Assembly assembly)
+        public bool Load([CanBeNull] Assembly assembly)
         {
+            assembly ??= Assembly.GetCallingAssembly();
             if (Plugin.Instance.Config.Token is "token" or "")
             {
                 Log.Error($"Could not load {assembly.GetName().Name} because the bot token is not set in the config file.");
