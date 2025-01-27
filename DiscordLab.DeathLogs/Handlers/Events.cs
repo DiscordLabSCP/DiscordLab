@@ -28,7 +28,7 @@ namespace DiscordLab.DeathLogs.Handlers
         {
             if (ev.Attacker == null) return;
             if (ev.Attacker == ev.Player) return;
-            if (ev.Attacker.Role.Type != ev.Player.Role.Type) return;
+            if (ev.Attacker.Role.Team != ev.Player.Role.Team) return;
             if(Plugin.Instance.Config.TeamKillChannelId == 0) return;
             SocketTextChannel channel = DiscordBot.Instance.GetTeamKillChannel();
             if (channel == null)
@@ -89,7 +89,7 @@ namespace DiscordLab.DeathLogs.Handlers
         {
             if(ev.Attacker == null) return;
             if(ev.Attacker == ev.Player) return;
-            if(ev.Attacker.Role.Type == ev.Player.Role.Type) return;
+            if(ev.Attacker.Role.Team == ev.Player.Role.Team) return;
             if(ev.Player.IsCuffed) return;
             if (Plugin.Instance.Config.ChannelId == 0) return;
             SocketTextChannel channel = DiscordBot.Instance.GetChannel();
