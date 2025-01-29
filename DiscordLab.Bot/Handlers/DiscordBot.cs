@@ -1,4 +1,5 @@
-﻿using Discord;
+﻿using System.Net.WebSockets;
+using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
@@ -37,6 +38,10 @@ namespace DiscordLab.Bot.Handlers
 
         private Task DiscLog(LogMessage msg)
         {
+            if (msg.Exception is WebSocketException or GatewayReconnectException)
+            {
+                return Task.CompletedTask;
+            }
             switch (msg.Severity)
             {
                 case LogSeverity.Error or LogSeverity.Critical:
