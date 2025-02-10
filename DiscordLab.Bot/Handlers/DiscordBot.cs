@@ -3,7 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
-using Exiled.API.Features;
+using LabApi.Features.Console;
 
 namespace DiscordLab.Bot.Handlers
 {
@@ -21,7 +21,7 @@ namespace DiscordLab.Bot.Handlers
             DiscordSocketConfig config = new()
             {
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
-                LogLevel = Plugin.Instance.Config.Debug ? LogSeverity.Debug : LogSeverity.Warning
+                LogLevel = Plugin.Instance.Config!.Debug ? LogSeverity.Debug : LogSeverity.Warning
             };
             Client = new(config);
             Client.Log += DiscLog;
@@ -45,13 +45,16 @@ namespace DiscordLab.Bot.Handlers
             switch (msg.Severity)
             {
                 case LogSeverity.Error or LogSeverity.Critical:
-                    Log.Error(msg);
+                    Logger.Error(msg);
                     break;
                 case LogSeverity.Warning:
-                    Log.Warn(msg);
+                    Logger.Warn(msg);
+                    break;
+                case LogSeverity.Debug:
+                    Logger.Debug(msg, Plugin.Instance.Config!.Debug);
                     break;
                 default:
-                    Log.Info(msg);
+                    Logger.Info(msg);
                     break;
             }
 
@@ -60,8 +63,8 @@ namespace DiscordLab.Bot.Handlers
 
         private async Task StartClient()
         {
-            Log.Debug("Starting Discord bot...");
-            await Client.LoginAsync(TokenType.Bot, Plugin.Instance.Config.Token);
+            Logger.Debug("Starting Discord bot...", Plugin.Instance.Config!.Debug);
+            await Client.LoginAsync(TokenType.Bot, Plugin.Instance.Config!.Token);
             await Client.StartAsync();
         }
 
@@ -78,7 +81,7 @@ namespace DiscordLab.Bot.Handlers
 
         private async Task Ready()
         {
-            _guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
+            _guild = Client.GetGuild(Plugin.Instance.Config!.GuildId);
             foreach (ISlashCommand command in SlashCommandLoader.Commands)
             {
                 try
@@ -86,14 +89,14 @@ namespace DiscordLab.Bot.Handlers
                     SocketGuild guild = GetGuild(command.GuildId);
                     if (guild == null)
                     {
-                        Log.Warn($"Command {command.Data.Name} failed to register, couldn't find guild {command.GuildId} (from module) nor {Plugin.Instance.Config.GuildId} (from the bot). Make sure your guild IDs are correct.");
+                        Logger.Warn($"Command {command.Data.Name} failed to register, couldn't find guild {command.GuildId} (from module) nor {Plugin.Instance.Config.GuildId} (from the bot). Make sure your guild IDs are correct.");
                         continue;
                     }
                     await guild.CreateApplicationCommandAsync(command.Data.Build());
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Failed to create guild command '{command.Data.Name}': {e}");
+                    Logger.Error($"Failed to create guild command '{command.Data.Name}': {e}");
                 }
             }
             await Task.CompletedTask;

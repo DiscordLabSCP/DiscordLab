@@ -1,6 +1,5 @@
 ﻿using CommandSystem;
 using DiscordLab.Bot.API.Modules;
-using PluginAPI.Core;
 
 namespace DiscordLab.Bot.Commands
 {

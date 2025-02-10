@@ -10,18 +10,20 @@
     </PropertyGroup>
     <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(EXILED_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="false" />
+        <Reference Include="Assembly-CSharp-Publicized" HintPath="$(EXILED_REFERENCES)\Assembly-CSharp-Publicized.dll" Private="false" />
         <Reference Include="Pooling" HintPath="$(EXILED_REFERENCES)\Pooling.dll" Private="false" />
         <Reference Include="Mirror" HintPath="$(EXILED_REFERENCES)\Mirror.dll" Private="false" />
         <Reference Include="UnityEngine" HintPath="$(EXILED_REFERENCES)\UnityEngine.dll" Private="false" />
         <Reference Include="UnityEngine.CoreModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
+        <Reference Include="LabApi" HintPath="$(EXILED_REFERENCES)\LabApi.dll" Private="false" />
+        <Reference Include="CommandSystem.Core" HintPath="$(EXILED_REFERENCES)\CommandSystem.Core.dll" Private="false" />
     </ItemGroup>
     <ItemGroup>
         <PackageReference Include="Costura.Fody" Version="6.0.0-beta0000" PrivateAssets="All" />
         <PackageReference Include="Discord.Net.Core" Version="3.15.3" />
         <PackageReference Include="Discord.Net.Rest" Version="3.15.3" />
         <PackageReference Include="Discord.Net.WebSocket" Version="3.15.3" />
-        <PackageReference Include="ExMod.Exiled" Version="9.0.1" />
         <PackageReference Include="Fody" Version="6.8.2">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

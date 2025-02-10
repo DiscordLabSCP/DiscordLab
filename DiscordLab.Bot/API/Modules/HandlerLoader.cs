@@ -1,7 +1,7 @@
 ﻿using System.Reflection;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Features;
 using JetBrains.Annotations;
+using LabApi.Features.Console;
 
 namespace DiscordLab.Bot.API.Modules
 {
@@ -19,12 +19,12 @@ namespace DiscordLab.Bot.API.Modules
         /// <remarks>
         /// If you use this function, you are required to call <see cref="Unload"/> when your plugin is about to be disabled. No need to pass in any params though.
         /// </remarks>
-        public bool Load([CanBeNull] Assembly assembly)
+        public bool Load(Assembly assembly = null)
         {
             assembly ??= Assembly.GetCallingAssembly();
             if (Plugin.Instance.Config.Token is "token" or "")
             {
-                Log.Error($"Could not load {assembly.GetName().Name} because the bot token is not set in the config file.");
+                Logger.Error($"Could not load {assembly.GetName().Name} because the bot token is not set in the config file.");
                 return false;
             }
             Type registerType = typeof(IRegisterable);
@@ -34,7 +34,7 @@ namespace DiscordLab.Bot.API.Modules
                     continue;
 
                 IRegisterable init = Activator.CreateInstance(type) as IRegisterable;
-                if(Plugin.Instance.Config.Debug) Log.Debug($"Loading {type.Name}...");
+                if(Plugin.Instance.Config.Debug) Logger.Debug($"Loading {type.Name}...");
                 _inits.Add(init);
                 init!.Init();
             }
