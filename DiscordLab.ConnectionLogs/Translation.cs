@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel;
-using Exiled.API.Interfaces;
+using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.ConnectionLogs
 {
-    public class Translation : ITranslation
+    public class Translation : IConfig
     {
         [Description("The message that will be sent when a player joins the server.")]
         public string PlayerJoin { get; set; } = "`{player}` (`{id}`) has joined the server.";

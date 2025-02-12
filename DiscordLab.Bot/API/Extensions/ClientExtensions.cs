@@ -5,7 +5,7 @@ namespace DiscordLab.Bot.API.Extensions
 {
     public static class ClientExtensions
     {
-        public static GuildReturn TryGetGuild(this DiscordSocketClient client, ulong guildId, out SocketGuild guild)
+        public static GuildReturn TryGetGuild(this DiscordSocketClient client, ulong guildId, out SocketGuild? guild)
         {
             if (guildId == 0)
             {
@@ -22,7 +22,7 @@ namespace DiscordLab.Bot.API.Extensions
             return GuildReturn.Found;
         }
         
-        public static ChannelReturn TryGetTextChannel(this DiscordSocketClient client, ulong channelId, out SocketTextChannel channel)
+        public static ChannelReturn TryGetTextChannel(this DiscordSocketClient client, ulong channelId, out SocketTextChannel? channel)
         {
             if (channelId == 0)
             {
@@ -45,7 +45,7 @@ namespace DiscordLab.Bot.API.Extensions
         }
 
         public static ChannelReturn TryGetTextChannel(this SocketGuild guild, ulong channelId,
-            out SocketTextChannel channel)
+            out SocketTextChannel? channel)
         {
             if(channelId == 0)
             {

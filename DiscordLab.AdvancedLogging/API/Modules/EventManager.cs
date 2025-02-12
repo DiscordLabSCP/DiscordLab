@@ -18,7 +18,7 @@ namespace DiscordLab.AdvancedLogging.API.Modules
 
         internal static void GetHandlers()
         {
-            HandlerTypes = Loader.Plugins.First(plug => plug.Name == "Exiled.Events")
+            HandlerTypes =  Loader.Plugins.First(plug => plug.Name == "Exiled.Events")
                 .Assembly.GetTypes()
                 .Where(t => t.FullName?.Equals($"Exiled.Events.Handlers.{t.Name}") is true).ToArray();
         }

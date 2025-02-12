@@ -1,7 +1,8 @@
 ﻿using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using Exiled.API.Features;
+using LabApi.Features.Wrappers;
+using PlayerRoles;
 
 namespace DiscordLab.Bot.API.Extensions
 {
@@ -9,6 +10,11 @@ namespace DiscordLab.Bot.API.Extensions
     {
         // ReSharper disable once MemberCanBePrivate.Global
         public static long CurrentUnix => DateTimeOffset.UtcNow.ToUnixTimeSeconds();
+        
+        public static bool InProgress => Round.IsRoundStarted && !Round.IsRoundEnded;
+
+        public static PlayerRoleBase GetRoleBase(this RoleTypeId roleTypeId) =>
+            PlayerRoleLoader.TryGetRoleTemplate(roleTypeId, out PlayerRoleBase role) ? role : null!;
         
         // ReSharper disable once MemberCanBePrivate.Global
         // ReSharper disable once FieldCanBeMadeReadOnly.Global
@@ -27,39 +33,30 @@ namespace DiscordLab.Bot.API.Extensions
             
             // Map Replacers
             new("seed", () => Map.Seed.ToString()),
-            new("decontstate", () => Map.DecontaminationState.ToString()),
-            new("isdecont", () => Map.IsLczDecontaminated.ToString()),
-            new("isdecontenabled", () => Map.IsDecontaminationEnabled.ToString()),
             
             // Round Replacers
-            new("killcount", () => Round.Kills.ToString()),
-            new("alivesides", () => string.Join(", ", Round.AliveSides.Select(s => s.ToString()))),
-            new("alivesidescount", () => Round.AliveSides.Count().ToString()),
-            new("elapsedtime", () => Round.ElapsedTime.ToString()),
-            new("elapsedtimerelative", () => $"<t:{CurrentUnix-Round.ElapsedTime.TotalSeconds}:R>"),
-            new("roundstart", () => $"<t:{CurrentUnix-Round.ElapsedTime.TotalSeconds}:T>"),
-            new("roundcount", () => Round.UptimeRounds.ToString()),
+            new("elapsedtime", () => Round.Duration.ToString()),
+            new("elapsedtimerelative", () => $"<t:{CurrentUnix-Round.Duration.TotalSeconds}:R>"),
+            new("roundstart", () => $"<t:{CurrentUnix-Round.Duration.TotalSeconds}:T>"),
             new("escapedscientistscount", () => Round.EscapedScientists.ToString()),
-            new("inprogress", () => Round.InProgress.ToString()),
-            new("isended", () => Round.IsEnded.ToString()),
-            new("isstarted", () => Round.IsStarted.ToString()),
+            new("inprogress", () => InProgress.ToString()),
+            new("isended", () => Round.IsRoundEnded.ToString()),
+            new("isstarted", () => Round.IsRoundStarted.ToString()),
             new("islocked", () => Round.IsLocked.ToString()),
-            new("islobby", () => Round.IsLobby.ToString()),
             new("changedintozombiescount", () => Round.ChangedIntoZombies.ToString()),
-            new("escapeddclassescount", () => Round.EscapedDClasses.ToString()),
+            new("escapeddclassescount", () => Round.EscapedClassD.ToString()),
             new("islobbylocked", () => Round.IsLobbyLocked.ToString()),
-            new("scpkillcount", () => Round.KillsByScp.ToString()),
             new("alivescpcount", () => Round.SurvivingSCPs.ToString()),
             
             // Server Replacers
-            new("maxplayers", () => Server.MaxPlayerCount.ToString()),
-            new("name", () => Server.Name),
+            new("maxplayers", () => Server.MaxPlayers.ToString()),
+            new("name", () => ServerConsole._serverName),
             new("nameparsed", () =>
             {
                 const string tagRemoveRegex = @"<[^>]+>";
                 const string uselessTextRemove = @"<color=#00000000>(.*?)<\/color>";
 
-                string result = Regex.Replace(Server.Name, uselessTextRemove, string.Empty);
+                string result = Regex.Replace(ServerConsole._serverName, uselessTextRemove, string.Empty);
                 result = Regex.Replace(result, tagRemoveRegex, string.Empty);
 
                 return result;
@@ -67,8 +64,8 @@ namespace DiscordLab.Bot.API.Extensions
             new("port", () => Server.Port.ToString()),
             new("ip", () => Server.IpAddress),
             new("playercount", () => Server.PlayerCount.ToString()),
-            new("playercountnonpcs", () => Player.List.Count(p => !p.IsNPC).ToString()),
-            new("tps", () => Server.Tps.ToString(CultureInfo.CurrentCulture)),
+            new("playercountnonpcs", () => Player.List.Count(p => p.IsPlayer).ToString()),
+            new("tps", () => Server.TPS.ToString(CultureInfo.CurrentCulture)),
         };
 
         // ReSharper disable once MemberCanBePrivate.Global
@@ -78,17 +75,16 @@ namespace DiscordLab.Bot.API.Extensions
         {
             new("nickname", player => player.Nickname.Replace("@", "\\@")),
             new("id", player => player.UserId),
-            new("ip", player => player.IPAddress),
-            new("userid", player => player.Id.ToString()),
-            new("role", player => player.Role.Name),
-            new("roletype", player => player.Role.Type.ToString()),
-            new("team", player => player.Role.Team.ToString()),
-            new("side", player => player.Role.Side.ToString()),
+            new("ip", player => player.IpAddress),
+            new("userid", player => player.PlayerId.ToString()),
+            new("role", player => player.Role.GetRoleBase().RoleName),
+            new("roletype", player => player.Role.ToString()),
+            new("team", player => player.Role.GetRoleBase().Team.ToString()),
             new("health", player => player.Health.ToString(CultureInfo.CurrentCulture)),
             new("maxhealth", player => player.MaxHealth.ToString(CultureInfo.CurrentCulture)),
             new("group", player => player.GroupName),
-            new("badge", player => player.Group.BadgeText),
-            new("badgecolor", player => player.Group.BadgeColor)
+            new("badge", player => player.UserGroup?.BadgeText ?? "Unknown"),
+            new("badgecolor", player => player.UserGroup?.BadgeColor ?? "Unknown")
         };
         
         /// <summary>

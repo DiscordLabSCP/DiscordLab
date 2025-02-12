@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Interfaces;
 
 namespace DiscordLab.AdminLogs
 {

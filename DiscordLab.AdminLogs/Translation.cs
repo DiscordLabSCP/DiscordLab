@@ -1,8 +1,8 @@
-﻿using Exiled.API.Interfaces;
+﻿using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.AdminLogs
 {
-    public class Translation : ITranslation
+    public class Translation : IConfig
     {
         public string Error { get; set; } = "Error on the server";
         

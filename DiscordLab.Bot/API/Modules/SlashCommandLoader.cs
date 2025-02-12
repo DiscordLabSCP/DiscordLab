@@ -1,7 +1,5 @@
 ﻿using System.Reflection;
-using Discord;
 using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Bot.Handlers;
 
 namespace DiscordLab.Bot.API.Modules
 {
@@ -23,7 +21,7 @@ namespace DiscordLab.Bot.API.Modules
                 if (type.IsAbstract || !registerType.IsAssignableFrom(type))
                     continue;
 
-                ISlashCommand init = Activator.CreateInstance(type) as ISlashCommand;
+                ISlashCommand init = (Activator.CreateInstance(type) as ISlashCommand)!;
                 Commands.Add(init);
             }
         }

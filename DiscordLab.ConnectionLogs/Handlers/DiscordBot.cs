@@ -2,7 +2,6 @@
 using Discord.Rest;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Features;
 using Newtonsoft.Json.Linq;
 
 namespace DiscordLab.ConnectionLogs.Handlers

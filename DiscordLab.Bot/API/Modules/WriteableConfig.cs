@@ -1,4 +1,4 @@
-﻿using Exiled.API.Features;
+﻿using LabApi.Loader.Features.Paths;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -7,7 +7,7 @@ namespace DiscordLab.Bot.API.Modules
     public static class WriteableConfig
     {
         private static string Path =
-            System.IO.Path.Combine(System.IO.Path.Combine(Paths.Configs, "DiscordLab"), "config.json");
+            System.IO.Path.Combine(System.IO.Path.Combine(PathManager.Configs.FullName, "DiscordLab"), "config.json");
         
         /// <summary>
         /// This will get the config.json file from the DiscordLab folder in the Exiled configs.

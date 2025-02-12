@@ -1,39 +1,43 @@
 ﻿using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
+using LabApi.Features;
 
 namespace DiscordLab.BotStatus
 {
-    public class Plugin : Plugin<Config, Translation>
+    public class Plugin : LabApi.Loader.Features.Plugins.Plugin
     {
         public override string Name => "DiscordLab.BotStatus";
         public override string Author => "LumiFae";
-        public override string Prefix => "DL.BotStatus";
-        public override Version Version => new (1, 5, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        public override string Description => "BotStatus module for DiscordLab";
+        public override Version Version => new(1, 5, 0);
+        public override Version RequiredApiVersion => new(LabApiProperties.CompiledVersion);
 
-        public static Plugin Instance { get; private set; }
+        public static Plugin Instance { get; private set; } = null!;
+
+        private HandlerLoader _handlerLoader = null!;
         
-        private HandlerLoader _handlerLoader;
+        public Config Config { get; set; } = null!;
+        public Translation Translation { get; set; } = null!;
 
-        public override void OnEnabled()
+        public override void Enable()
         {
             Instance = this;
-            
-            _handlerLoader = new ();
-            if (!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
+
+            _handlerLoader = new();
+            if(!_handlerLoader.Load()) throw new ("Couldn't load this module correctly.");
         }
-        
-        public override void OnDisabled()
+
+        public override void Disable()
         {
             _handlerLoader.Unload();
-            _handlerLoader = null;
-            
-            base.OnDisabled();
+            _handlerLoader = null!;
+        }
+
+        public override void LoadConfigs()
+        {
+            ConfigLoader.LoadConfigs(this, out Config config, out Translation translation);
+            Config = config;
+            Translation = translation;
         }
     }
 }

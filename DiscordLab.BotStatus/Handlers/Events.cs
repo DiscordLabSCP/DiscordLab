@@ -2,6 +2,9 @@
 using DiscordLab.Bot.API.Modules;
 using Exiled.API.Features;
 using Exiled.Events.EventArgs.Player;
+using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Handlers;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.BotStatus.Handlers
 {
@@ -9,33 +12,33 @@ namespace DiscordLab.BotStatus.Handlers
     {
         public void Init()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers += OnWaitingForPlayers;
-            Exiled.Events.Handlers.Server.RoundStarted += OnRoundStarted;
-            Exiled.Events.Handlers.Player.Verified += OnPlayerVerified;
-            Exiled.Events.Handlers.Player.Left += OnPlayerLeave;
+            ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
+            ServerEvents.RoundStarted += OnRoundStarted;
+            PlayerEvents.Joined += OnPlayerVerified;
+            PlayerEvents.Left += OnPlayerLeave;
         }
 
         public void Unregister()
         {
-            Exiled.Events.Handlers.Server.WaitingForPlayers -= OnWaitingForPlayers;
-            Exiled.Events.Handlers.Server.RoundStarted -= OnRoundStarted;
-            Exiled.Events.Handlers.Player.Verified -= OnPlayerVerified;
-            Exiled.Events.Handlers.Player.Left -= OnPlayerLeave;
+            ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
+            ServerEvents.RoundStarted -= OnRoundStarted;
+            PlayerEvents.Joined -= OnPlayerVerified;
+            PlayerEvents.Left -= OnPlayerLeave;
         }
 
-        private void OnPlayerVerified(VerifiedEventArgs ev)
+        private void OnPlayerVerified(PlayerJoinedEventArgs ev)
         {
-            if (Round.InProgress) DiscordBot.Instance.SetStatus();
+            if (Round.IsRoundStarted && !Round.IsRoundEnded) DiscordBot.Instance.SetStatus();
             else
                 QueueSystem.QueueRun("DiscordLab.BotStatus.OnPlayerVerified", () =>
                     DiscordBot.Instance.SetStatus()
                 );
         }
 
-        private void OnPlayerLeave(LeftEventArgs ev)
+        private void OnPlayerLeave(PlayerLeftEventArgs ev)
         {
-            int players = Player.List.Count(p => p != ev.Player && !p.IsNPC);
-            if (Round.InProgress || players == 0)
+            int players = Player.List.Count(p => p != ev.Player && !p.IsPlayer);
+            if ((Round.IsRoundStarted && !Round.IsRoundEnded) || players == 0)
                 DiscordBot.Instance.SetStatus(
                     players
                 );

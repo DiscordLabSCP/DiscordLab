@@ -1,8 +1,9 @@
 ﻿using System.ComponentModel;
+using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.Bot
 {
-    public class Config
+    public class Config : IConfig
     {
         public bool IsEnabled { get; set; } = true;
         public bool Debug { get; set; } = false;

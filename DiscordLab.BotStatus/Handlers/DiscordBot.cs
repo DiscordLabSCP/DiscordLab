@@ -1,7 +1,8 @@
 ﻿using Discord;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Features;
+using LabApi.Features.Console;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.BotStatus.Handlers
 {
@@ -23,10 +24,10 @@ namespace DiscordLab.BotStatus.Handlers
 
         public void SetStatus(int? count = null)
         {
-            count ??= Player.List.Count(p => !p.IsNPC);
+            count ??= Player.List.Count(p => p.IsPlayer);
             string status = (count != 0 ? Translation.StatusMessage : Translation.EmptyServer).LowercaseParams()
                 .Replace("{current}", count.ToString())
-                .Replace("{max}", Server.MaxPlayerCount.ToString()).StaticReplace();
+                .Replace("{max}", Server.MaxPlayers.ToString()).StaticReplace();
             if (Bot.Handlers.DiscordBot.Instance.Client.Activity?.ToString().Trim() == status) return;
             try
             {
@@ -43,7 +44,7 @@ namespace DiscordLab.BotStatus.Handlers
             }
             catch (Exception e)
             {
-                Log.Error("Error setting status: " + e);
+                Logger.Error("Error setting status: " + e);
             }
         }
     }

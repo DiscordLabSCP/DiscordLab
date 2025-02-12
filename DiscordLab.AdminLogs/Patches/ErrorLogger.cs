@@ -2,15 +2,15 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.AdminLogs.Handlers;
-using Exiled.API.Features;
 using HarmonyLib;
+using LabApi.Features.Console;
 using NorthwoodLib.Pools;
 using static HarmonyLib.AccessTools;
 
 namespace DiscordLab.AdminLogs.Patches
 {
-    [HarmonyPatch(typeof(Log), nameof(Log.Error), typeof(object))]
-    [HarmonyPatch(typeof(Log), nameof(Log.Error), typeof(string))]
+    [HarmonyPatch(typeof(Logger), nameof(Logger.Error), typeof(object))]
+    [HarmonyPatch(typeof(Logger), nameof(Logger.Error), typeof(string))]
     public class ErrorLogger
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -41,7 +41,7 @@ namespace DiscordLab.AdminLogs.Patches
             SocketTextChannel channel = DiscordBot.Instance.GetErrorLogsChannel();
             if (channel == null)
             {
-                Log.Error(
+                Logger.Error(
                     "Guild or channel was not found. So the error logging message has failed to send.");
                 return;
             }

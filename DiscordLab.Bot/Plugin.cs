@@ -1,13 +1,14 @@
 ﻿using DiscordLab.Bot.API.Modules;
 using LabApi.Features;
 using LabApi.Features.Console;
+using LabApi.Loader;
 using LabApi.Loader.Features.Plugins;
 using LabApi.Loader.Features.Plugins.Enums;
 using Version = System.Version;
 
 namespace DiscordLab.Bot
 {
-    public class Plugin : Plugin<Config>
+    public class Plugin : LabApi.Loader.Features.Plugins.Plugin
     {
         public override string Name => "DiscordLab";
         public override string Author => "LumiFae";
@@ -17,15 +18,17 @@ namespace DiscordLab.Bot
         public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
         public override LoadPriority Priority => LoadPriority.Highest;
 
-        public static Plugin Instance { get; private set; }
+        public static Plugin Instance { get; private set; } = null!;
+
+        public Config Config { get; private set; } = null!;
         
-        private HandlerLoader _handlerLoader;
+        private HandlerLoader _handlerLoader = null!;
 
         public override void Enable()
         {
             Instance = this;
             
-            if(Config!.Token is "token" or "")
+            if(Config.Token is "token" or "")
             {
                 Logger.Error("Please set the bot token in the config file.");
                 return;
@@ -52,11 +55,17 @@ namespace DiscordLab.Bot
 
             Task.Run(UpdateStatus.GetStatus);
         }
+
+        public override void LoadConfigs()
+        {
+            ConfigLoader.LoadConfigs(this, out Config config);
+            Config = config;
+        }
         
         public override void Disable()
         {
             _handlerLoader.Unload();
-            _handlerLoader = null;
+            _handlerLoader = null!;
             
             SlashCommandLoader.ClearCommands();
         }

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel;
 using DiscordLab.Bot.API.Features;
-using Exiled.API.Interfaces;
+using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.BotStatus
 {
