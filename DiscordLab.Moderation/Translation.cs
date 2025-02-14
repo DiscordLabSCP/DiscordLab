@@ -1,4 +1,4 @@
-﻿using Exiled.API.Interfaces;
+﻿using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.Moderation
 {
@@ -13,6 +13,8 @@ namespace DiscordLab.Moderation
         public string BanCommandReasonOptionName { get; set; } = "reason";
         public string BanCommandReasonOptionDescription { get; set; } = "The reason for the ban.";
         public string BanCommandSuccess { get; set; } = "Successfully banned `{player}`.";
+        
+        public string BanCommandDurationIncorrect { get; set; } = "The duration of the ban is incorrect, it has to be in seconds."; 
         public string UnbanCommandName { get; set; } = "unban";
         public string UnbanCommandDescription { get; set; } = "Unbans a player from the server.";
         public string UnbanCommandUserOptionName { get; set; } = "user";

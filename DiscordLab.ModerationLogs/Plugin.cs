@@ -1,32 +1,34 @@
 ﻿using System.Globalization;
 using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
 using HarmonyLib;
+using LabApi.Features;
+using LabApi.Features.Console;
 
 namespace DiscordLab.ModerationLogs
 {
-    public class Plugin : Plugin<Config, Translation>
+    public class Plugin : LabApi.Loader.Features.Plugins.Plugin
     {
         public override string Name => "DiscordLab.ModerationLogs";
         public override string Author => "LumiFae";
-        public override string Prefix => "DL.ModerationLogs";
+        public override string Description => "ModerationLogs module for DiscordLab";
         public override Version Version => new (1, 5, 1);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        public override Version RequiredApiVersion => new (LabApiProperties.CompiledVersion);
 
-        public static Plugin Instance { get; private set; }
+        public static Plugin Instance { get; private set; } = null!;
         
-        private HandlerLoader _handlerLoader;
+        private HandlerLoader _handlerLoader = null!;
 
-        private Harmony harmony;
+        private Harmony harmony = null!;
+        
+        public Config Config { get; set; } = null!;
+        public Translation Translation { get; set; } = null!;
 
-        public override void OnEnabled()
+        public override void Enable()
         {
             Instance = this;
             
             _handlerLoader = new ();
-            if(!_handlerLoader.Load(Assembly)) return;
+            if(!_handlerLoader.Load()) throw new Exception("Failed to load module, contact us");
 
             try
             {
@@ -35,23 +37,26 @@ namespace DiscordLab.ModerationLogs
             }
             catch (Exception e)
             {
-                Log.Error($"An error occurred while patching: {e}");
+                Logger.Error($"An error occurred while patching: {e}");
             }
-
-            base.OnEnabled();
         }
         
-        public override void OnDisabled()
+        public override void Disable()
         {
             _handlerLoader.Unload();
-            _handlerLoader = null;
+            _handlerLoader = null!;
             
             harmony?.UnpatchAll(harmony.Id);
-            harmony = null;
-            
-            base.OnDisabled();
+            harmony = null!;
         }
-        
+
+        public override void LoadConfigs()
+        {
+            this.LoadConfigs(out Config config, out Translation translation);
+            Config = config;
+            Translation = translation;
+        }
+
         public static uint GetColor(string color)
         {
             return uint.Parse(color, NumberStyles.HexNumber);

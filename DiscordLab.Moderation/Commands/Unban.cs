@@ -3,7 +3,7 @@ using Discord.WebSocket;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Moderation.Handlers;
-using Exiled.API.Features;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands
 {
@@ -36,10 +36,10 @@ namespace DiscordLab.Moderation.Commands
             string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
                 .Value.ToString();
 
-            string response = Server.ExecuteCommand($"/unban id {user}");
-            if (!response.Contains("Done"))
+            bool response = Server.UnbanUserId(user);
+            if (!response)
             {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", "Unknown"));
             }
             else
             {

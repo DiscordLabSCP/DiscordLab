@@ -74,9 +74,9 @@ namespace DiscordLab.Bot.API.Extensions
         public static List<Tuple<string, Func<Player, string>>> PlayerReplacers = new () 
         {
             new("nickname", player => player.Nickname.Replace("@", "\\@")),
-            new("id", player => player.UserId),
+            new("id", player => player.PlayerId.ToString()),
             new("ip", player => player.IpAddress),
-            new("userid", player => player.PlayerId.ToString()),
+            new("userid", player => player.UserId),
             new("role", player => player.Role.GetRoleBase().RoleName),
             new("roletype", player => player.Role.ToString()),
             new("team", player => player.Role.GetRoleBase().Team.ToString()),

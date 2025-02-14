@@ -1,4 +1,6 @@
 ﻿using Discord.WebSocket;
+using DiscordLab.Bot.API.Enums;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.DeathLogs.Handlers
@@ -7,10 +9,10 @@ namespace DiscordLab.DeathLogs.Handlers
     {
         public static DiscordBot Instance { get; private set; }
 
-        private SocketTextChannel Channel { get; set; }
-        private SocketTextChannel CuffedChannel { get; set; }
-        private SocketTextChannel SelfChannel { get; set; }
-        private SocketTextChannel TeamKillChannel { get; set; }
+        private SocketTextChannel? Channel { get; set; }
+        private SocketTextChannel? CuffedChannel { get; set; }
+        private SocketTextChannel? SelfChannel { get; set; }
+        private SocketTextChannel? TeamKillChannel { get; set; }
 
         public void Init()
         {
@@ -25,44 +27,40 @@ namespace DiscordLab.DeathLogs.Handlers
             TeamKillChannel = null;
         }
         
-        public SocketGuild GetGuild()
+        public bool TryGetGuild(out SocketGuild? guild)
         {
-            return Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
+            return Bot.Handlers.DiscordBot.Instance.Client.TryGetGuild(Plugin.Instance.Config.GuildId, out guild) == GuildReturn.Found;
         }
 
-        public SocketTextChannel GetChannel()
+        public SocketTextChannel? GetChannel()
         {
-            SocketGuild guild = GetGuild();
-            if (GetGuild() == null) return null;
+            if (!TryGetGuild(out SocketGuild? guild)) return null;
             if (Plugin.Instance.Config.ChannelId == 0) return null;
-            return Channel ??= guild.GetTextChannel(Plugin.Instance.Config.ChannelId);
+            return Channel ??= guild!.GetTextChannel(Plugin.Instance.Config.ChannelId);
         }
 
-        public SocketTextChannel GetCuffedChannel()
+        public SocketTextChannel? GetCuffedChannel()
         {
-            SocketGuild guild = GetGuild();
-            if (guild == null) return null;
+            if (!TryGetGuild(out SocketGuild? guild)) return null;
             if (Plugin.Instance.Config.CuffedChannelId == 0) return null;
             return CuffedChannel ??=
-                guild.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
+                guild!.GetTextChannel(Plugin.Instance.Config.CuffedChannelId);
         }
 
-        public SocketTextChannel GetSelfChannel()
+        public SocketTextChannel? GetSelfChannel()
         {
-            SocketGuild guild = GetGuild();
-            if (guild == null) return null;
+            if (!TryGetGuild(out SocketGuild? guild)) return null;
             if (Plugin.Instance.Config.SelfChannelId == 0) return null;
             return SelfChannel ??=
-                guild.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
+                guild!.GetTextChannel(Plugin.Instance.Config.SelfChannelId);
         }
 
-        public SocketTextChannel GetTeamKillChannel()
+        public SocketTextChannel? GetTeamKillChannel()
         {
-            SocketGuild guild = GetGuild();
-            if (guild == null) return null;
+            if (!TryGetGuild(out SocketGuild? guild)) return null;
             if (Plugin.Instance.Config.TeamKillChannelId == 0) return null;
             return TeamKillChannel ??=
-                guild.GetTextChannel(Plugin.Instance.Config.TeamKillChannelId);
+                guild!.GetTextChannel(Plugin.Instance.Config.TeamKillChannelId);
         }
     }
 }

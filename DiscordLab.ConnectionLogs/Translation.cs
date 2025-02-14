@@ -3,7 +3,7 @@ using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.ConnectionLogs
 {
-    public class Translation : IConfig
+    public class Translation : ITranslation
     {
         [Description("The message that will be sent when a player joins the server.")]
         public string PlayerJoin { get; set; } = "`{player}` (`{id}`) has joined the server.";

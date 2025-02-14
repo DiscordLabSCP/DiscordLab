@@ -2,6 +2,7 @@
 {
     public interface IConfig
     {
-        
+        public bool IsEnabled { get; set; }
+        public bool Debug { get; set; }
     }
 }

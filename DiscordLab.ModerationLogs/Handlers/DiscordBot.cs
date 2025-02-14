@@ -1,8 +1,7 @@
 ﻿using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Features;
-using JetBrains.Annotations;
+using Logger = LabApi.Features.Console.Logger;
 
 namespace DiscordLab.ModerationLogs.Handlers
 {
@@ -10,18 +9,18 @@ namespace DiscordLab.ModerationLogs.Handlers
     {
         private static Translation Translation => Plugin.Instance.Translation;
 
-        public static DiscordBot Instance { get; private set; }
+        public static DiscordBot Instance { get; private set; } = null!;
 
-        private SocketTextChannel BanChannel { get; set; }
-        private SocketTextChannel UnbanChannel { get; set; }
-        private SocketTextChannel KickChannel { get; set; }
-        private SocketTextChannel MuteChannel { get; set; }
-        private SocketTextChannel UnmuteChannel { get; set; }
-        private SocketTextChannel AdminChatChannel { get; set; }
-        private SocketTextChannel ReportChannel { get; set; }
-        private SocketTextChannel RemoteAdminChannel { get; set; }
+        private SocketTextChannel? BanChannel { get; set; }
+        private SocketTextChannel? UnbanChannel { get; set; }
+        private SocketTextChannel? KickChannel { get; set; }
+        private SocketTextChannel? MuteChannel { get; set; }
+        private SocketTextChannel? UnmuteChannel { get; set; }
+        private SocketTextChannel? AdminChatChannel { get; set; }
+        private SocketTextChannel? ReportChannel { get; set; }
+        private SocketTextChannel? RemoteAdminChannel { get; set; }
 
-        private SocketGuild Guild { get; set; }
+        private SocketGuild? Guild { get; set; }
 
         public void Init()
         {
@@ -40,12 +39,12 @@ namespace DiscordLab.ModerationLogs.Handlers
             RemoteAdminChannel = null;
         }
 
-        private SocketGuild GetGuild()
+        private SocketGuild? GetGuild()
         {
             return Guild ??= Bot.Handlers.DiscordBot.Instance.GetGuild(Plugin.Instance.Config.GuildId);
         }
 
-        public SocketTextChannel GetBanChannel()
+        public SocketTextChannel? GetBanChannel()
         {
             if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.BanChannelId == 0) return null;
@@ -53,7 +52,7 @@ namespace DiscordLab.ModerationLogs.Handlers
                 Guild.GetTextChannel(Plugin.Instance.Config.BanChannelId);
         }
 
-        public SocketTextChannel GetUnbanChannel()
+        public SocketTextChannel? GetUnbanChannel()
         {
             if (GetGuild() == null) return null;
             if (Plugin.Instance.Config.UnbanChannelId == 0) return null;
@@ -110,14 +109,14 @@ namespace DiscordLab.ModerationLogs.Handlers
         }
 
         // These 2 functions are here, and public because they are used in DiscordLab.Moderation when the ban commands are used.
-        public void SendBanMessage([CanBeNull] string targetName, string targetId, string reason, string issuerName,
-            [CanBeNull] string issuerId, string duration)
+        public void SendBanMessage(string? targetName, string targetId, string reason, string issuerName,
+            string? issuerId, string duration)
         {
-            SocketTextChannel channel = GetBanChannel();
+            SocketTextChannel? channel = GetBanChannel();
             if (channel == null)
             {
                 if (Plugin.Instance.Config.BanChannelId == 0) return;
-                Log.Error("Either the guild is null or the channel is null. So the ban message has failed to send.");
+                Logger.Error("Either the guild is null or the channel is null. So the ban message has failed to send.");
                 return;
             }
 
@@ -135,11 +134,11 @@ namespace DiscordLab.ModerationLogs.Handlers
 
         public void SendUnbanMessage(string targetId)
         {
-            SocketTextChannel channel = GetUnbanChannel();
+            SocketTextChannel? channel = GetUnbanChannel();
             if (channel == null)
             {
                 if (Plugin.Instance.Config.UnbanChannelId == 0) return;
-                Log.Error("Either the guild is null or the channel is null. So the unban message has failed to send.");
+                Logger.Error("Either the guild is null or the channel is null. So the unban message has failed to send.");
                 return;
             }
 

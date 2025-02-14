@@ -2,7 +2,7 @@
 
 namespace DiscordLab.AdminLogs
 {
-    public class Translation : IConfig
+    public class Translation : ITranslation
     {
         public string Error { get; set; } = "Error on the server";
         

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel;
-using Exiled.API.Interfaces;
+using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.DeathLogs
 {

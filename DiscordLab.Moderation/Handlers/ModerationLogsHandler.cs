@@ -1,34 +1,30 @@
 ﻿using System.Reflection;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Features;
-using Exiled.API.Interfaces;
-using Exiled.Loader;
+using LabApi.Loader;
 
 namespace DiscordLab.Moderation.Handlers
 {
     public class ModerationLogsHandler : IRegisterable
     {
         public static ModerationLogsHandler Instance { get; private set; }
-        
-        private Type HandlerType { get; set; }
+
+        private Type HandlerType { get; set; } = null!;
         public bool IsEnabled;
-        public object HandlerInstance { get; private set; }
-        public MethodInfo SendBanLogMethod { get; private set; }
-        public MethodInfo SendUnbanLogMethod { get; private set; }
+        public object HandlerInstance { get; private set; } = null!;
+        public MethodInfo SendBanLogMethod { get; private set; } = null!;
+        public MethodInfo SendUnbanLogMethod { get; private set; } = null!;
         
         public void Init()
         {
             Instance = this;
-            IPlugin<IConfig> moderationPlugin = Loader.Plugins.FirstOrDefault(p => p.Name == "DiscordLab.ModerationLogs");
+            KeyValuePair<LabApi.Loader.Features.Plugins.Plugin,Assembly>? moderationPlugin = PluginLoader.Plugins.FirstOrDefault(p => p.Key.Name == "DiscordLab.ModerationLogs");
             if (moderationPlugin == null)
             {
                 IsEnabled = false;
                 return;
             }
 
-            IsEnabled = moderationPlugin.Config.IsEnabled;
-
-            Assembly assembly = moderationPlugin.Assembly;
+            Assembly assembly = moderationPlugin.Value.Value;
             
             HandlerType = assembly.GetType("DiscordLab.ModerationLogs.Handlers.DiscordBot");
             HandlerInstance = HandlerType.GetProperty("Instance")!.GetValue(null);
@@ -38,10 +34,10 @@ namespace DiscordLab.Moderation.Handlers
 
         public void Unregister()
         {
-            HandlerType = null;
-            HandlerInstance = null;
-            SendBanLogMethod = null;
-            SendUnbanLogMethod = null;
+            HandlerType = null!;
+            HandlerInstance = null!;
+            SendBanLogMethod = null!;
+            SendUnbanLogMethod = null!;
         }
     }
 }

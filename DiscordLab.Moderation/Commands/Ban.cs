@@ -3,7 +3,7 @@ using Discord.WebSocket;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Moderation.Handlers;
-using Exiled.API.Features;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands
 {
@@ -54,10 +54,16 @@ namespace DiscordLab.Moderation.Commands
             string duration = command.Data.Options
                 .First(option => option.Name == Translation.BanCommandDurationOptionName).Value.ToString();
 
-            string response = Server.ExecuteCommand($"/oban {user} {duration} {reason}");
-            if (!response.Contains("has been banned"))
+            if (!long.TryParse(duration, out long parsedDuration))
             {
-                await command.ModifyOriginalResponseAsync(m=> m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.BanCommandDurationIncorrect);
+                return;
+            }
+            
+            bool success = Server.BanUserId(user, reason, parsedDuration);
+            if (!success)
+            {
+                await command.ModifyOriginalResponseAsync(m=> m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", "Unknown"));
             }
             else
             {

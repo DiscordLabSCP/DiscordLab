@@ -1,9 +1,6 @@
 ﻿using Discord.WebSocket;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Features;
-using Exiled.Events.EventArgs.Player;
-using Exiled.Events.EventArgs.Server;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.Handlers;

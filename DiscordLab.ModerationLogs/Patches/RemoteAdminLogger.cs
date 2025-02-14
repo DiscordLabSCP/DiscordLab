@@ -2,8 +2,10 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.ModerationLogs.Handlers;
-using Exiled.API.Features;
+using GameCore;
 using HarmonyLib;
+using LabApi.Features.Console;
+using LabApi.Features.Wrappers;
 using NorthwoodLib.Pools;
 using RemoteAdmin;
 
@@ -38,7 +40,7 @@ namespace DiscordLab.ModerationLogs.Patches
 
             if (query.StartsWith("$")) return;
             
-            Player player = sender is PlayerCommandSender commandSender
+            Player? player = sender is PlayerCommandSender commandSender
                 ? Player.Get(commandSender)
                 : Server.Host;
             if (player == null || string.IsNullOrEmpty(player.UserId)) return;
@@ -46,7 +48,7 @@ namespace DiscordLab.ModerationLogs.Patches
             SocketTextChannel channel = DiscordBot.Instance.GetRemoteAdminChannel();
             if (channel == null)
             {
-                Log.Error("Either the guild is null or the channel is null. So the remote admin message has failed to send.");
+                Logger.Error("Either the guild is null or the channel is null. So the remote admin message has failed to send.");
                 return;
             }
 
