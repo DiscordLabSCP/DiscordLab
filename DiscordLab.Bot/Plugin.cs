@@ -1,4 +1,5 @@
-﻿using DiscordLab.Bot.API.Modules;
+﻿using Discord;
+using DiscordLab.Bot.API.Modules;
 using Exiled.API.Enums;
 using Exiled.API.Features;
 using GameCore;
@@ -27,6 +28,16 @@ namespace DiscordLab.Bot
             if(Config.Token is "token" or "")
             {
                 Log.Error("Please set the bot token in the config file.");
+                return;
+            }
+
+            try
+            {
+                TokenUtils.ValidateToken(TokenType.Bot, Config.Token);
+            }
+            catch (Exception _)
+            {
+                Log.Error("Token is invalid, please put the correct token in the config file.");
                 return;
             }
 
