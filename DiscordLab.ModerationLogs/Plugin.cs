@@ -56,5 +56,10 @@ namespace DiscordLab.ModerationLogs
         {
             return uint.Parse(color, NumberStyles.HexNumber);
         }
+
+        public static string ExpiresToString(long expires)
+        {
+            return (expires / 10000000L - 62135596800L).ToString();
+        }
     }
 }
