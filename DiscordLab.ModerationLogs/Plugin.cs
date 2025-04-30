@@ -11,7 +11,7 @@ namespace DiscordLab.ModerationLogs
         public override string Name => "DiscordLab.ModerationLogs";
         public override string Author => "LumiFae";
         public override string Prefix => "DL.ModerationLogs";
-        public override Version Version => new (1, 5, 1);
+        public override Version Version => new (1, 5, 2);
         public override Version RequiredExiledVersion => new (8, 11, 0);
         public override PluginPriority Priority => PluginPriority.Default;
 
@@ -57,9 +57,9 @@ namespace DiscordLab.ModerationLogs
             return uint.Parse(color, NumberStyles.HexNumber);
         }
 
-        public static string ExpiresToString(long expires)
+        public static string ExpiresToString(DateTime dateTime)
         {
-            return (expires / 10000000L - 62135596800L).ToString();
+            return new DateTimeOffset(dateTime).ToUnixTimeSeconds().ToString();
         }
     }
 }

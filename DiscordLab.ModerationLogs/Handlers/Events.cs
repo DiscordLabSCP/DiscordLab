@@ -63,7 +63,7 @@ namespace DiscordLab.ModerationLogs.Handlers
                 ev.Details.Reason,
                 ev.Player.Nickname,
                 ev.Player.UserId,
-                 $"<t:{Plugin.ExpiresToString(ev.Details.IssuanceTime)}:R>"
+                 $"<t:{Plugin.ExpiresToString(new (ev.Details.Expires))}:R>"
             );
         }
 
