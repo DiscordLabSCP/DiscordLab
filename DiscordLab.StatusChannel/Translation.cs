@@ -15,7 +15,7 @@ namespace DiscordLab.StatusChannel
         [Description("The text that shows in the embed description when the server has no players online.")]
         public string EmbedNoPlayers { get; set; } = "0/{max} currently online";
 
-        [Description("The text that shows for each player in the players list in embed description.")]
-        public string PlayersList { get; set; } = "- {player} ({playerid})";
+        [Description("The text that shows for each player in the players list in embed description. Make sure you don't put placeholders here which could break VSR if public.")]
+        public string PlayersList { get; set; } = "- {player}";
     }
 }
