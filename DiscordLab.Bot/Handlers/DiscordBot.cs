@@ -1,9 +1,11 @@
 ﻿using System.Net.WebSockets;
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
 using Exiled.API.Features;
+using UpdateStatus = DiscordLab.Bot.API.Modules.UpdateStatus;
 
 namespace DiscordLab.Bot.Handlers
 {
@@ -106,26 +108,13 @@ namespace DiscordLab.Bot.Handlers
             if (cmd == null) return;
             await cmd.Run(command);
         }
-        
+
         private async Task AutoCompleteHandler(SocketAutocompleteInteraction autocomplete)
         {
             List<ISlashCommand> commands = SlashCommandLoader.Commands;
             ISlashCommand cmd = commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName);
-            if (cmd == null) return;
-            if (cmd.Data.Name == "discordlab")
-            {
-                if (UpdateStatus.Statuses == null)
-                {
-                    await autocomplete.RespondAsync(new List<AutocompleteResult>());
-                    return;
-                }
-                await autocomplete.RespondAsync(result: UpdateStatus.Statuses
-                    .Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => new AutocompleteResult
-                    {
-                        Name = s.ModuleName,
-                        Value = s.ModuleName
-                    }));
-            }
+            if (cmd is not IAutocompleteCommand autocompleteCmd) return;
+            await autocompleteCmd.Autocomplete(autocomplete);
         }
     }
 }
