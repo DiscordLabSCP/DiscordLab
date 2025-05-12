@@ -5,7 +5,7 @@ using DiscordLab.Bot.API.Modules;
 
 namespace DiscordLab.Bot.Commands
 {
-    public class Discord : ISlashCommand
+    public class Discord : IAutocompleteCommand
     {
         public SlashCommandBuilder Data { get; } = new()
         {
@@ -80,6 +80,21 @@ namespace DiscordLab.Bot.Commands
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
                 await command.ModifyOriginalResponseAsync(m => m.Content = "Downloaded module. Server will restart next round.");
             }
+        }
+
+        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        {
+            if (UpdateStatus.Statuses == null)
+            {
+                await autocomplete.RespondAsync(new List<AutocompleteResult>());
+                return;
+            }
+            await autocomplete.RespondAsync(result: UpdateStatus.Statuses
+                .Where(s => s.ModuleName != "DiscordLab.Bot").Select(s => new AutocompleteResult
+                {
+                    Name = s.ModuleName,
+                    Value = s.ModuleName
+                }));
         }
     }
 }
