@@ -12,6 +12,13 @@ namespace DiscordLab.Moderation
         [Description(DescriptionConstants.Debug)]
         public bool Debug { get; set; } = false;
         
+        [Description("The role ID for the role that is able to run this command")]
+        public ulong BanCommandRole { get; set; } = 0;
+        [Description("The role ID for the role that is able to run this command")]
+        public ulong UnbanCommandRole { get; set; } = 0;
+        [Description("The role ID for the role that is able to run this command")]
+        public ulong SendCommandRole { get; set; } = 0;
+        
         [Description(DescriptionConstants.GuildId)]
         public ulong GuildId { get; set; }
     }

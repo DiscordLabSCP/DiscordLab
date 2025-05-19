@@ -24,5 +24,7 @@ namespace DiscordLab.Moderation
         public string SendCommandCommandOptionName { get; set; } = "command";
         public string SendCommandCommandOptionDescription { get; set; } = "The command to send to the server.";
         public string SendCommandResponse { get; set; } = "Successfully sent the command to the server. Here is the response the server gave back: \n```{response}```";
+        
+        public string NoPermissions { get; set; } = "You do not have the required permissions to use this command.";
     }
 }
