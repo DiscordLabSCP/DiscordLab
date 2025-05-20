@@ -34,12 +34,6 @@ namespace DiscordLab.Moderation.Commands
         {
             await command.DeferAsync(true);
             
-            if (command.User is not SocketGuildUser guildUser || !guildUser.Roles.Any(role => role.Id == Plugin.Instance.Config.UnbanCommandRole))
-            {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.NoPermissions);
-                return;
-            }
-            
             string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
                 .Value.ToString();
 
