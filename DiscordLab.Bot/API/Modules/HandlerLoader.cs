@@ -19,7 +19,7 @@ namespace DiscordLab.Bot.API.Modules
         /// <remarks>
         /// If you use this function, you are required to call <see cref="Unload"/> when your plugin is about to be disabled. No need to pass in any params though.
         /// </remarks>
-        public bool Load([CanBeNull] Assembly assembly)
+        public bool Load(Assembly assembly = null)
         {
             assembly ??= Assembly.GetCallingAssembly();
             if (Plugin.Instance.Config.Token is "token" or "")
