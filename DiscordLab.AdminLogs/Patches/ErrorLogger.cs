@@ -34,25 +34,23 @@ namespace DiscordLab.AdminLogs.Patches
 
         public static void LogError(string message)
         {
-            if (message.ToLower().Contains(
-                "error logging message"))
-                return;
-            if (Plugin.Instance.Config.ErrorLogChannelId == 0) return;
-            SocketTextChannel channel = DiscordBot.Instance.GetErrorLogsChannel();
-            if (channel == null)
+            try
             {
-                Log.Error(
-                    "Guild or channel was not found. So the error logging message has failed to send.");
-                return;
+                SocketTextChannel channel = DiscordBot.Instance.GetErrorLogsChannel();
+                if (channel == null) return;
+
+                EmbedBuilder embed = new()
+                {
+                    Title = Plugin.Instance.Translation.Error,
+                    Description = message
+                };
+
+                channel.SendMessageAsync(embed: embed.Build());
             }
-
-            EmbedBuilder embed = new()
+            catch
             {
-                Title = Plugin.Instance.Translation.Error,
-                Description = message
-            };
-
-            channel.SendMessageAsync(embed: embed.Build());
+                // ignored
+            }
         }
     }
 }
