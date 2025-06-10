@@ -186,6 +186,7 @@ namespace DiscordLab.DeathLogs.Handlers
             DamageType.Scp3114 => "SCP-3114",
             DamageType.Strangled => "Strangled",
             DamageType.Marshmallow => "Marshmallow",
+            _ => type.ToString()
         };
     }
 }
