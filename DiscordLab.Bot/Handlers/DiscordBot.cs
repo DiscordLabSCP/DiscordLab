@@ -73,7 +73,7 @@ namespace DiscordLab.Bot.Handlers
             await Client.StopAsync();
         }
 
-        public SocketGuild GetGuild(ulong id)
+        public SocketGuild GetGuild(ulong id = 0)
         {
             return id == 0 ? _guild : Client.GetGuild(id);
         }
@@ -112,9 +112,9 @@ namespace DiscordLab.Bot.Handlers
         private async Task AutoCompleteHandler(SocketAutocompleteInteraction autocomplete)
         {
             List<ISlashCommand> commands = SlashCommandLoader.Commands;
-            ISlashCommand cmd = commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName);
-            if (cmd is not IAutocompleteCommand autocompleteCmd) return;
-            await autocompleteCmd.Autocomplete(autocomplete);
+            IAutocompleteCommand cmd = (IAutocompleteCommand)commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName && c is IAutocompleteCommand);
+            if (cmd == null) return;
+            await cmd.Autocomplete(autocomplete);
         }
     }
 }
