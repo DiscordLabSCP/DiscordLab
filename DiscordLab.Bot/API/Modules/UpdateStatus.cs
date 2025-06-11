@@ -96,6 +96,10 @@ namespace DiscordLab.Bot.API.Modules
                         Version = new (string.Join(".", release.TagName.Split('.').Take(3))),
                         Url = asset.DownloadUrl
                     };
+                    
+                    // do not want to auto update to breaking changes
+                    if(status.Version.Major != Plugin.Instance.Version.Major) continue;
+                    
                     List<API.Features.UpdateStatus> moduleStatuses = statuses.Where(s => s.ModuleName == status.ModuleName).ToList();
                     if (moduleStatuses.Any(s => s.Version < status.Version))
                     {
