@@ -57,6 +57,8 @@ namespace DiscordLab.Bot
                          "to set a high number, or 0, for this value to avoid potential Discord rate limits. This is just a warning.");
             }
             
+            SlashCommandLoader.Create();
+            
             _handlerLoader = new ();
             _handlerLoader.Load(Assembly);
 
@@ -70,7 +72,7 @@ namespace DiscordLab.Bot
             _handlerLoader.Unload();
             _handlerLoader = null;
             
-            SlashCommandLoader.ClearCommands();
+            SlashCommandLoader.Destroy();
             
             base.OnDisabled();
         }

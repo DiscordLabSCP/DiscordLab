@@ -1,5 +1,5 @@
-﻿using System.Reflection;
-using Discord;
+﻿using System.ComponentModel;
+using System.Reflection;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.Handlers;
 
@@ -7,7 +7,12 @@ namespace DiscordLab.Bot.API.Modules
 {
     public static class SlashCommandLoader
     {
-        public static List<ISlashCommand> Commands = new();
+        internal static void Create()
+        {
+            Commands.AddingNew += OnCommandAdded;
+        }
+        
+        public static BindingList<ISlashCommand> Commands = new();
         
         /// <summary>
         /// Adds all commands in a <see cref="Assembly"/> from the <see cref="ISlashCommand"/> classes to a list.
@@ -37,6 +42,19 @@ namespace DiscordLab.Bot.API.Modules
         public static void ClearCommands()
         {
             Commands = new();
+        }
+
+        internal static void Destroy()
+        {
+            Commands.AddingNew -= OnCommandAdded;
+            ClearCommands();
+        }
+
+        private static void OnCommandAdded(object sender, AddingNewEventArgs ev)
+        {
+            ISlashCommand command = (ISlashCommand)ev.NewObject;
+            if (!DiscordBot.Instance.IsReady) return;
+            Task.Run(() => DiscordBot.Instance.CreateGuildCommand(command));
         }
     }
 }

@@ -78,41 +78,52 @@ namespace DiscordLab.Bot.Handlers
             return id == 0 ? _guild : Client.GetGuild(id);
         }
 
+        public bool IsReady;
+
         private async Task Ready()
         {
+            IsReady = true;
+            
             _guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
-            foreach (ISlashCommand command in SlashCommandLoader.Commands)
+
+            // just in case a command gets added whilst the below loop is happening
+            List<ISlashCommand> commandsSnapshot = SlashCommandLoader.Commands.ToList();
+            
+            foreach (ISlashCommand command in commandsSnapshot)
             {
-                try
-                {
-                    SocketGuild guild = GetGuild(command.GuildId);
-                    if (guild == null)
-                    {
-                        Log.Warn($"Command {command.Data.Name} failed to register, couldn't find guild {command.GuildId} (from module) nor {Plugin.Instance.Config.GuildId} (from the bot). Make sure your guild IDs are correct.");
-                        continue;
-                    }
-                    await guild.CreateApplicationCommandAsync(command.Data.Build());
-                }
-                catch (Exception e)
-                {
-                    Log.Error($"Failed to create guild command '{command.Data.Name}': {e}");
-                }
+                await CreateGuildCommand(command);
             }
             await Task.CompletedTask;
         }
 
+        public async Task CreateGuildCommand(ISlashCommand command)
+        {
+            try
+            {
+                SocketGuild guild = GetGuild(command.GuildId);
+                if (guild == null)
+                {
+                    Log.Warn($"Command {command.Data.Name} failed to register, couldn't find guild {command.GuildId} (from module) nor {Plugin.Instance.Config.GuildId} (from the bot). Make sure your guild IDs are correct.");
+                    return;
+                }
+                await guild.CreateApplicationCommandAsync(command.Data.Build());
+            }
+            catch (Exception e)
+            {
+                Log.Error($"Failed to create guild command '{command.Data.Name}': {e}");
+            }
+        }
+
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
-            List<ISlashCommand> commands = SlashCommandLoader.Commands;
-            ISlashCommand cmd = commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
+            ISlashCommand cmd = SlashCommandLoader.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
             if (cmd == null) return;
             await cmd.Run(command);
         }
 
         private async Task AutoCompleteHandler(SocketAutocompleteInteraction autocomplete)
         {
-            List<ISlashCommand> commands = SlashCommandLoader.Commands;
-            IAutocompleteCommand cmd = (IAutocompleteCommand)commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName && c is IAutocompleteCommand);
+            IAutocompleteCommand cmd = (IAutocompleteCommand)SlashCommandLoader.Commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName && c is IAutocompleteCommand);
             if (cmd == null) return;
             await cmd.Autocomplete(autocomplete);
         }
