@@ -10,7 +10,7 @@ env:
 
 jobs:
   build:
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v1.1.3
