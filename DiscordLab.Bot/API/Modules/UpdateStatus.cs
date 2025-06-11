@@ -18,6 +18,10 @@ namespace DiscordLab.Bot.API.Modules
         public DateTime PublishedAt { get; set; }
         [JsonProperty("assets")]
         public List<GitHubReleaseAsset> Assets { get; set; }
+        [JsonProperty("prerelease")]
+        public bool Prerelease { get; set; }
+        [JsonProperty("draft")]
+        public bool Draft { get; set; }
     }
 
     public class GitHubReleaseAsset
@@ -78,11 +82,12 @@ namespace DiscordLab.Bot.API.Modules
         {
             Statuses = new();
             Client.DefaultRequestHeaders.UserAgent.ParseAdd("request");
-            string response = await Client.GetStringAsync("https://api.github.com/repos/JayXTQ/DiscordLab/releases");
+            string response = await Client.GetStringAsync("https://api.github.com/repos/DiscordLabSCP/DiscordLab/releases");
             List<API.Features.UpdateStatus> statuses = new();
             List<GitHubRelease> releases = JsonConvert.DeserializeObject<List<GitHubRelease>>(response);
             foreach (GitHubRelease release in releases)
             {
+                if(release.Prerelease || release.Draft) continue;
                 foreach (GitHubReleaseAsset asset in release.Assets)
                 {
                     Features.UpdateStatus status = new()
