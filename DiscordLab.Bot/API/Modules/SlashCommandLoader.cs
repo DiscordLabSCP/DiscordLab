@@ -2,6 +2,7 @@
 using System.Reflection;
 using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.Handlers;
+using Exiled.API.Features;
 
 namespace DiscordLab.Bot.API.Modules
 {
@@ -53,6 +54,7 @@ namespace DiscordLab.Bot.API.Modules
         private static void OnCommandAdded(object sender, AddingNewEventArgs ev)
         {
             ISlashCommand command = (ISlashCommand)ev.NewObject;
+            Log.Debug($"Added command {command.Data.Name}, processing...");
             if (!DiscordBot.Instance.IsReady) return;
             Task.Run(() => DiscordBot.Instance.CreateGuildCommand(command));
         }

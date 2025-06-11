@@ -82,6 +82,7 @@ namespace DiscordLab.Bot.Handlers
 
         private async Task Ready()
         {
+            Log.Debug("Bot is ready, getting guild and current commands.");
             IsReady = true;
             
             _guild = Client.GetGuild(Plugin.Instance.Config.GuildId);
@@ -93,11 +94,11 @@ namespace DiscordLab.Bot.Handlers
             {
                 await CreateGuildCommand(command);
             }
-            await Task.CompletedTask;
         }
 
         public async Task CreateGuildCommand(ISlashCommand command)
         {
+            Log.Debug($"Command creation requested for {command.Data.Name}, checking...");
             try
             {
                 SocketGuild guild = GetGuild(command.GuildId);
@@ -106,6 +107,7 @@ namespace DiscordLab.Bot.Handlers
                     Log.Warn($"Command {command.Data.Name} failed to register, couldn't find guild {command.GuildId} (from module) nor {Plugin.Instance.Config.GuildId} (from the bot). Make sure your guild IDs are correct.");
                     return;
                 }
+                Log.Debug($"Found guild {guild.Id} for command {command.Data.Name}, creating...");
                 await guild.CreateApplicationCommandAsync(command.Data.Build());
             }
             catch (Exception e)
@@ -116,15 +118,19 @@ namespace DiscordLab.Bot.Handlers
 
         private async Task SlashCommandHandler(SocketSlashCommand command)
         {
+            Log.Debug($"{command.Data.Name} requested a response, finding the command...");
             ISlashCommand cmd = SlashCommandLoader.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
             if (cmd == null) return;
+            Log.Debug($"Found command {command.Data.Name}, responding...");
             await cmd.Run(command);
         }
 
         private async Task AutoCompleteHandler(SocketAutocompleteInteraction autocomplete)
         {
+            Log.Debug($"{autocomplete.Data.CommandName} requested an autocomplete response, finding the command...");
             IAutocompleteCommand cmd = (IAutocompleteCommand)SlashCommandLoader.Commands.FirstOrDefault(c => c.Data.Name == autocomplete.Data.CommandName && c is IAutocompleteCommand);
             if (cmd == null) return;
+            Log.Debug($"Found command {autocomplete.Data.CommandName} for autocomplete response, responding...");
             await cmd.Autocomplete(autocomplete);
         }
     }
