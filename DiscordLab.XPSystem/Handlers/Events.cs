@@ -3,6 +3,7 @@ using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Interfaces;
 using Exiled.API.Features;
 using XPSystem.API;
+using XPSystem.API.Player;
 
 namespace DiscordLab.XPSystem.Handlers
 {
