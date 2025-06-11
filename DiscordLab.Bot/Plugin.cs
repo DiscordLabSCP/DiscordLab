@@ -35,7 +35,7 @@ namespace DiscordLab.Bot
             {
                 TokenUtils.ValidateToken(TokenType.Bot, Config.Token);
             }
-            catch (Exception _)
+            catch (Exception)
             {
                 Log.Error("Token is invalid, please put the correct token in the config file.");
                 return;
