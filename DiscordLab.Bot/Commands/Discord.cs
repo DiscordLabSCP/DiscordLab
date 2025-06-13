@@ -18,7 +18,7 @@ namespace DiscordLab.Bot.Commands
                 {
                     Type = ApplicationCommandOptionType.SubCommand,
                     Name = "list",
-                    Description = "List all available DiscordLab modules",
+                    Description = "List all available DiscordLab modules"
                 },
                 new()
                 {
@@ -36,6 +36,12 @@ namespace DiscordLab.Bot.Commands
                             IsAutocomplete = true
                         }
                     }
+                },
+                new()
+                {
+                    Type = ApplicationCommandOptionType.SubCommand,
+                    Name = "check",
+                    Description = "Check for DiscordLab updates"
                 }
             }
         };
@@ -79,6 +85,16 @@ namespace DiscordLab.Bot.Commands
                 await UpdateStatus.DownloadPlugin(status);
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
                 await command.ModifyOriginalResponseAsync(m => m.Content = "Downloaded module. Server will restart next round.");
+            }
+            else if (subcommand == "check")
+            {
+                await UpdateStatus.GetStatus();
+                if (UpdateStatus.Statuses == null)
+                {
+                    await command.ModifyOriginalResponseAsync(m => m.Content = "Could not collect modules successfully, try again later.");
+                    return;
+                }
+                await command.ModifyOriginalResponseAsync(m => m.Content = "Checked modules, if there is any updates, your server will restart next round to update to them.");
             }
         }
 

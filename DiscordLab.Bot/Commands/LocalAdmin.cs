@@ -54,6 +54,10 @@ namespace DiscordLab.Bot.Commands
                     ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
                     response = "Downloaded module. Server will restart next round.";
                     return true;
+                case "check":
+                    Task.Run(UpdateStatus.GetStatus);
+                    response = "Checking for updates... If any require an update, you will soon receive a log.";
+                    return true;
                 default:
                     response = "Invalid subcommand. Available subcommands: list, install";
                     return false;
