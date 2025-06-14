@@ -1,5 +1,4 @@
-﻿using System.ComponentModel;
-using System.Globalization;
+﻿using System.Globalization;
 using CustomPlayerEffects;
 using Discord;
 using Discord.WebSocket;
@@ -9,11 +8,8 @@ using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Modules;
 using Exiled.API.Enums;
 using Exiled.API.Features;
-using Exiled.API.Features.DamageHandlers;
 using Exiled.Events.EventArgs.Player;
 using PlayerStatsSystem;
-using AttackerDamageHandler = PlayerStatsSystem.AttackerDamageHandler;
-using ScpDamageHandler = PlayerStatsSystem.ScpDamageHandler;
 
 namespace DiscordLab.DeathLogs.Handlers
 {
