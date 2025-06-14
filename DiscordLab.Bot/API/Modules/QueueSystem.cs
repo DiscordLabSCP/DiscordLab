@@ -22,7 +22,13 @@ namespace DiscordLab.Bot.API.Modules
         {
             if (_openQueueIds.Contains(id)) return;
             _openQueueIds.Add(id);
-            Timing.CallDelayed(5, action);
+            Timing.CallDelayed(5, () =>
+            {
+                RemoveId(id);
+                action();
+            });
         }
+        
+        private static void RemoveId(string id) => _openQueueIds.Remove(id);
     }
 }
