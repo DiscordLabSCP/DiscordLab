@@ -28,6 +28,15 @@ namespace DiscordLab.DeathLogs
         
         [Description("If this is true, then the plugin will ignore the cuff state of the player and send the death logs to the normal death logs channel.")]
         public bool ScpIgnoreCuffed { get; set; } = true;
+
+        [Description("The channel to send death logs to, if any.")]
+        public ulong DamageLogChannelId { get; set; } = new();
+        
+        [Description("Whether damage logs shouldn't be tracked if the attacker is an SCP. Not recommended because this can hide team killing on the SCP team.")]
+        public bool IgnoreScpDamage { get; set; } = false;
+
+        [Description("The hex color code of the embed for damage logs, do not include the #.")]
+        public string DamageLogEmbedColor = "3498DB";
         
         [Description(DescriptionConstants.GuildId)]
         public ulong GuildId { get; set; }

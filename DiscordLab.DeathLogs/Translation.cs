@@ -20,5 +20,11 @@ namespace DiscordLab.DeathLogs
         [Description("The message that will be sent when a player dies due to someone on their own team.")]
         public string TeamKill { get; set; } =
             "`{player}` has been team-killed by `{attacker}`, they were both {role}. They died from: `{cause}`";
+
+        [Description("The title of the embed for when sending damage logs")]
+        public string DamageLogEmbedTitle { get; set; } = "Damage Log";
+
+        [Description("What each instance of damage will look like in the logs.")]
+        public string DamageLogEntry { get; set; } = "{timet} | `{attacker}` did `{damage}` damage to `{player}` | Cause: `{cause}`";
     }
 }

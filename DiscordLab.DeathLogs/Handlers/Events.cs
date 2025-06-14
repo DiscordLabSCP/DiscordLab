@@ -137,7 +137,7 @@ namespace DiscordLab.DeathLogs.Handlers
             );
         }
 
-        private string ConvertToString(DamageType type) => type switch
+        internal static string ConvertToString(DamageType type) => type switch
         {
             DamageType.A7 => "A7",
             DamageType.Unknown => "Unknown",
