@@ -41,6 +41,7 @@ namespace DiscordLab.DeathLogs.Handlers
             if (ev.DamageHandler.Base is Scp049DamageHandler { DamageSubType: Scp049DamageHandler.AttackType.CardiacArrest }) return;
             if (ev.Player.IsEffectActive<Corroding>() && ev.DamageHandler.Type == DamageType.Scp106) return;
             if (ev.Player.IsEffectActive<PocketCorroding>() && ev.DamageHandler.Type == DamageType.Scp106) return;
+            if (ev.DamageHandler.Type == DamageType.Strangled) return;
             
             if (ev.Player.IsScp && ev.Attacker.IsScp && Plugin.Instance.Config.IgnoreScpDamage) return;
             
