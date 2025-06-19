@@ -1,0 +1,11 @@
+﻿<Project>
+  <PropertyGroup>
+    <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
+  </PropertyGroup>
+
+  <Target Name="CopyToSharedBin" AfterTargets="Build">
+    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
+          DestinationFolder="$(SharedBinPath)"
+          SkipUnchangedFiles="true" />
+  </Target>
+</Project>
