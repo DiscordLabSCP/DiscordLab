@@ -37,23 +37,9 @@ jobs:
         run: nuget restore ${{ github.workspace }}/DiscordLab.sln
       - name: Build
         run: msbuild.exe ${{ github.workspace }}/DiscordLab.sln /p:Configuration=Debug /p:Platform="Any CPU"
-      - name: Move DLLs to single directory
-        shell: pwsh
-        run: |
-          $outputDir = "${{ github.workspace }}/output"
-          if (-Not (Test-Path -Path $outputDir)) {
-            New-Item -ItemType Directory -Path $outputDir
-          }
-          Get-ChildItem -Path ${{ github.workspace }} -Directory | ForEach-Object {
-            $folderName = $_.Name
-            $dllPath = Join-Path -Path $_.FullName -ChildPath "bin/Debug/net48/$folderName.dll"
-            if (Test-Path -Path $dllPath) {
-              Copy-Item -Path $dllPath -Destination $outputDir
-            }
-          }
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:
           name: DiscordLab
-          path: ${{ github.workspace }}/output
+          path: ${{ github.workspace }}/bin
           if-no-files-found: error
