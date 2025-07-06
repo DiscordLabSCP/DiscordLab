@@ -1,58 +1,53 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
+using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Moderation.Handlers;
-using Exiled.API.Features;
 
 namespace DiscordLab.Moderation.Commands
 {
-    public class Unban : ISlashCommand
+    public class Unban : IAutocompleteCommand
     {
-        private static Translation Translation => Plugin.Instance.Translation;
-
-        public SlashCommandBuilder Data { get; } = new()
+        public SlashCommandBuilder Data
         {
-            Name = Translation.UnbanCommandName,
-            Description = Translation.UnbanCommandDescription,
-            DefaultMemberPermissions = GuildPermission.ManageGuild,
-            Options = new()
+            get
             {
-                new()
-                {
-                    Name = Translation.UnbanCommandUserOptionName,
-                    Description = Translation.UnbanCommandUserOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                }
-            }
-        };
-        
-        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
+                SlashCommandBuilder builder = Plugin.Instance.Translation.UnbanCommand;
+                SlashCommandOptionBuilder option = builder.Options[0];
+                option.Type = ApplicationCommandOptionType.String;
+                option.IsRequired = true;
+                option.IsAutocomplete = true;
 
+                return builder;
+            }
+        }
+
+        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        
         public async Task Run(SocketSlashCommand command)
         {
-            await command.DeferAsync(true);
-            
-            string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
-                .Value.ToString();
+            await command.DeferAsync();
 
-            string response = Server.ExecuteCommand($"/unban id {user}");
-            if (!response.Contains("Done"))
-            {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
-            }
-            else
-            {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.UnbanCommandSuccess.LowercaseParams().Replace("{player}", user));
-                if (ModerationLogsHandler.Instance.IsEnabled)
-                {
-                    ModerationLogsHandler.Instance.SendUnbanLogMethod.Invoke(
-                        ModerationLogsHandler.Instance.HandlerInstance, 
-                        new object[] { user }
-                    );
-                }
-            }
+            string id = (string)command.Data.Options.First().Value;
+
+            BanHandler.RemoveBan(id, id.Contains("@") ? BanHandler.BanType.UserId : BanHandler.BanType.IP);
+
+            TranslationBuilder builder = new(Plugin.Instance.Translation.UnbanSuccess);
+            
+            builder.CustomReplacers.Add("userid", () => id);
+            
+            await command.ModifyOriginalResponseAsync(m => 
+                m.Content = 
+                    builder);
+        }
+        
+        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        {
+            IEnumerable<BanDetails> response =
+            [
+                ..BanHandler.GetBans(BanHandler.BanType.UserId),
+                ..BanHandler.GetBans(BanHandler.BanType.IP)
+            ];
+            await autocomplete.RespondAsync(response.Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
         }
     }
 }

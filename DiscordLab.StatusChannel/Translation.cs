@@ -1,21 +1,33 @@
-﻿using System.ComponentModel;
-using Exiled.API.Interfaces;
+using System.ComponentModel;
+using Discord;
 
 namespace DiscordLab.StatusChannel
 {
-    public class Translation : ITranslation
+    public class Translation
     {
-        [Description("The text that shows in the embed title.")]
-        public string EmbedTitle { get; set; } = "Server Status";
+        [Description("What will show when the server has players.")]
+        public EmbedBuilder Embed { get; set; } = new()
+        {
+            Title = "Server Status",
+            Color = Color.Blue,
+            Description = "{playercount}/{maxplayers} currently online\\n```{players}```"
+        };
 
-        [Description(
-            "The text that shows in the embed description when the server has players online. players placeholder is the list of players using the player list translation.")]
-        public string EmbedDescription { get; set; } = "{current}/{max} currently online\n```{players}```";
+        [Description("What will show when the server is empty.")]
+        public EmbedBuilder EmbedEmpty { get; set; } = new()
+        {
+            Title = "Server Status",
+            Color = Color.Blue,
+            Description = "0/{maxplayers} currently online"
+        };
 
-        [Description("The text that shows in the embed description when the server has no players online.")]
-        public string EmbedNoPlayers { get; set; } = "0/{max} currently online";
+        [Description("What will appear for each player when replacing the players variable above.")]
+        public string PlayerItem { get; set; } = "- {player}";
 
-        [Description("The text that shows for each player in the players list in embed description. Make sure you don't put placeholders here which could break VSR if public.")]
-        public string PlayersList { get; set; } = "- {player}";
+        public SlashCommandBuilder PlayerListCommand = new()
+        {
+            Name = "players",
+            Description = "Get the current list of players on the server"
+        };
     }
 }

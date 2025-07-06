@@ -1,31 +1,21 @@
-﻿using System.ComponentModel;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Interfaces;
+using System.ComponentModel;
 
 namespace DiscordLab.ConnectionLogs
 {
-    public class Config : IConfig, IDLConfig
+    public class Config
     {
-        [Description(DescriptionConstants.IsEnabled)]
-        public bool IsEnabled { get; set; } = true;
-        
-        [Description(DescriptionConstants.Debug)]
-        public bool Debug { get; set; } = false;
-
         [Description("The channel where the join logs will be sent.")]
-        public ulong JoinChannelId { get; set; } = new();
+        public ulong JoinChannelId { get; set; } = 0;
 
         [Description("The channel where the leave logs will be sent.")]
-        public ulong LeaveChannelId { get; set; } = new();
+        public ulong LeaveChannelId { get; set; } = 0;
 
         [Description("The channel where the round start logs will be sent.")]
-        public ulong RoundStartChannelId { get; set; } = new();
+        public ulong RoundStartChannelId { get; set; } = 0;
         
         [Description("The channel where the round end logs will be sent. Optional.")]
-        public ulong RoundEndChannelId { get; set; } = new();
-        
-        [Description(DescriptionConstants.GuildId)]
-        public ulong GuildId { get; set; }
+        public ulong RoundEndChannelId { get; set; } = 0;
+
+        public ulong GuildId { get; set; } = 0;
     }
 }

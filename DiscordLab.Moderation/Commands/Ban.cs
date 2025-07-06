@@ -1,76 +1,66 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
+using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Moderation.Handlers;
-using Exiled.API.Features;
+using DiscordLab.Bot.API.Utilities;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands
 {
-    public class Ban : ISlashCommand
+    public class Ban : IAutocompleteCommand
     {
-        private static Translation Translation => Plugin.Instance.Translation;
-
-        public SlashCommandBuilder Data { get; } = new()
+        public SlashCommandBuilder Data
         {
-            Name = Translation.BanCommandName,
-            Description = Translation.BanCommandDescription,
-            DefaultMemberPermissions = GuildPermission.BanMembers,
-            Options = new()
+            get
             {
-                new()
-                {
-                    Name = Translation.BanCommandUserOptionName,
-                    Description = Translation.BanCommandUserOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                },
-                new()
-                {
-                    Name = Translation.BanCommandReasonOptionName,
-                    Description = Translation.BanCommandReasonOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                },
-                new()
-                {
-                    Name = Translation.BanCommandDurationOptionName,
-                    Description = Translation.BanCommandDurationOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                }
-            }
-        };
-        
-        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
+                SlashCommandBuilder builder = Plugin.SetupDurationBuilder(Plugin.Instance.Translation.BanCommand, true);
+                SlashCommandOptionBuilder option = builder.Options[2];
+                option.IsRequired = true;
+                option.IsAutocomplete = false;
+                option.Type = ApplicationCommandOptionType.String;
 
+                return builder;
+            }
+        }
+
+        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        
         public async Task Run(SocketSlashCommand command)
         {
-            await command.DeferAsync(true);
-            
-            string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
-                .Value.ToString();
-            string reason = command.Data.Options.First(option => option.Name == Translation.BanCommandReasonOptionName)
-                .Value.ToString();
-            string duration = command.Data.Options
-                .First(option => option.Name == Translation.BanCommandDurationOptionName).Value.ToString();
+            await command.DeferAsync();
 
-            string response = Server.ExecuteCommand($"/oban {user} {duration} {reason}");
-            if (!response.Contains("has been banned"))
+            string userId = (string)command.Data.Options.ElementAt(0).Value;
+            long duration = Misc.RelativeTimeToSeconds((string)command.Data.Options.ElementAt(1).Value, 60);
+            string reason = (string)command.Data.Options.ElementAt(2).Value;
+
+            TranslationBuilder successBuilder = new(Plugin.Instance.Translation.BanSuccess)
             {
-                await command.ModifyOriginalResponseAsync(m=> m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
-            }
-            else
+                Time = TempMuteManager.GetExpireDate(duration)
+            };
+            TranslationBuilder failBuilder = new(Plugin.Instance.Translation.BanFailure);
+            
+            successBuilder.CustomReplacers.Add("userid", () => userId);
+            failBuilder.CustomReplacers.Add("userid", () => userId);
+            
+            if (!CommandUtils.TryGetPlayerFromUnparsed(userId, out Player player))
             {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.BanCommandSuccess.LowercaseParams().Replace("{player}", user));
-                if (ModerationLogsHandler.Instance.IsEnabled)
-                {
-                    ModerationLogsHandler.Instance.SendBanLogMethod.Invoke(
-                        ModerationLogsHandler.Instance.HandlerInstance, 
-                        new object[] { null, user, reason, $"<@{command.User.Id}>", null, duration }
-                    );
-                }
+                bool result = userId.Contains("@") ? 
+                    Server.BanUserId(userId, reason, duration) : 
+                    Server.BanIpAddress(userId, reason, duration);
+
+                await command.ModifyOriginalResponseAsync(m =>
+                    m.Content = !result ? failBuilder : successBuilder);
+                
+                return;
             }
+
+            await command.ModifyOriginalResponseAsync(m =>
+                m.Content = Server.BanPlayer(player, reason, duration) ? successBuilder : failBuilder);
+        }
+
+        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        {
+            await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
         }
     }
 }

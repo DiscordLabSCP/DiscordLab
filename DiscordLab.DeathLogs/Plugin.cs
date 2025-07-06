@@ -1,39 +1,31 @@
-﻿using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using LabApi.Features;
 
 namespace DiscordLab.DeathLogs
 {
     public class Plugin : Plugin<Config, Translation>
     {
-        public override string Name => "DiscordLab.DeathLogs";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DL.DeathLogs";
-        public override Version Version => new (1, 6, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
-
-        public static Plugin Instance { get; private set; }
+        public static Plugin Instance;
         
-        private HandlerLoader _handlerLoader;
-
-        public override void OnEnabled()
+        public override string Name { get; } = "DiscordLab.DeathLogs";
+        public override string Description { get; } = "Adds death logging capabilities";
+        public override string Author { get; } = "LumiFae";
+        public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
+        public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+        
+        public override void Enable()
         {
             Instance = this;
             
-            _handlerLoader = new ();
-            if(!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
+            CallOnLoadAttribute.Load();
         }
-        
-        public override void OnDisabled()
+
+        public override void Disable()
         {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
+            CallOnUnloadAttribute.Unload();
             
-            base.OnDisabled();
+            Instance = null;
         }
     }
 }

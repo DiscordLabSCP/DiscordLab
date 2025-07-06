@@ -1,38 +1,36 @@
-﻿using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using LabApi.Events.CustomHandlers;
+using LabApi.Features;
 
 namespace DiscordLab.RoundLogs
 {
     public class Plugin : Plugin<Config, Translation>
     {
-        public override string Name => "DiscordLab.RoundLogs";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DL.RoundLogs";
-        public override Version Version => new (1, 0, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
-
-        public static Plugin Instance { get; private set; }
+        public static Plugin Instance;
         
-        private HandlerLoader _handlerLoader;
+        public override string Name { get; } = "DiscordLab.RoundLogs";
+        public override string Description { get; } = "Allows you to log specific details about the round.";
+        public override string Author { get; } = "LumiFae";
+        public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
+        public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
 
-        public override void OnEnabled()
+        public Events Events = new();
+        
+        public override void Enable()
         {
             Instance = this;
             
-            _handlerLoader = new ();
-            if(!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
+            CustomHandlersManager.RegisterEventsHandler(Events);
         }
-        
-        public override void OnDisabled()
+
+        public override void Disable()
         {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
+            CustomHandlersManager.UnregisterEventsHandler(Events);
+
+            Events = null;
             
-            base.OnDisabled();
+            Instance = null;
         }
     }
 }

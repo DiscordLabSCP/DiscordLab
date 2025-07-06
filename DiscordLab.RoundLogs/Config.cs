@@ -1,31 +1,37 @@
-﻿using System.ComponentModel;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Interfaces;
+using System.ComponentModel;
 
 namespace DiscordLab.RoundLogs
 {
-    public class Config : IConfig, IDLConfig
+    public class Config
     {
-        [Description(DescriptionConstants.IsEnabled)]
-        public bool IsEnabled { get; set; } = true;
-        [Description(DescriptionConstants.Debug)]
-        public bool Debug { get; set; } = false;
-        
-        [Description("The channel ID to send the round start messages to.")]
-        public ulong RoundStartChannelId { get; set; } = new();
-        [Description("The channel ID to send the round end messages to.")]
-        public ulong RoundEndChannelId { get; set; } = new();
-        [Description("The channel ID to send the cuff logs to. (When a player gets cuffed)")]
-        public ulong CuffedChannelId { get; set; } = new();
-        [Description("The channel ID to send the uncuff logs to. (When a player gets uncuffed)")]
-        public ulong UncuffedChannelId { get; set; } = new();
-        [Description("The channel ID to send the Chaos spawn logs to.")]
-        public ulong ChaosSpawnChannelId { get; set; } = new();
-        [Description("The channel ID to send the NTF spawn logs to.")]
-        public ulong NtfSpawnChannelId { get; set; } = new();
-        
-        [Description(DescriptionConstants.GuildId)]
-        public ulong GuildId { get; set; } = new();
+        [Description("The guild ID, set to 0 for default guild.")]
+        public ulong GuildId { get; set; } = 0;
+
+        [Description("The channel to log to when someone's role changes.")]
+        public ulong RoleChangeChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when someone swaps from an SCP to another.")]
+        public ulong ScpSwapChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when NTF spawns.")]
+        public ulong NtfSpawnChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when Chaos spawns.")]
+        public ulong ChaosSpawnChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when someone gets cuffed.")]
+        public ulong CuffedChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when someone gets uncuffed.")]
+        public ulong UncuffedChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when the round starts.")]
+        public ulong RoundStartedChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when the round ends.")]
+        public ulong RoundEndedChannelId { get; set; } = 0;
+
+        [Description("The channel to log to when decontamination starts.")]
+        public ulong DecontaminationChannelId { get; set; } = 0;
     }
 }
