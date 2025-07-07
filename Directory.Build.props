@@ -21,7 +21,7 @@
   </ItemGroup>
   
   <ItemGroup Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)DiscordLab.Dependency\DiscordLab.Dependency.csproj" />
+    <ProjectReference Include="$(MSBuildThisFileDirectory)DiscordLab.Dependency\DiscordLab.Dependency.csproj" Private="false" PrivateAssets="none" IncludeAssets="all" />
   </ItemGroup>
 
   <ItemGroup>
