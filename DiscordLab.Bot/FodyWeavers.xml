@@ -4,7 +4,6 @@
       Discord.Net.Core
       Discord.Net.Rest
       Discord.Net.WebSocket
-      DiscordLab.Dependency
       Newtonsoft.Json
     </IncludeAssemblies>
   </Costura>
