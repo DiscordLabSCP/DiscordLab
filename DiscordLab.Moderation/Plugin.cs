@@ -1,7 +1,7 @@
 ﻿using Discord;
 using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Dependency;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
 using LabApi.Features.Wrappers;
@@ -30,7 +30,7 @@ namespace DiscordLab.Moderation
             CallOnLoadAttribute.Load();
             
             if (Config.AddCommands)
-                ISlashCommand.FindAll();
+                SlashCommand.FindAll();
             
             CustomHandlersManager.RegisterEventsHandler(Events);
         }
@@ -55,21 +55,5 @@ namespace DiscordLab.Moderation
 
         public static IEnumerable<AutocompleteResult> PlayersAutocompleteResults =>
             Player.ReadyList.Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
-
-        public static SlashCommandBuilder SetupDurationBuilder(SlashCommandBuilder original, bool required = false)
-        {
-            SlashCommandOptionBuilder playerOption = original.Options[0];
-            SlashCommandOptionBuilder durationOption = original.Options[1];
-
-            playerOption.Type = ApplicationCommandOptionType.String;
-            playerOption.IsAutocomplete = true;
-            playerOption.IsRequired = true;
-
-            durationOption.Type = ApplicationCommandOptionType.String;
-            durationOption.IsAutocomplete = false;
-            durationOption.IsRequired = required;
-
-            return original;
-        }
     }
 }

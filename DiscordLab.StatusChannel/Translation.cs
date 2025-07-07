@@ -24,10 +24,8 @@ namespace DiscordLab.StatusChannel
         [Description("What will appear for each player when replacing the players variable above.")]
         public string PlayerItem { get; set; } = "- {player}";
 
-        public SlashCommandBuilder PlayerListCommand = new()
-        {
-            Name = "players",
-            Description = "Get the current list of players on the server"
-        };
+        public string PlayerListCommandName { get; set; } = "players";
+
+        public string PlayerListCommandDescription { get; set; } = "Get the current list of players on the server";
     }
 }

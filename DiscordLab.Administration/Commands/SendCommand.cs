@@ -2,35 +2,37 @@ using CommandSystem;
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
 using LabApi.Features.Wrappers;
 using RemoteAdmin;
 
 namespace DiscordLab.Administration.Commands
 {
-    public class SendCommand : IAutocompleteCommand
+    public class SendCommand : AutocompleteCommand
     {
         public static Config Config => Plugin.Instance.Config;
 
         public static Translation Translation => Plugin.Instance.Translation;
 
-        public SlashCommandBuilder Data
+        public override SlashCommandBuilder Data { get; } = new()
         {
-            get
-            {
-                SlashCommandBuilder builder = Translation.SendCommand;
-                SlashCommandOptionBuilder option = builder.Options.First();
-                option.IsAutocomplete = true;
-                option.Type = ApplicationCommandOptionType.String;
-                option.IsRequired = true;
+            Name = Translation.SendCommandName,
+            Description = Translation.SendCommandDescription,
+            DefaultMemberPermissions = GuildPermission.ModerateMembers,
+            Options =
+            [
+                new()
+                {
+                    Name = Translation.SendCommandOptionName,
+                    Description = Translation.SendCommandOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                }
+            ]
+        };
 
-                return builder;
-            }
-        }
-
-        public ulong GuildId { get; } = Config.GuildId;
+        public override ulong GuildId { get; } = Config.GuildId;
         
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.DeferAsync();
 
@@ -42,7 +44,7 @@ namespace DiscordLab.Administration.Commands
             await command.ModifyOriginalResponseAsync(m => m.Content = builder);
         }
 
-        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
         {
             IEnumerable<string> commands =
             [

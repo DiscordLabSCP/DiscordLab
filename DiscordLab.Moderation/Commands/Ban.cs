@@ -1,31 +1,49 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands
 {
-    public class Ban : IAutocompleteCommand
+    public class Ban : AutocompleteCommand
     {
-        public SlashCommandBuilder Data
+        public static Translation Translation => Plugin.Instance.Translation;
+
+        public override SlashCommandBuilder Data { get; } = new()
         {
-            get
-            {
-                SlashCommandBuilder builder = Plugin.SetupDurationBuilder(Plugin.Instance.Translation.BanCommand, true);
-                SlashCommandOptionBuilder option = builder.Options[2];
-                option.IsRequired = true;
-                option.IsAutocomplete = false;
-                option.Type = ApplicationCommandOptionType.String;
+            Name = Translation.BanCommandName,
+            Description = Translation.BanCommandDescription,
+            DefaultMemberPermissions = GuildPermission.ModerateMembers,
+            Options =
+            [
+                new()
+                {
+                    Name = Translation.BanUserOptionName,
+                    Description = Translation.BanUserOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                },
+                new()
+                {
+                    Name = Translation.BanDurationOptionName,
+                    Description = Translation.BanDurationOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                },
+                new()
+                {
+                    Name = Translation.BanReasonOptionName,
+                    Description = Translation.BanReasonOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                }
+            ]
+        };
 
-                return builder;
-            }
-        }
-
-        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
         
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.DeferAsync();
 
@@ -33,11 +51,11 @@ namespace DiscordLab.Moderation.Commands
             long duration = Misc.RelativeTimeToSeconds((string)command.Data.Options.ElementAt(1).Value, 60);
             string reason = (string)command.Data.Options.ElementAt(2).Value;
 
-            TranslationBuilder successBuilder = new(Plugin.Instance.Translation.BanSuccess)
+            TranslationBuilder successBuilder = new(Translation.BanSuccess)
             {
                 Time = TempMuteManager.GetExpireDate(duration)
             };
-            TranslationBuilder failBuilder = new(Plugin.Instance.Translation.BanFailure);
+            TranslationBuilder failBuilder = new(Translation.BanFailure);
             
             successBuilder.CustomReplacers.Add("userid", () => userId);
             failBuilder.CustomReplacers.Add("userid", () => userId);
@@ -58,7 +76,7 @@ namespace DiscordLab.Moderation.Commands
                 m.Content = Server.BanPlayer(player, reason, duration) ? successBuilder : failBuilder);
         }
 
-        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
         {
             await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
         }

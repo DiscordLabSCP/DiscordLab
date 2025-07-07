@@ -2,14 +2,14 @@ namespace DiscordLab.Bot.Commands
 {
     using Discord;
     using Discord.WebSocket;
-    using DiscordLab.Bot.API.Interfaces;
+    using DiscordLab.Bot.API.Features;
     using DiscordLab.Bot.API.Updates;
 
     /// <inheritdoc />
-    public class DiscordCommand : IAutocompleteCommand
+    public class DiscordCommand : AutocompleteCommand
     {
         /// <inheritdoc />
-        public SlashCommandBuilder Data { get; } = new()
+        public override SlashCommandBuilder Data { get; } = new()
         {
             Name = "discordlab",
             Description = "DiscordLab related commands",
@@ -53,10 +53,10 @@ namespace DiscordLab.Bot.Commands
         };
 
         /// <inheritdoc />
-        public ulong GuildId { get; } = 0;
+        public override ulong GuildId { get; } = 0;
 
         /// <inheritdoc />
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.DeferAsync(true);
             string subcommand = command.Data.Options.First().Name;
@@ -108,7 +108,7 @@ namespace DiscordLab.Bot.Commands
         }
 
         /// <inheritdoc />
-        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
         {
             await autocomplete.RespondAsync(Module.CurrentModules.Where(x => x.Name != "DiscordLab.Bot").Select(x => new AutocompleteResult(x.Name, x.Name)));
         }

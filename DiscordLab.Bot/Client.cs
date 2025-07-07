@@ -7,7 +7,7 @@ namespace DiscordLab.Bot
     using Discord.Net.WebSockets;
     using Discord.WebSocket;
     using DiscordLab.Bot.API.Attributes;
-    using DiscordLab.Bot.API.Interfaces;
+    using DiscordLab.Bot.API.Features;
     using LabApi.Features.Console;
 
     /// <summary>
@@ -28,7 +28,7 @@ namespace DiscordLab.Bot
         /// <summary>
         /// Gets a list of saved text channels listed by their ID.
         /// </summary>
-        public static Dictionary<ulong, SocketTextChannel> SavedTextChannels { get; } = new();
+        public static Dictionary<ulong, SocketTextChannel> SavedTextChannels { get; private set; } = new();
 
         /// <summary>
         /// Gets the default guild for the plugin.
@@ -73,24 +73,36 @@ namespace DiscordLab.Bot
         [CallOnLoad]
         internal static void Start()
         {
+            DebugLog("Starting the Client");
             DiscordSocketConfig config = new()
             {
                 GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
                 LogLevel = Config.Debug ? LogSeverity.Debug : LogSeverity.Warning,
+                RestClientProvider = DefaultRestClientProvider.Create(),
+                WebSocketProvider = DefaultWebSocketProvider.Create(),
             };
 
             if (!string.IsNullOrEmpty(Config.ProxyUrl))
             {
+                DebugLog("Proxy is configured.");
                 WebProxy proxy = new(Config.ProxyUrl);
                 config.RestClientProvider = DefaultRestClientProvider.Create(true, proxy);
                 config.WebSocketProvider = DefaultWebSocketProvider.Create(proxy);
             }
 
+            DebugLog("Done the initial setup...");
+
             SocketClient = new(config);
+
+            DebugLog("Client has been created...");
+
             SocketClient.Log += OnLog;
             SocketClient.Ready += OnReady;
             SocketClient.SlashCommandExecuted += SlashCommandHandler;
             SocketClient.AutocompleteExecuted += AutocompleteHandler;
+
+            DebugLog("Client events subscribed...");
+
             Task.Run(StartClient);
         }
 
@@ -157,7 +169,7 @@ namespace DiscordLab.Bot
         private static Task SlashCommandHandler(SocketSlashCommand command)
         {
             DebugLog($"{command.Data.Name} requested a response, finding the command...");
-            ISlashCommand cmd = ISlashCommand.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
+            SlashCommand cmd = SlashCommand.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
 
             cmd?.Run(command);
             return Task.CompletedTask;
@@ -166,7 +178,7 @@ namespace DiscordLab.Bot
         private static Task AutocompleteHandler(SocketAutocompleteInteraction autocomplete)
         {
             DebugLog($"{autocomplete.Data.CommandName} requested a response, finding the command...");
-            IAutocompleteCommand command = ISlashCommand.Commands.FirstOrDefault(c => c is IAutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as IAutocompleteCommand;
+            AutocompleteCommand command = SlashCommand.Commands.FirstOrDefault(c => c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
 
             command?.Autocomplete(autocomplete);
             return Task.CompletedTask;

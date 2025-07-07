@@ -1,29 +1,33 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
 
 namespace DiscordLab.Moderation.Commands
 {
-    public class Unban : IAutocompleteCommand
+    public class Unban : AutocompleteCommand
     {
-        public SlashCommandBuilder Data
+        public static Translation Translation => Plugin.Instance.Translation;
+
+        public override SlashCommandBuilder Data { get; } = new()
         {
-            get
-            {
-                SlashCommandBuilder builder = Plugin.Instance.Translation.UnbanCommand;
-                SlashCommandOptionBuilder option = builder.Options[0];
-                option.Type = ApplicationCommandOptionType.String;
-                option.IsRequired = true;
-                option.IsAutocomplete = true;
+            Name = Translation.UnbanCommandName,
+            Description = Translation.UnbanCommandDescription,
+            DefaultMemberPermissions = GuildPermission.ModerateMembers,
+            Options =
+            [
+                new()
+                {
+                    Name = Translation.UnbanUserOptionName,
+                    Description = Translation.UnbanUserOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                },
+            ]
+        };
 
-                return builder;
-            }
-        }
-
-        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
         
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.DeferAsync();
 
@@ -31,7 +35,7 @@ namespace DiscordLab.Moderation.Commands
 
             BanHandler.RemoveBan(id, id.Contains("@") ? BanHandler.BanType.UserId : BanHandler.BanType.IP);
 
-            TranslationBuilder builder = new(Plugin.Instance.Translation.UnbanSuccess);
+            TranslationBuilder builder = new(Translation.UnbanSuccess);
             
             builder.CustomReplacers.Add("userid", () => id);
             
@@ -40,7 +44,7 @@ namespace DiscordLab.Moderation.Commands
                     builder);
         }
         
-        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
         {
             IEnumerable<BanDetails> response =
             [

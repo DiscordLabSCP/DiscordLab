@@ -5,80 +5,32 @@ namespace DiscordLab.Moderation
 {
     public class Translation
     {
-        public SlashCommandBuilder MuteCommand { get; set; } = new()
-        {
-            Name = "mute",
-            Description = "Mute a player on the server",
-            DefaultMemberPermissions = GuildPermission.ModerateMembers,
-            Options =
-            [
-                new()
-                {
-                    Name = "user",
-                    Description = "The user to mute"
-                },
-                new()
-                {
-                    Name = "duration",
-                    Description = "The duration to mute the user for"
-                }
-            ]
-        };
+        // String properties for command and option names
+        public string MuteCommandName { get; set; } = "mute";
+        public string MuteCommandDescription { get; set; } = "Mute a player on the server";
+        public string MuteUserOptionName { get; set; } = "user";
+        public string MuteUserOptionDescription { get; set; } = "The user to mute";
+        public string MuteDurationOptionName { get; set; } = "duration";
+        public string MuteDurationOptionDescription { get; set; } = "The duration to mute the user for";
 
-        public SlashCommandBuilder UnmuteCommand { get; set; } = new()
-        {
-            Name = "unmute",
-            Description = "Unmute a player on the server",
-            DefaultMemberPermissions = GuildPermission.ModerateMembers,
-            Options =
-            [
-                new()
-                {
-                    Name = "user",
-                    Description = "The user to unmute"
-                }
-            ]
-        };
+        public string UnmuteCommandName { get; set; } = "unmute";
+        public string UnmuteCommandDescription { get; set; } = "Unmute a player on the server";
+        public string UnmuteUserOptionName { get; set; } = "user";
+        public string UnmuteUserOptionDescription { get; set; } = "The user to unmute";
 
-        public SlashCommandBuilder BanCommand { get; set; } = new()
-        {
-            Name = "ban",
-            Description = "Ban a player on the server",
-            DefaultMemberPermissions = GuildPermission.ModerateMembers,
-            Options =
-            [
-                new()
-                {
-                    Name = "user",
-                    Description = "The user to ban"
-                },
-                new()
-                {
-                    Name = "duration",
-                    Description = "The duration to ban the user for"
-                },
-                new()
-                {
-                    Name = "reason",
-                    Description = "The reason to ban the user"
-                }
-            ]
-        };
-        
-        public SlashCommandBuilder UnbanCommand { get; set; } = new()
-        {
-            Name = "unban",
-            Description = "Unban a player on the server",
-            DefaultMemberPermissions = GuildPermission.ModerateMembers,
-            Options =
-            [
-                new()
-                {
-                    Name = "user",
-                    Description = "The user to unban"
-                }
-            ]
-        };
+        public string BanCommandName { get; set; } = "ban";
+        public string BanCommandDescription { get; set; } = "Ban a player on the server";
+        public string BanUserOptionName { get; set; } = "user";
+        public string BanUserOptionDescription { get; set; } = "The user to ban";
+        public string BanDurationOptionName { get; set; } = "duration";
+        public string BanDurationOptionDescription { get; set; } = "The duration to ban the user for";
+        public string BanReasonOptionName { get; set; } = "reason";
+        public string BanReasonOptionDescription { get; set; } = "The reason to ban the user";
+
+        public string UnbanCommandName { get; set; } = "unban";
+        public string UnbanCommandDescription { get; set; } = "Unban a player on the server";
+        public string UnbanUserOptionName { get; set; } = "user";
+        public string UnbanUserOptionDescription { get; set; } = "The user to unban";
 
         public string InvalidUser { get; set; } = "Please provide a valid user to use this command on.";
         

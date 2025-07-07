@@ -1,16 +1,20 @@
 using Discord;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Bot.API.Features;
 
 namespace DiscordLab.StatusChannel
 {
-    public class Command : ISlashCommand
+    public class Command : SlashCommand
     {
-        public SlashCommandBuilder Data { get; } = Plugin.Instance.Translation.PlayerListCommand;
+        public override SlashCommandBuilder Data { get; } = new()
+        {
+            Name = Plugin.Instance.Translation.PlayerListCommandName,
+            Description = Plugin.Instance.Translation.PlayerListCommandDescription,
+        };
 
-        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
         
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.RespondAsync(embed: Events.GetEmbed().Build());
         }

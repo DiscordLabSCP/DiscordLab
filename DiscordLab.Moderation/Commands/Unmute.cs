@@ -1,38 +1,41 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands
 {
-    public class Unmute : IAutocompleteCommand
+    public class Unmute : AutocompleteCommand
     {
+        public static Translation Translation => Plugin.Instance.Translation;
 
-        public SlashCommandBuilder Data
+        public override SlashCommandBuilder Data { get; } = new()
         {
-            get
-            {
-                SlashCommandBuilder builder = Plugin.Instance.Translation.UnmuteCommand;
-                SlashCommandOptionBuilder option = builder.Options[0];
-                option.Type = ApplicationCommandOptionType.String;
-                option.IsRequired = true;
-                option.IsAutocomplete = true;
+            Name = Translation.UnmuteCommandName,
+            Description = Translation.UnmuteCommandDescription,
+            DefaultMemberPermissions = GuildPermission.ModerateMembers,
+            Options =
+            [
+                new()
+                {
+                    Name = Translation.UnbanUserOptionName,
+                    Description = Translation.UnbanUserOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                },
+            ]
+        };
 
-                return builder;
-            }
-        }
-
-        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
         
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.DeferAsync();
 
             if (!CommandUtils.TryGetPlayerFromUnparsed((string)command.Data.Options.First().Value, out Player player))
             {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Plugin.Instance.Translation.InvalidUser);
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.InvalidUser);
                 return;
             }
 
@@ -40,10 +43,10 @@ namespace DiscordLab.Moderation.Commands
             
             await command.ModifyOriginalResponseAsync(m => 
                 m.Content = 
-                    new TranslationBuilder(Plugin.Instance.Translation.UnmuteSuccess, "player", player));
+                    new TranslationBuilder(Translation.UnmuteSuccess, "player", player));
         }
         
-        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
         {
             await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
         }

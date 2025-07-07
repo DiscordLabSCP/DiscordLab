@@ -1,6 +1,7 @@
 using Discord;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Features;
+using DiscordLab.Dependency;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features;

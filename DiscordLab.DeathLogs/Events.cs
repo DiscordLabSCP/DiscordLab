@@ -25,22 +25,22 @@ namespace DiscordLab.DeathLogs
         [CallOnLoad]
         public static void Register()
         {
-            PlayerEvents.Death += OnTeamKill;
-            PlayerEvents.Death += OnCuffKill;
-            PlayerEvents.Death += OnDeath;
-            PlayerEvents.Death += OnOwnDeath;
+            PlayerEvents.Dying += OnTeamKill;
+            PlayerEvents.Dying += OnCuffKill;
+            PlayerEvents.Dying += OnDeath;
+            PlayerEvents.Dying += OnOwnDeath;
         }
 
         [CallOnUnload]
         public static void Unregister()
         {
-            PlayerEvents.Death -= OnTeamKill;
-            PlayerEvents.Death -= OnCuffKill;
-            PlayerEvents.Death -= OnDeath;
-            PlayerEvents.Death -= OnOwnDeath;
+            PlayerEvents.Dying -= OnTeamKill;
+            PlayerEvents.Dying -= OnCuffKill;
+            PlayerEvents.Dying -= OnDeath;
+            PlayerEvents.Dying -= OnOwnDeath;
         }
 
-        public static void OnTeamKill(PlayerDeathEventArgs ev)
+        public static void OnTeamKill(PlayerDyingEventArgs ev)
         {
             if (ev.Attacker == null || ev.Attacker.Team.GetFaction() != ev.Player.Team.GetFaction())
                 return;
@@ -64,7 +64,7 @@ namespace DiscordLab.DeathLogs
             channel.SendMessage(builder);
         }
 
-        public static void OnCuffKill(PlayerDeathEventArgs ev)
+        public static void OnCuffKill(PlayerDyingEventArgs ev)
         {
             if (ev.Attacker == null || !ev.Player.IsDisarmed || (ev.Attacker.IsSCP && Config.ScpIgnoreCuffed))
                 return;
@@ -87,7 +87,7 @@ namespace DiscordLab.DeathLogs
             channel.SendMessage(builder);
         }
 
-        public static void OnDeath(PlayerDeathEventArgs ev)
+        public static void OnDeath(PlayerDyingEventArgs ev)
         {
             if (ev.Attacker == null || ev.Player.IsDisarmed ||
                 ev.Attacker.Team.GetFaction() == ev.Player.Team.GetFaction())
@@ -111,7 +111,7 @@ namespace DiscordLab.DeathLogs
             channel.SendMessage(builder);
         }
 
-        public static void OnOwnDeath(PlayerDeathEventArgs ev)
+        public static void OnOwnDeath(PlayerDyingEventArgs ev)
         {
             if (ev.Attacker != null)
                 return;
@@ -125,48 +125,54 @@ namespace DiscordLab.DeathLogs
 
                 return;
             }
+            
+            string converted = ConvertToString(ev.DamageHandler);
+
+            // usually because of disconnect, only way to really track rn
+            if (converted == "Unknown")
+                return;
 
             TranslationBuilder builder = new TranslationBuilder(Translation.PlayerDeathSelf)
                 .AddPlayer("player", ev.Player)
-                .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
+                .AddCustomReplacer("cause", converted);
             
             channel.SendMessage(builder);
         }
-
+        
+        private static Dictionary<byte, string> _translations = new()
+        {
+            { DeathTranslations.Asphyxiated.Id, "Asphyxiation" },
+            { DeathTranslations.Bleeding.Id, "Bleeding" },
+            { DeathTranslations.Crushed.Id, "Crushed" },
+            { DeathTranslations.Decontamination.Id, "Decontamination" },
+            { DeathTranslations.Explosion.Id, "Explosion" },
+            { DeathTranslations.Falldown.Id, "Falldown" },
+            { DeathTranslations.Poisoned.Id, "Poison" },
+            { DeathTranslations.Recontained.Id, "Recontainment" },
+            { DeathTranslations.Scp049.Id, "SCP-049" },
+            { DeathTranslations.Scp096.Id, "SCP-096" },
+            { DeathTranslations.Scp173.Id, "SCP-173" },
+            { DeathTranslations.Scp207.Id, "SCP-207" },
+            { DeathTranslations.Scp939Lunge.Id, "SCP-939 Lunge" },
+            { DeathTranslations.Scp939Other.Id, "SCP-939" },
+            { DeathTranslations.Scp3114Slap.Id, "SCP-3114" },
+            { DeathTranslations.Tesla.Id, "Tesla" },
+            { DeathTranslations.Unknown.Id, "Unknown" },
+            { DeathTranslations.Warhead.Id, "Warhead" },
+            { DeathTranslations.Zombie.Id, "SCP-049-2" },
+            { DeathTranslations.BulletWounds.Id, "Firearm" },
+            { DeathTranslations.PocketDecay.Id, "Pocket Decay" },
+            { DeathTranslations.SeveredHands.Id, "Severed Hands" },
+            { DeathTranslations.FriendlyFireDetector.Id, "Friendly Fire" },
+            { DeathTranslations.UsedAs106Bait.Id, "Femur Breaker" },
+            { DeathTranslations.MicroHID.Id, "Micro H.I.D." },
+            { DeathTranslations.Hypothermia.Id, "Hypothermia" },
+            { DeathTranslations.MarshmallowMan.Id, "Marshmellow" },
+            { DeathTranslations.Scp1344.Id, "Severed Eyes" },
+        };
+        
         internal static string ConvertToString(DamageHandlerBase handler)
         {
-            Dictionary<byte, string> translations = new()
-                {
-                    { DeathTranslations.Asphyxiated.Id, "Asphyxiation" },
-                    { DeathTranslations.Bleeding.Id, "Bleeding" },
-                    { DeathTranslations.Crushed.Id, "Crushed" },
-                    { DeathTranslations.Decontamination.Id, "Decontamination" },
-                    { DeathTranslations.Explosion.Id, "Explosion" },
-                    { DeathTranslations.Falldown.Id, "Falldown" },
-                    { DeathTranslations.Poisoned.Id, "Poison" },
-                    { DeathTranslations.Recontained.Id, "Recontainment" },
-                    { DeathTranslations.Scp049.Id, "SCP-049" },
-                    { DeathTranslations.Scp096.Id, "SCP-096" },
-                    { DeathTranslations.Scp173.Id, "SCP-173" },
-                    { DeathTranslations.Scp207.Id, "SCP-207" },
-                    { DeathTranslations.Scp939Lunge.Id, "SCP-939 Lunge" },
-                    { DeathTranslations.Scp939Other.Id, "SCP-939" },
-                    { DeathTranslations.Scp3114Slap.Id, "SCP-3114" },
-                    { DeathTranslations.Tesla.Id, "Tesla" },
-                    { DeathTranslations.Unknown.Id, "Unknown" },
-                    { DeathTranslations.Warhead.Id, "Warhead" },
-                    { DeathTranslations.Zombie.Id, "SCP-049-2" },
-                    { DeathTranslations.BulletWounds.Id, "Firearm" },
-                    { DeathTranslations.PocketDecay.Id, "Pocket Decay" },
-                    { DeathTranslations.SeveredHands.Id, "Severed Hands" },
-                    { DeathTranslations.FriendlyFireDetector.Id, "Friendly Fire" },
-                    { DeathTranslations.UsedAs106Bait.Id, "Femur Breaker" },
-                    { DeathTranslations.MicroHID.Id, "Micro H.I.D." },
-                    { DeathTranslations.Hypothermia.Id, "Hypothermia" },
-                    { DeathTranslations.MarshmallowMan.Id, "Marshmellow" },
-                    { DeathTranslations.Scp1344.Id, "Severed Eyes" },
-                };
-            
             switch (handler)
             {
                 case CustomReasonDamageHandler:
@@ -213,11 +219,13 @@ namespace DiscordLab.DeathLogs
                     {
                         DeathTranslation translation = DeathTranslations.TranslationsById[universal.TranslationId];
 
-                        if (translations.TryGetValue(translation.Id, out string s))
+                        if (_translations.TryGetValue(translation.Id, out string s))
                             return s;
                         
                         break;
                     }
+                case FirearmDamageHandler firearm:
+                    return firearm.Firearm.Name;
             }
 
             return "Unknown";

@@ -1,4 +1,4 @@
-namespace DiscordLab.Bot.API.Interfaces
+namespace DiscordLab.Bot.API.Features
 {
     using System.Collections.ObjectModel;
     using System.Collections.Specialized;
@@ -11,26 +11,24 @@ namespace DiscordLab.Bot.API.Interfaces
     /// <summary>
     /// A wrapper to easily add your own slash commands in your bot.
     /// </summary>
-    public interface ISlashCommand
+    public abstract class SlashCommand
     {
-        public static ObservableCollection<ISlashCommand> Commands = [];
+        /// <summary>
+        /// The list of currently active <see cref="SlashCommand"/>s.
+        /// </summary>
+#pragma warning disable SA1401
+        public static ObservableCollection<SlashCommand> Commands = [];
+#pragma warning restore SA1401
 
         /// <summary>
         /// Gets the slash command data.
         /// </summary>
-        public SlashCommandBuilder Data { get; }
+        public abstract SlashCommandBuilder Data { get; }
 
         /// <summary>
         /// Gets the guild ID to assign this command to.
         /// </summary>
-        public ulong GuildId { get; }
-
-        /// <summary>
-        /// What should be called when you run this command.
-        /// </summary>
-        /// <param name="command">The command data.</param>
-        /// <returns>A <see cref="Task"/>.</returns>
-        public Task Run(SocketSlashCommand command);
+        public abstract ulong GuildId { get; }
 
         /// <summary>
         /// Finds and creates all slash commands in your plugin. There is no method to delete all your commands, as that is handled by the bot itself.
@@ -42,13 +40,20 @@ namespace DiscordLab.Bot.API.Interfaces
 
             foreach (Type type in assembly.GetTypes())
             {
-                if (type.IsAbstract || !typeof(ISlashCommand).IsAssignableFrom(type))
+                if (type.IsAbstract || !typeof(SlashCommand).IsAssignableFrom(type))
                     continue;
 
-                ISlashCommand init = Activator.CreateInstance(type) as ISlashCommand;
+                SlashCommand init = Activator.CreateInstance(type) as SlashCommand;
                 Commands.Add(init);
             }
         }
+
+        /// <summary>
+        /// What should be called when you run this command.
+        /// </summary>
+        /// <param name="command">The command data.</param>
+        /// <returns>A <see cref="Task"/>.</returns>
+        public abstract Task Run(SocketSlashCommand command);
 
         [CallOnLoad]
         private static void Start()
@@ -69,19 +74,21 @@ namespace DiscordLab.Bot.API.Interfaces
             Task.Run(() => RegisterGuildCommands(Commands));
         }
 
+#pragma warning disable SA1313
         private static void OnCollectionChanged(object _, NotifyCollectionChangedEventArgs ev)
+#pragma warning restore SA1313
         {
             if (!Client.IsClientReady)
                 return;
             if (ev.Action is not (NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Replace))
                 return;
 
-            Task.Run(() => RegisterGuildCommands((IEnumerable<ISlashCommand>)ev.NewItems));
+            Task.Run(() => RegisterGuildCommands((IEnumerable<SlashCommand>)ev.NewItems));
         }
 
-        private static async Task RegisterGuildCommands(IEnumerable<ISlashCommand> commands)
+        private static async Task RegisterGuildCommands(IEnumerable<SlashCommand> commands)
         {
-            foreach (IGrouping<ulong, ISlashCommand> cmds in commands.GroupBy(cmd => cmd.GuildId))
+            foreach (IGrouping<ulong, SlashCommand> cmds in commands.GroupBy(cmd => cmd.GuildId))
             {
                 SocketGuild guild = Client.GetGuild(cmds.Key);
                 if (guild == null)

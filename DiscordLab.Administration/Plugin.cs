@@ -1,6 +1,6 @@
 ﻿using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Dependency;
 using HarmonyLib;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
@@ -31,7 +31,7 @@ namespace DiscordLab.Administration
             CallOnLoadAttribute.Load();
             
             if(Config.AddCommands)
-                ISlashCommand.FindAll();
+                SlashCommand.FindAll();
             
             CustomHandlersManager.RegisterEventsHandler(Events);
         }

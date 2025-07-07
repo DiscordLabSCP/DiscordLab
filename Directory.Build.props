@@ -10,14 +10,18 @@
   </Target>
   
   <ItemGroup>
-    <Reference Include="Assembly-CSharp" HintPath="$(EXILED_REFERENCES)\Assembly-CSharp.dll" Private="false" Publicize="true" />
-    <Reference Include="CommandSystem.Core" HintPath="$(EXILED_REFERENCES)\CommandSystem.Core.dll" Private="false" />
-    <Reference Include="Mirror" HintPath="$(EXILED_REFERENCES)\Mirror.dll" Private="false" Publicize="true" />
-    <Reference Include="UnityEngine" HintPath="$(EXILED_REFERENCES)\UnityEngine.dll" Private="false" />
-    <Reference Include="UnityEngine.CoreModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
-    <Reference Include="UnityEngine.PhysicsModule" HintPath="$(EXILED_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
-    <Reference Include="NorthwoodLib" HintPath="$(EXILED_REFERENCES)\NorthwoodLib.dll" Private="false" />
-    <Reference Include="mscorlib" HintPath="$(EXILED_REFERENCES)\mscorlib.dll" />
+    <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="false" Publicize="true" />
+    <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll" Private="false" />
+    <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll" Private="false" Publicize="true" />
+    <Reference Include="UnityEngine" HintPath="$(SL_REFERENCES)\UnityEngine.dll" Private="false" />
+    <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
+    <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll" Private="false" />
+    <Reference Include="mscorlib" HintPath="$(SL_REFERENCES)\mscorlib.dll" />
+  </ItemGroup>
+  
+  <ItemGroup Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
+    <ProjectReference Include="$(MSBuildThisFileDirectory)DiscordLab.Dependency\DiscordLab.Dependency.csproj" />
   </ItemGroup>
 
   <ItemGroup>

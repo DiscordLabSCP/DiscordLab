@@ -1,26 +1,49 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Wrappers;
 using VoiceChat;
 
 namespace DiscordLab.Moderation.Commands
 {
-    public class Mute : IAutocompleteCommand
+    public class Mute : AutocompleteCommand
     {
-        public SlashCommandBuilder Data { get; } = Plugin.SetupDurationBuilder(Plugin.Instance.Translation.MuteCommand);
+        public static Translation Translation => Plugin.Instance.Translation;
 
-        public ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+        public override SlashCommandBuilder Data { get; } = new()
+        {
+            Name = Translation.MuteCommandName,
+            Description = Translation.MuteCommandDescription,
+            DefaultMemberPermissions = GuildPermission.ModerateMembers,
+            Options =
+            [
+                new()
+                {
+                    Name = Translation.MuteUserOptionName,
+                    Description = Translation.MuteUserOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = true
+                },
+                new()
+                {
+                    Name = Translation.MuteDurationOptionName,
+                    Description = Translation.MuteDurationOptionDescription,
+                    Type = ApplicationCommandOptionType.String,
+                    IsRequired = false
+                }
+            ]
+        };
+
+        public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
         
-        public async Task Run(SocketSlashCommand command)
+        public override async Task Run(SocketSlashCommand command)
         {
             await command.DeferAsync();
 
             if (!CommandUtils.TryGetPlayerFromUnparsed((string)command.Data.Options.First().Value, out Player player))
             {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Plugin.Instance.Translation.InvalidUser);
+                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.InvalidUser);
                 return;
             }
 
@@ -32,7 +55,7 @@ namespace DiscordLab.Moderation.Commands
                 DateTime time = TempMuteManager.GetExpireDate(duration);
                 TempMuteManager.MutePlayer(player, time);
                 
-                builder = new(Plugin.Instance.Translation.TempMuteSuccess, "player", player)
+                builder = new(Translation.TempMuteSuccess, "player", player)
                 {
                     Time = time
                 };
@@ -45,12 +68,12 @@ namespace DiscordLab.Moderation.Commands
 
             VoiceChatMutes.IssueLocalMute(player.UserId);
 
-            builder = new(Plugin.Instance.Translation.PermMuteSuccess, "player", player);
+            builder = new(Translation.PermMuteSuccess, "player", player);
 
             await command.ModifyOriginalResponseAsync(m => m.Content = builder);
         }
 
-        public async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+        public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
         {
             await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
         }

@@ -1,7 +1,7 @@
-namespace DiscordLab.Bot.API.Features
-{
-    using LabApi.Loader;
+using LabApi.Loader;
 
+namespace DiscordLab.Dependency
+{
     /// <summary>
     /// Allows users to easily make plugins with translations also, not just configs.
     /// </summary>
@@ -11,6 +11,7 @@ namespace DiscordLab.Bot.API.Features
         where TConfig : class, new()
         where TTranslation : class, new()
     {
+#pragma warning disable SA1401 // FieldsMustBePrivate
         /// <summary>
         /// Gets the plugin's config.
         /// </summary>
@@ -20,6 +21,7 @@ namespace DiscordLab.Bot.API.Features
         /// Gets the plugin's translation.
         /// </summary>
         public TTranslation Translation;
+#pragma warning restore SA1401 // FieldsMustBePrivate
 
         /// <inheritdoc/>
         public override void LoadConfigs()

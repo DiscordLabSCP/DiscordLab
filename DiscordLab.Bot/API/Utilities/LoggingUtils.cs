@@ -9,7 +9,7 @@ namespace DiscordLab.Bot.API.Utilities
         /// Generates a message that will tell the user that the channel was not found.
         /// </summary>
         /// <param name="type">The submodule that this error comes from.</param>
-        /// <param name="channelId">The channel ID that was missing</param>
+        /// <param name="channelId">The channel ID that was missing.</param>
         /// <param name="guildId">The related guild ID, goes to the default guild ID if 0.</param>
         /// <returns>The error string.</returns>
         public static string GenerateMissingChannelMessage(string type, ulong channelId, ulong guildId)

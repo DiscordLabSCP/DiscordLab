@@ -1,6 +1,6 @@
 ﻿using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
 using LabApi.Features;
+using DiscordLab.Dependency;
 
 namespace DiscordLab.DeathLogs
 {

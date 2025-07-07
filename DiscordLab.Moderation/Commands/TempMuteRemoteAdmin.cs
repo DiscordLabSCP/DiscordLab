@@ -14,8 +14,8 @@ namespace DiscordLab.Moderation.Commands
         
         public string[] Usage { get; } =
         [
-            "{player}",
-            "{duration}"
+            "player",
+            "duration"
         ];
         
         public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)

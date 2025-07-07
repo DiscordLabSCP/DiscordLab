@@ -1,9 +1,8 @@
-using HarmonyLib;
-using LabApi.Loader;
-using LabApi.Loader.Features.Paths;
-
 namespace DiscordLab.Bot.API.Updates
 {
+    using LabApi.Loader;
+    using LabApi.Loader.Features.Paths;
+
     /// <summary>
     /// Contains information about a DiscordLab module.
     /// </summary>
@@ -60,8 +59,7 @@ namespace DiscordLab.Bot.API.Updates
         /// <returns>The generated string.</returns>
         public static string GenerateUpdateString(IEnumerable<Module> modules) => string.Join(
             "\n- ", modules.Select(module =>
-                $"{module.Name} | Current Version: {module.ExistingPlugin.Version} | Latest Version: {module.Version}")
-        );
+                $"{module.Name} | Current Version: {module.ExistingPlugin.Version} | Latest Version: {module.Version}"));
 
         /// <summary>
         /// Downloads this module.

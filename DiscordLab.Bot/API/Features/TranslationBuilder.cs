@@ -1,9 +1,8 @@
-using Discord;
-
 namespace DiscordLab.Bot.API.Features
 {
     using System.Globalization;
     using System.Text.RegularExpressions;
+    using Discord;
     using LabApi.Features.Extensions;
     using LabApi.Features.Wrappers;
     using PlayerRoles;
@@ -13,10 +12,36 @@ namespace DiscordLab.Bot.API.Features
     /// </summary>
     public class TranslationBuilder
     {
+        private static readonly Regex TagRemoveRegex = new("<[^>]+>", RegexOptions.Compiled);
+
+        private static readonly Regex UselessTextRemoveRegex = new(@"<color=#00000000>(.*?)<\/color>", RegexOptions.Compiled);
+
         /// <summary>
-        /// The dictionary of replacers that have no argument.
+        /// Initializes a new instance of the <see cref="TranslationBuilder"/> class.
         /// </summary>
-        public static Dictionary<string, Func<string>> StaticReplacers = new()
+        /// <param name="translation">The translation to modify.</param>
+        public TranslationBuilder(string translation)
+        {
+            Translation = translation;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TranslationBuilder"/> class with a person added.
+        /// </summary>
+        /// <param name="translation">The translation to modify.</param>
+        /// <param name="playerPrefix">The player prefix.</param>
+        /// <param name="player">The player to use for the prefix.</param>
+        public TranslationBuilder(string translation, string playerPrefix, Player player)
+        {
+            Translation = translation;
+            AddPlayer(playerPrefix, player);
+        }
+
+#pragma warning disable SA1401 // FieldsMustBePrivate
+        /// <summary>
+        /// Gets the dictionary of replacers that have no argument.
+        /// </summary>
+        public static Dictionary<string, Func<string>> StaticReplacers { get; } = new()
         {
             // Map Replacers
             ["seed"] = () => Map.Seed.ToString(),
@@ -53,9 +78,9 @@ namespace DiscordLab.Bot.API.Features
         };
 
         /// <summary>
-        /// Time based replacers. The <see cref="long"/> type is the unix timestamp. Can be got with <see cref="DateTimeOffset.ToUnixTimeSeconds"/>.
+        /// Gets time based replacers. The <see cref="long"/> type is the unix timestamp. Can be got with <see cref="DateTimeOffset.ToUnixTimeSeconds"/>.
         /// </summary>
-        public static Dictionary<string, Func<long, string>> TimeReplacers = new()
+        public static Dictionary<string, Func<long, string>> TimeReplacers { get; } = new()
         {
             ["time"] = time => $"<t:{time}>",
             ["timet"] = time => $"<t:{time}:t>",
@@ -70,9 +95,9 @@ namespace DiscordLab.Bot.API.Features
         };
 
         /// <summary>
-        /// Player based replacements.
+        /// Gets player based replacements.
         /// </summary>
-        public static Dictionary<string, Func<Player, string>> PlayerReplacers = new()
+        public static Dictionary<string, Func<Player, string>> PlayerReplacers { get; } = new()
         {
             ["nickname"] = player => player.Nickname.Replace("@", "\\@"),
             ["id"] = player => player.UserId,
@@ -87,31 +112,7 @@ namespace DiscordLab.Bot.API.Features
             ["group"] = player => player.GroupName,
             ["badgecolor"] = player => player.GroupColor.ToString(),
         };
-
-        private static readonly Regex TagRemoveRegex = new("<[^>]+>", RegexOptions.Compiled);
-
-        private static readonly Regex UselessTextRemoveRegex = new(@"<color=#00000000>(.*?)<\/color>", RegexOptions.Compiled);
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TranslationBuilder"/> class.
-        /// </summary>
-        /// <param name="translation">The translation to modify.</param>
-        public TranslationBuilder(string translation)
-        {
-            Translation = translation;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="TranslationBuilder"/> class with a person added.
-        /// </summary>
-        /// <param name="translation">The translation to modify.</param>
-        /// <param name="playerPrefix">The player prefix.</param>
-        /// <param name="player">The player to use for the prefix.</param>
-        public TranslationBuilder(string translation, string playerPrefix, Player player)
-        {
-            Translation = translation;
-            AddPlayer(playerPrefix, player);
-        }
+#pragma warning restore SA1401 // FieldsMustBePrivate
 
         /// <summary>
         /// Gets or sets a Dictionary of custom replacers. Key is the text to replace and value is the factory to replace with.
@@ -143,6 +144,11 @@ namespace DiscordLab.Bot.API.Features
         /// Gets or sets the separator between items in <see cref="PlayerListItem"/>.
         /// </summary>
         public string PlayerListSeparator { get; set; } = "\n";
+
+        /// <summary>
+        /// Gets or sets the player list that will be used for <see cref="PlayerListItem"/>.
+        /// </summary>
+        public IEnumerable<Player> PlayerList { get; set; }
 
         /// <summary>
         /// <inheritdoc cref="Build"/>.
@@ -292,7 +298,7 @@ namespace DiscordLab.Bot.API.Features
 
         private void SetupPlayerList()
         {
-            Player[] readyPlayers = Player.ReadyList.ToArray();
+            Player[] readyPlayers = (PlayerList ?? Player.ReadyList).ToArray();
 
             int length = readyPlayers.Length;
 

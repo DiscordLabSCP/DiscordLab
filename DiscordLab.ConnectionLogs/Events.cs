@@ -32,6 +32,10 @@ namespace DiscordLab.ConnectionLogs
         
         public override void OnPlayerLeft(PlayerLeftEventArgs ev)
         {
+            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
+            if (ev.Player == null) // for some reason, leave logs are sent with no player...
+                return;
+            
             if (Config.LeaveChannelId == 0)
                 return;
 

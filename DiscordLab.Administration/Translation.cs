@@ -13,20 +13,13 @@ namespace DiscordLab.Administration
         
         public string CommandLog { get; set; } = "Player {player} has executed the command: `{command}`";
         
-        public SlashCommandBuilder SendCommand { get; set; } = new()
-        {
-            Name = "send",
-            Description = "Sends a command to the server",
-            DefaultMemberPermissions = GuildPermission.Administrator,
-            Options =
-            [
-                new()
-                {
-                    Name = "command",
-                    Description = "The command to send"
-                }
-            ]
-        };
+        public string SendCommandName { get; set; } = "send";
+        
+        public string SendCommandDescription { get; set; } = "Sends a command to the server";
+        
+        public string SendCommandOptionName { get; set; } = "command";
+        
+        public string SendCommandOptionDescription { get; set; } = "The command to send";
 
         public string SendCommandResponse { get; set; } = "The command has been sent, it returned: {response}";
     }

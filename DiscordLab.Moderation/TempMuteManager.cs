@@ -26,7 +26,7 @@ namespace DiscordLab.Moderation
                     RemoveMute(dict.Key);
                     continue;
                 }
-                AddHandle();
+                AddHandle(dict.Key, time);
             }
         }
 

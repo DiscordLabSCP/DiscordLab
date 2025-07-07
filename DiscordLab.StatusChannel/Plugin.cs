@@ -1,6 +1,6 @@
 ﻿using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
+using DiscordLab.Dependency;
 using LabApi.Events.CustomHandlers;
 using LabApi.Events.Handlers;
 using LabApi.Features;
@@ -31,7 +31,7 @@ namespace DiscordLab.StatusChannel
             CustomHandlersManager.RegisterEventsHandler(Events);
             
             if(Config.AddCommand)
-                ISlashCommand.FindAll();
+                SlashCommand.FindAll();
         }
 
         public override void Disable()

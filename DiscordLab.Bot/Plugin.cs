@@ -1,8 +1,8 @@
-﻿using DiscordLab.Bot.API.Interfaces;
-
-namespace DiscordLab.Bot
+﻿namespace DiscordLab.Bot
 {
     using DiscordLab.Bot.API.Attributes;
+    using DiscordLab.Bot.API.Features;
+    using HarmonyLib;
     using LabApi.Features;
     using LabApi.Loader.Features.Plugins;
     using LabApi.Loader.Features.Plugins.Enums;
@@ -38,25 +38,31 @@ namespace DiscordLab.Bot
         /// </summary>
         public new Config Config { get; private set; }
 
+        private Harmony Harmony { get; } = new($"DiscordLab.Bot-{DateTime.Now.Ticks}");
+
         /// <inheritdoc />
         public override void Enable()
         {
+            Harmony.PatchAll();
+
             Instance = this;
             Config = base.Config;
 
             CallOnLoadAttribute.Load();
             CallOnReadyAttribute.Load();
 
-            ISlashCommand.FindAll();
+            SlashCommand.FindAll();
         }
 
         /// <inheritdoc />
         public override void Disable()
         {
-            Config = null;
-            Instance = null;
+            Harmony.UnpatchAll();
 
             CallOnUnloadAttribute.Unload();
+
+            Config = null;
+            Instance = null;
         }
     }
 }

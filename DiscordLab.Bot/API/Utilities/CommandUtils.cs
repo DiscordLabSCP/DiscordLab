@@ -1,7 +1,10 @@
-using LabApi.Features.Wrappers;
-
 namespace DiscordLab.Bot.API.Utilities
 {
+    using LabApi.Features.Wrappers;
+
+    /// <summary>
+    /// Utility methods for commands.
+    /// </summary>
     public static class CommandUtils
     {
         /// <summary>

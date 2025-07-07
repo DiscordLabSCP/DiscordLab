@@ -8,6 +8,7 @@ using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
 using PlayerRoles;
 using LabApi.Features.Console;
+using LabApi.Features.Extensions;
 using LabApi.Features.Wrappers;
 using Respawning.Waves;
 
@@ -22,13 +23,13 @@ namespace DiscordLab.RoundLogs
         public override void OnPlayerChangedRole(PlayerChangedRoleEventArgs ev)
         {
             if (ev.ChangeReason is RoleChangeReason.Respawn or RoleChangeReason.RoundStart
-                or RoleChangeReason.RespawnMiniwave or RoleChangeReason.LateJoin)
+                or RoleChangeReason.RespawnMiniwave or RoleChangeReason.LateJoin or RoleChangeReason.Died or RoleChangeReason.Destroyed)
                 return;
             
             Dictionary<string, Func<string>> customReplacers = new()
             {
-                ["oldrole"] = () => ev.OldRole.ToString(),
-                ["newrole"] = () => ev.NewRole.RoleTypeId.ToString(),
+                ["oldrole"] = () => ev.OldRole.GetFullName(),
+                ["newrole"] = () => ev.NewRole.RoleName,
                 ["reason"] = () => ev.ChangeReason.ToString(),
                 ["spawnflags"] = () => string.Join(", ", ev.SpawnFlags.GetFlags())
             };
@@ -90,7 +91,8 @@ namespace DiscordLab.RoundLogs
 
             TranslationBuilder builder = new(isFoundation ? Translation.NtfSpawn : Translation.ChaosSpawn)
             {
-                PlayerListItem = Translation.PlayerListItem
+                PlayerListItem = Translation.PlayerListItem,
+                PlayerList = ev.Players
             };
             
             channel.SendMessage(builder);
