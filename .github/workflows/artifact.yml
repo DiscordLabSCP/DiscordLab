@@ -7,7 +7,7 @@ env:
   EXILED_REFERENCES_URL: https://exslmod-team.github.io/SL-References/Dev.zip
   XP_SYSTEM_URL: https://api.github.com/repos/RowpannSCP/XP/releases
   SL_REFERENCES: ${{ github.workspace }}/refs
-  EXILED_REFERENCES: ${{ env.SL_REFERENCES }}
+  EXILED_REFERENCES: ${{ github.workspace }}/refs
 
 jobs:
   build:
