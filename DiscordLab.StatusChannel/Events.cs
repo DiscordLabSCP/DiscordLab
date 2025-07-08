@@ -9,6 +9,7 @@ using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using LabApi.Loader;
+using MEC;
 
 namespace DiscordLab.StatusChannel
 {
@@ -91,20 +92,29 @@ namespace DiscordLab.StatusChannel
                 return;
             }
 
-            Task.Run(GetOrCreateMessage);
+            Timing.CallDelayed(0.1f, () => Task.Run(GetOrCreateMessage));
         }
 
         public static async Task GetOrCreateMessage()
         {
             ulong msgId = Plugin.Instance.MessageConfig.MessageId;
-            Message = Channel.GetCachedMessage(msgId) as IUserMessage ??
-                      await Channel.GetMessageAsync(msgId) as IUserMessage;
-
+            Message = msgId != 0 ? Channel.GetCachedMessage(msgId) as IUserMessage ??
+                      await Channel.GetMessageAsync(msgId) as IUserMessage : null;
+            
             if (Message == null)
             {
                 EmbedBuilder embed = Plugin.Instance.Translation.EmbedEmpty;
-                embed.Description = new TranslationBuilder(embed.Description);
-                Message = await Channel.SendMessageAsync(embed:embed.Build());
+                try
+                {
+                    embed.Description = new TranslationBuilder(embed.Description).Build();
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                    return;
+                }
+
+                Message = await Channel.SendMessageAsync(embed: embed.Build());
 
                 Plugin.Instance.MessageConfig.MessageId = Message.Id;
                 Plugin.Instance.SaveConfig(Plugin.Instance.MessageConfig, "message_config.yml");

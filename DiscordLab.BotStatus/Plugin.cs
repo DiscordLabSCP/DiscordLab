@@ -1,5 +1,6 @@
 using Discord;
 using DiscordLab.Bot;
+using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Dependency;
 using LabApi.Events.Arguments.PlayerEvents;
@@ -25,14 +26,23 @@ namespace DiscordLab.BotStatus
 
             PlayerEvents.Joined += OnPlayerJoin;
             PlayerEvents.Left += OnPlayerLeave;
+            
+            ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
         }
 
         public override void Disable()
         {
+            ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
+            
             PlayerEvents.Joined -= OnPlayerJoin;
             PlayerEvents.Left -= OnPlayerLeave;
             
             Instance = null;
+        }
+
+        public static void OnWaitingForPlayers()
+        {
+            UpdateStatus();
         }
 
         public static void OnPlayerJoin(PlayerJoinedEventArgs _)
@@ -52,7 +62,7 @@ namespace DiscordLab.BotStatus
         }
 
         private static Queue Queue { get; } = new(5, UpdateStatus);
-
+        
         private static void UpdateStatus()
         {
             TranslationBuilder builder = new(Server.PlayerCount == 0 ? Instance.Translation.EmptyContent : Instance.Translation.NormalContent);

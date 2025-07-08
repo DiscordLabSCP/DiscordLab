@@ -73,7 +73,7 @@ namespace DiscordLab.Bot.API.Features
             ["port"] = () => Server.Port.ToString(),
             ["ip"] = () => Server.IpAddress,
             ["playercount"] = () => Server.PlayerCount.ToString(),
-            ["playercountnonpcs"] = () => Player.List.Count(p => !p.IsNpc).ToString(),
+            ["playercountnonpcs"] = () => Player.ReadyList.Count(p => !p.IsNpc).ToString(),
             ["tps"] = () => Server.Tps.ToString(CultureInfo.CurrentCulture),
         };
 

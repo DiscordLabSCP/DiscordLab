@@ -9,7 +9,7 @@ namespace DiscordLab.StatusChannel
         public EmbedBuilder Embed { get; set; } = new()
         {
             Title = "Server Status",
-            Color = Color.Blue,
+            Color = Color.Blue.RawValue,
             Description = "{playercount}/{maxplayers} currently online\\n```{players}```"
         };
 
@@ -17,7 +17,7 @@ namespace DiscordLab.StatusChannel
         public EmbedBuilder EmbedEmpty { get; set; } = new()
         {
             Title = "Server Status",
-            Color = Color.Blue,
+            Color = Color.Blue.RawValue,
             Description = "0/{maxplayers} currently online"
         };
 
