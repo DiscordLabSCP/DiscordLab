@@ -25,6 +25,8 @@ namespace DiscordLab.Bot.API.Attributes
                     if (attribute == null)
                         continue;
 
+                    Logger.Debug($"Loading load attribute {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
+
                     try
                     {
                         method.Invoke(null, null);

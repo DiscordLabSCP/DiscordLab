@@ -6,6 +6,7 @@
     using System.Reflection.Emit;
     using Discord.Net.Rest;
     using HarmonyLib;
+    using LabApi.Features.Console;
 
     /// <summary>
     /// Patches <see cref="DefaultRestClient"/>.
@@ -39,6 +40,8 @@
         /// <returns>The patched code.</returns>
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
+            Logger.Debug("Transpiler start", Plugin.Instance.Config.Debug);
+
             CodeMatcher matcher = new CodeMatcher(instructions)
                 .MatchEndForward(
                     new CodeMatch(OpCodes.Ldarg_0),
@@ -67,11 +70,15 @@
                     new CodeInstruction(OpCodes.Ldarg_3),  // webProxy parameter
                     new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RestClientCreate), nameof(CreateHttpClientHandler))));
 
+            Logger.Debug("Transpiler end", Plugin.Instance.Config.Debug);
+
             return matcher.InstructionEnumeration();
         }
 
         private static HttpClientHandler CreateHttpClientHandler(DecompressionMethods decompressionMethods, bool useCookies, bool useProxy, IWebProxy webProxy)
         {
+            Logger.Debug("Creating HttpClientHandler", Plugin.Instance.Config.Debug);
+
             HttpClientHandler handler = new()
             {
                 AutomaticDecompression = decompressionMethods,
@@ -80,6 +87,8 @@
 
             if (!useProxy)
                 return handler;
+
+            Logger.Debug("Creating HttpClientHandler with proxy", Plugin.Instance.Config.Debug);
 
             handler.UseProxy = true;
             handler.Proxy = webProxy;

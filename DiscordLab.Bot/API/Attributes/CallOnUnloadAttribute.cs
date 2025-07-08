@@ -27,6 +27,7 @@ namespace DiscordLab.Bot.API.Attributes
 
                     try
                     {
+                        Logger.Debug($"Calling unload attribute {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
                         method.Invoke(null, null);
                     }
                     catch (Exception ex)

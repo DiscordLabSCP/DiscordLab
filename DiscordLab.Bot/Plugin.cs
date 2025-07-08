@@ -1,9 +1,11 @@
 ﻿namespace DiscordLab.Bot
 {
+    using Discord;
     using DiscordLab.Bot.API.Attributes;
     using DiscordLab.Bot.API.Features;
     using HarmonyLib;
     using LabApi.Features;
+    using LabApi.Features.Console;
     using LabApi.Loader.Features.Plugins;
     using LabApi.Loader.Features.Plugins.Enums;
 
@@ -43,10 +45,20 @@
         /// <inheritdoc />
         public override void Enable()
         {
-            Harmony.PatchAll();
-
             Instance = this;
-            Config = base.Config;
+            Config = base.Config!;
+
+            try
+            {
+                TokenUtils.ValidateToken(TokenType.Bot, Config.Token);
+            }
+            catch (Exception)
+            {
+                Logger.Error("DiscordLab bot token is invalid");
+                return;
+            }
+
+            Harmony.PatchAll();
 
             CallOnLoadAttribute.Load();
             CallOnReadyAttribute.Load();
