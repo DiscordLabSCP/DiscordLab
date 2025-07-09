@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Discord;
+using EmbedBuilder = DiscordLab.Bot.API.Features.Embed.EmbedBuilder;
 
 namespace DiscordLab.StatusChannel
 {
@@ -9,7 +10,7 @@ namespace DiscordLab.StatusChannel
         public EmbedBuilder Embed { get; set; } = new()
         {
             Title = "Server Status",
-            Color = Color.Blue.RawValue,
+            Color = Color.Blue.ToString(),
             Description = "{playercount}/{maxplayers} currently online\\n```{players}```"
         };
 
@@ -17,7 +18,7 @@ namespace DiscordLab.StatusChannel
         public EmbedBuilder EmbedEmpty { get; set; } = new()
         {
             Title = "Server Status",
-            Color = Color.Blue.RawValue,
+            Color = Color.Blue.ToString(),
             Description = "0/{maxplayers} currently online"
         };
 

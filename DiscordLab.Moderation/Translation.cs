@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using Discord;
+using DiscordLab.Bot.API.Features.Embed;
 
 namespace DiscordLab.Moderation
 {
