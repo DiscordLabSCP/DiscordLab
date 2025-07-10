@@ -40,7 +40,16 @@
         public string Color
         {
             get => Builder.Color?.ToString();
-            set => Builder.Color = Discord.Color.Parse(value);
+            set
+            {
+                if (value == null)
+                {
+                    Builder.Color = null;
+                    return;
+                }
+
+                Builder.Color = Discord.Color.Parse(value);
+            }
         }
 
         [YamlIgnore]
