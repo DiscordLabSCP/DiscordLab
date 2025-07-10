@@ -9,13 +9,14 @@ using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using LabApi.Loader;
-using MEC;
 
 namespace DiscordLab.StatusChannel
 {
     public class Events : CustomEventsHandler
     {
         // events
+
+        public override void OnServerWaitingForPlayers() => Task.Run(GetOrCreateMessage);
         
         public override void OnPlayerJoined(PlayerJoinedEventArgs _) => Process();
 
@@ -91,8 +92,6 @@ namespace DiscordLab.StatusChannel
                 Plugin.Instance.Disable();
                 return;
             }
-
-            Timing.CallDelayed(0.1f, () => Task.Run(GetOrCreateMessage));
         }
 
         public static async Task GetOrCreateMessage()
