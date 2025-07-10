@@ -55,6 +55,7 @@ namespace DiscordLab.StatusChannel
         public static EmbedBuilder GetEmbed()
         {
             EmbedBuilder embed = !Player.ReadyList.Any() ? Translation.EmbedEmpty : Translation.Embed;
+            
             TranslationBuilder builder = new(embed.Description);
             
             if (Player.ReadyList.Any())
@@ -69,7 +70,6 @@ namespace DiscordLab.StatusChannel
 
         public static void EditMessage()
         {
-            if (Channel == null && Message == null) return;
             if (Message == null)
             {
                 Task.Run(async () =>
@@ -80,7 +80,17 @@ namespace DiscordLab.StatusChannel
                 return;
             }
             
-            Task.Run(async () => await Message.ModifyAsync(x => x.Embed = GetEmbed().Build()).ConfigureAwait(false));
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await Message.ModifyAsync(x => x.Embed = GetEmbed().Build());
+                }
+                catch (Exception e)
+                {
+                    Logger.Error(e);
+                }
+            });
         }
 
         [CallOnReady]
@@ -90,7 +100,6 @@ namespace DiscordLab.StatusChannel
             {
                 Logger.Error(LoggingUtils.GenerateMissingChannelMessage("status channel", Config.ChannelId, Config.GuildId));
                 Plugin.Instance.Disable();
-                return;
             }
         }
 
@@ -103,15 +112,7 @@ namespace DiscordLab.StatusChannel
             if (Message == null)
             {
                 EmbedBuilder embed = Plugin.Instance.Translation.EmbedEmpty;
-                try
-                {
-                    embed.Description = new TranslationBuilder(embed.Description).Build();
-                }
-                catch (Exception e)
-                {
-                    Logger.Error(e);
-                    return;
-                }
+                embed.Description = new TranslationBuilder(embed.Description);
 
                 Message = await Channel.SendMessageAsync(embed: embed.Build());
 

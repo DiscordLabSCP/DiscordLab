@@ -11,7 +11,7 @@ namespace DiscordLab.StatusChannel
         {
             Title = "Server Status",
             Color = Color.Blue.ToString(),
-            Description = "{playercount}/{maxplayers} currently online\\n```{players}```"
+            Description = "{playercount}/{maxplayers} currently online\n```{players}```"
         };
 
         [Description("What will show when the server is empty.")]

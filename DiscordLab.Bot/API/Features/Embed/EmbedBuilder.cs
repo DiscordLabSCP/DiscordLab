@@ -59,8 +59,44 @@
         /// Changes a <see cref="EmbedBuilder"/> into a <see cref="Discord.EmbedBuilder"/> instance.
         /// </summary>
         /// <param name="builder">The <see cref="EmbedBuilder"/> instance.</param>
-        /// <returns>The <see cref="Discord.EmbedBuilder"/> instance.</returns>
-        public static implicit operator Discord.EmbedBuilder(EmbedBuilder builder) =>
-            builder.Builder;
+        /// <returns>A copy of the <see cref="Discord.EmbedBuilder"/> instance.</returns>
+        public static implicit operator Discord.EmbedBuilder(EmbedBuilder builder)
+        {
+            Discord.EmbedBuilder copy = new();
+
+            if (builder.Builder.Title != null)
+                copy.WithTitle(builder.Builder.Title);
+
+            if (builder.Builder.Description != null)
+                copy.WithDescription(builder.Builder.Description);
+
+            if (builder.Builder.Color.HasValue)
+                copy.WithColor(builder.Builder.Color.Value);
+
+            if (builder.Builder.Url != null)
+                copy.WithUrl(builder.Builder.Url);
+
+            if (builder.Builder.ImageUrl != null)
+                copy.WithImageUrl(builder.Builder.ImageUrl);
+
+            if (builder.Builder.ThumbnailUrl != null)
+                copy.WithThumbnailUrl(builder.Builder.ThumbnailUrl);
+
+            if (builder.Builder.Timestamp.HasValue)
+                copy.WithTimestamp(builder.Builder.Timestamp.Value);
+
+            if (builder.Builder.Footer != null)
+                copy.WithFooter(builder.Builder.Footer);
+
+            if (builder.Builder.Author != null)
+                copy.WithAuthor(builder.Builder.Author);
+
+            foreach (Discord.EmbedFieldBuilder field in builder.Builder.Fields)
+            {
+                copy.AddField(field.Name, field.Value, field.IsInline);
+            }
+
+            return copy;
+        }
     }
 }

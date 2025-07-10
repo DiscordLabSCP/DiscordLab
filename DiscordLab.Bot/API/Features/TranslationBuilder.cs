@@ -312,7 +312,7 @@ namespace DiscordLab.Bot.API.Features
                 playerDictionary[playerKey] = readyPlayers[i];
             }
 
-            CustomReplacers.Add("players", () => string.Join(PlayerListSeparator, playerItems));
+            AddCustomReplacer("players", string.Join(PlayerListSeparator, playerItems));
 
             AddPlayers(playerDictionary);
         }
