@@ -5,7 +5,11 @@ namespace DiscordLab.Bot.API.Features
     using Discord;
     using LabApi.Features.Extensions;
     using LabApi.Features.Wrappers;
+    using LightContainmentZoneDecontamination;
+    using Mirror.LiteNetLib4Mirror;
     using PlayerRoles;
+    using RoundRestarting;
+    using UnityEngine;
 
     /// <summary>
     /// Allows you to create translations with placeholders being replaced.
@@ -45,6 +49,14 @@ namespace DiscordLab.Bot.API.Features
         {
             // Map Replacers
             ["seed"] = () => Map.Seed.ToString(),
+            ["isdecont"] = () => DecontaminationController.Singleton.IsDecontaminating.ToString(),
+            ["remainingdeconttime"] = () =>
+                Mathf
+                    .Min(
+                        0,
+                        (float)(DecontaminationController.Singleton.DecontaminationPhases[DecontaminationController.Singleton.DecontaminationPhases.Length - 1].TimeTrigger - DecontaminationController.GetServerTime))
+                    .ToString(CultureInfo.InvariantCulture),
+            ["isdecontenabled"] = () => (DecontaminationController.Singleton.NetworkDecontaminationOverride == DecontaminationController.DecontaminationStatus.None).ToString(),
 
             // Round Replacers
             ["killcount"] = () => Round.TotalDeaths.ToString(),
@@ -59,6 +71,7 @@ namespace DiscordLab.Bot.API.Features
             ["islobbylocked"] = () => Round.IsLobbyLocked.ToString(),
             ["scpkillcount"] = () => Round.KilledBySCPs.ToString(),
             ["alivescpcount"] = () => Round.SurvivingSCPs.ToString(),
+            ["roundcount"] = () => RoundRestart.UptimeRounds.ToString(),
 
             // Server Replacers
             ["maxplayers"] = () => Server.MaxPlayers.ToString(),
@@ -75,6 +88,9 @@ namespace DiscordLab.Bot.API.Features
             ["playercount"] = () => Server.PlayerCount.ToString(),
             ["playercountnonpcs"] = () => Player.ReadyList.Count(p => !p.IsNpc).ToString(),
             ["tps"] = () => Server.Tps.ToString(CultureInfo.CurrentCulture),
+            ["version"] = () => GameCore.Version.VersionString,
+            ["isbeta"] = () => (GameCore.Version.PublicBeta || GameCore.Version.PublicBeta).ToString(),
+            ["isfriendlyfire"] = () => Server.FriendlyFire.ToString(),
         };
 
         /// <summary>
@@ -111,6 +127,14 @@ namespace DiscordLab.Bot.API.Features
             ["maxhealth"] = player => player.MaxHealth.ToString(CultureInfo.CurrentCulture),
             ["group"] = player => player.GroupName,
             ["badgecolor"] = player => player.GroupColor.ToString(),
+            ["hasdnt"] = player => player.DoNotTrack.ToString(),
+            ["hasra"] = player => player.RemoteAdminAccess.ToString(),
+            ["isnorthwood"] = player => player.IsNorthwoodStaff.ToString(),
+            ["room"] = player => player.Room?.ToString() ?? "None",
+            ["zone"] = player => player.Zone.ToString(),
+            ["position"] = player => player.Position.ToString(),
+            ["ping"] = player => LiteNetLib4MirrorServer.GetPing(player.Connection.connectionId).ToString(),
+            ["isglobalmod"] = player => player.IsGlobalModerator.ToString(),
         };
 #pragma warning restore SA1401 // FieldsMustBePrivate
 
