@@ -42,7 +42,7 @@ namespace DiscordLab.DeathLogs
             if (ev.DamageHandler is not StandardDamageHandler handler)
                 return;
             
-            if (handler.TotalDamageDealt <= 0) return;
+            if (handler.Damage <= 0) return;
 
             string type = Events.ConvertToString(ev.DamageHandler);
             
@@ -57,7 +57,7 @@ namespace DiscordLab.DeathLogs
             string log = new TranslationBuilder(Plugin.Instance.Translation.DamageLogEntry)
                 .AddPlayer("target", ev.Player)
                 .AddPlayer("player", ev.Attacker)
-                .AddCustomReplacer("damage", handler.TotalDamageDealt.ToString(CultureInfo.InvariantCulture))
+                .AddCustomReplacer("damage", handler.Damage.ToString(CultureInfo.InvariantCulture))
                 .AddCustomReplacer("cause", type);
             
             DamageLogEntries.Add(log);
