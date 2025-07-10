@@ -7,7 +7,6 @@ using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
-using GameCore;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Console;
@@ -18,6 +17,8 @@ namespace DiscordLab.DeathLogs
     public static class DamageLogs
     {
         public static List<string> DamageLogEntries { get; set; } = new();
+
+        public static SocketTextChannel Channel;
 
         private static Queue queue = new(5, SendLog);
         
@@ -33,6 +34,9 @@ namespace DiscordLab.DeathLogs
         {
             if (Plugin.Instance.Config.DamageLogChannelId == 0) return;
             PlayerEvents.Hurt -= OnHurt;
+
+            DamageLogEntries = null;
+            Channel = null;
         }
 
         public static void OnHurt(PlayerHurtEventArgs ev)
@@ -67,7 +71,7 @@ namespace DiscordLab.DeathLogs
 
         public static void SendLog()
         {
-            if (!Client.TryGetOrAddChannel(Plugin.Instance.Config.DamageLogChannelId, out SocketTextChannel channel))
+            if (Channel == null && !Client.TryGetOrAddChannel(Plugin.Instance.Config.DamageLogChannelId, out Channel))
             {
                 Logger.Error(
                     LoggingUtils.GenerateMissingChannelMessage(
@@ -77,7 +81,7 @@ namespace DiscordLab.DeathLogs
                 return;
             }
             
-            channel.SendMessage(embeds:CreateEmbeds());
+            Channel.SendMessage(embeds:CreateEmbeds());
             
             DamageLogEntries.Clear();
         }
