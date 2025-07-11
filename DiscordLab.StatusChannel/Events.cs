@@ -16,7 +16,7 @@ namespace DiscordLab.StatusChannel
     {
         // events
 
-        public override void OnServerWaitingForPlayers() => Task.Run(GetOrCreateMessage);
+        public override void OnServerWaitingForPlayers() => EditMessage();
         
         public override void OnPlayerJoined(PlayerJoinedEventArgs _) => Process();
 
