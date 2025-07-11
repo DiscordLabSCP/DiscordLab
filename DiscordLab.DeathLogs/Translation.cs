@@ -25,7 +25,8 @@ namespace DiscordLab.DeathLogs
         public EmbedBuilder DamageLogEmbed { get; set; } = new()
         {
             Title = "Damage Logs",
-            Description = "{entries}"
+            Description = "{entries}",
+            Color = Discord.Color.Blue.ToString()
         };
 
         [Description("What each instance of damage will look like in the logs.")]
