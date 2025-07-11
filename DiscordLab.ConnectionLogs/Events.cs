@@ -62,7 +62,7 @@ namespace DiscordLab.ConnectionLogs
                 return;
             }
             
-            channel.SendMessage(new TranslationBuilder(Translation.PlayerLeave)
+            channel.SendMessage(new TranslationBuilder(Translation.RoundStart)
             {
                 PlayerListItem = Translation.RoundPlayers
             });
@@ -79,7 +79,7 @@ namespace DiscordLab.ConnectionLogs
                 return;
             }
 
-            TranslationBuilder builder = new(Translation.PlayerLeave)
+            TranslationBuilder builder = new(Translation.RoundEnd)
             {
                 PlayerListItem = Translation.RoundPlayers
             };
