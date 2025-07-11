@@ -7,6 +7,7 @@ using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.ConnectionLogs
 {
@@ -18,6 +19,9 @@ namespace DiscordLab.ConnectionLogs
 
         public override void OnPlayerJoined(PlayerJoinedEventArgs ev)
         {
+            if (!Round.IsRoundInProgress)
+                return;
+            
             if (Config.JoinChannelId == 0)
                 return;
 
@@ -32,8 +36,7 @@ namespace DiscordLab.ConnectionLogs
         
         public override void OnPlayerLeft(PlayerLeftEventArgs ev)
         {
-            // ReSharper disable once ConditionIsAlwaysTrueOrFalse
-            if (ev.Player == null) // for some reason, leave logs are sent with no player...
+            if (!Round.IsRoundInProgress)
                 return;
             
             if (Config.LeaveChannelId == 0)
