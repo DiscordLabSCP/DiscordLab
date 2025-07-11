@@ -115,7 +115,9 @@ namespace DiscordLab.Bot.API.Features
         /// </summary>
         public static Dictionary<string, Func<Player, string>> PlayerReplacers { get; } = new()
         {
-            ["nickname"] = player => player.Nickname.Replace("@", "\\@"),
+            ["name"] = player => player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere"),
+            ["nickname"] = player => player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere"),
+            ["displayname"] = player => player.DisplayName,
             ["id"] = player => player.UserId,
             ["ip"] = player => player.IpAddress,
             ["userid"] = player => player.PlayerId.ToString(),
@@ -135,6 +137,7 @@ namespace DiscordLab.Bot.API.Features
             ["position"] = player => player.Position.ToString(),
             ["ping"] = player => LiteNetLib4MirrorServer.GetPing(player.Connection.connectionId).ToString(),
             ["isglobalmod"] = player => player.IsGlobalModerator.ToString(),
+            ["permissiongroup"] = player => player.PermissionsGroupName ?? "None",
         };
 #pragma warning restore SA1401 // FieldsMustBePrivate
 
