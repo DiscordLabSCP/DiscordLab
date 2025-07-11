@@ -43,4 +43,21 @@
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
         <PackageReference Include="System.Text.Json" Version="9.0.6" />
     </ItemGroup>
+  
+    <PropertyGroup>
+        <DependencyPath>$(MSBuildThisFileDirectory)bin\dependencies\</DependencyPath>
+    </PropertyGroup>
+
+    <Target Name="CopyDependencies" AfterTargets="Build">
+        <ItemGroup>
+            <DependenciesToCopy Include="$(OutputPath)0Harmony.dll" />
+            <DependenciesToCopy Include="$(OutputPath)Discord.Net.*.dll" />
+            <DependenciesToCopy Include="$(OutputPath)Newtonsoft.Json.dll" />
+            <DependenciesToCopy Include="$(OutputPath)System.ValueTuple.dll" />
+        </ItemGroup>
+    
+        <Copy SourceFiles="@(DependenciesToCopy)"
+              DestinationFolder="$(DependencyPath)"
+              SkipUnchangedFiles="true"/>
+    </Target>
 </Project>
