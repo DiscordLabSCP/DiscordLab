@@ -115,8 +115,8 @@ namespace DiscordLab.Bot.API.Features
         /// </summary>
         public static Dictionary<string, Func<Player, string>> PlayerReplacers { get; } = new()
         {
-            ["name"] = player => player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere"),
-            ["nickname"] = player => player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere"),
+            ["name"] = player => player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere").Trim(),
+            ["nickname"] = player => player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere").Trim(),
             ["displayname"] = player => player.DisplayName,
             ["id"] = player => player.UserId,
             ["ip"] = player => player.IpAddress,
