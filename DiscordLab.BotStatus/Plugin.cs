@@ -25,7 +25,7 @@ namespace DiscordLab.BotStatus
             Instance = this;
 
             PlayerEvents.Joined += OnPlayerJoin;
-            PlayerEvents.Left += OnPlayerLeave;
+            ReferenceHub.OnPlayerRemoved += OnPlayerLeave;
             
             ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
         }
@@ -35,7 +35,7 @@ namespace DiscordLab.BotStatus
             ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
             
             PlayerEvents.Joined -= OnPlayerJoin;
-            PlayerEvents.Left -= OnPlayerLeave;
+            ReferenceHub.OnPlayerRemoved -= OnPlayerLeave;
             
             Instance = null;
         }
@@ -53,7 +53,7 @@ namespace DiscordLab.BotStatus
                 Queue.Process();
         }
 
-        public static void OnPlayerLeave(PlayerLeftEventArgs _)
+        public static void OnPlayerLeave(ReferenceHub _)
         {
             if(Round.IsRoundInProgress)
                 UpdateStatus();

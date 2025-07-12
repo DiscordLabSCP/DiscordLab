@@ -19,8 +19,8 @@ namespace DiscordLab.StatusChannel
         public override void OnServerWaitingForPlayers() => EditMessage();
         
         public override void OnPlayerJoined(PlayerJoinedEventArgs _) => Process();
-
-        public override void OnPlayerLeft(PlayerLeftEventArgs _) => Process();
+        
+        public static void OnPlayerLeave(ReferenceHub _) => Process();
 
         public override void OnServerRoundStarted() => EditMessage();
         
@@ -36,12 +36,20 @@ namespace DiscordLab.StatusChannel
 
         public static Queue Queue = new(5, EditMessage);
 
+        [CallOnLoad]
+        public static void Register()
+        {
+            ReferenceHub.OnPlayerRemoved += OnPlayerLeave;
+        }
+        
         [CallOnUnload]
         public static void Unregister()
         {
             Channel = null;
             Message = null;
             Queue = null;
+
+            ReferenceHub.OnPlayerRemoved -= OnPlayerLeave;
         }
         
         public static void Process()

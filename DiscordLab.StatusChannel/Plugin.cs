@@ -26,6 +26,8 @@ namespace DiscordLab.StatusChannel
         {
             Instance = this;
             
+            CallOnLoadAttribute.Load();
+            
             CallOnReadyAttribute.Load();
             
             CustomHandlersManager.RegisterEventsHandler(Events);
