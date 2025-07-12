@@ -9,8 +9,9 @@ using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
-using LabApi.Features.Console;
 using PlayerStatsSystem;
+using UnityEngine;
+using Logger = LabApi.Features.Console.Logger;
 
 namespace DiscordLab.DeathLogs
 {
@@ -49,14 +50,24 @@ namespace DiscordLab.DeathLogs
             if (handler.Damage <= 0) return;
 
             string type = Events.ConvertToString(ev.DamageHandler);
+
             
             // passive damage checkers, don't want these spamming console.
-            if (type == "Cardiac Arrest") return;
-            if (ev.Player.HasEffect<Corroding>() && type == "SCP-106") return;
-            if (ev.Player.HasEffect<PocketCorroding>() && type == "SCP-106") return;
-            if (type == "Strangled") return;
+            switch (type)
+            {
+                case "Cardiac Arrest":
+                case "Unknown" when Mathf.Approximately(handler.Damage, 2.1f):
+                    return;
+            }
+            if (ev.Player.HasEffect<Corroding>() && type == "SCP-106") 
+                return;
+            if (ev.Player.HasEffect<PocketCorroding>() && type == "SCP-106") 
+                return;
+            if (type == "Strangled") 
+                return;
             
-            if (ev.Player.IsSCP && ev.Attacker.IsSCP && Plugin.Instance.Config.IgnoreScpDamage) return;
+            if (ev.Player.IsSCP && ev.Attacker.IsSCP && Plugin.Instance.Config.IgnoreScpDamage) 
+                return;
 
             string log = new TranslationBuilder(Plugin.Instance.Translation.DamageLogEntry)
                 .AddPlayer("target", ev.Player)
