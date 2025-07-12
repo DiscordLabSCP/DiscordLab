@@ -22,18 +22,11 @@ jobs:
         uses: NuGet/setup-nuget@v2
       - name: Checkout
         uses: actions/checkout@v4
-      - name: Get Exiled References
+      - name: Get References
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri ${{ env.EXILED_REFERENCES_URL }} -OutFile ${{ github.workspace }}/References.zip
           Expand-Archive -Path References.zip -DestinationPath ${{ env.SL_REFERENCES }} -Force
-      - name: Get XP System
-        shell: pwsh
-        run: |
-          $response = Invoke-RestMethod -Uri ${{ env.XP_SYSTEM_URL }}
-          $asset = $response.assets | Where-Object { $_.name -eq 'XPSystem-EXILED.dll' } | Select-Object -First 1
-          $url = $asset.browser_download_url
-          Invoke-WebRequest -Uri $url -OutFile ${{ env.SL_REFERENCES }}/XPSystem.dll
       - name: Restore packages
         run: nuget restore ${{ github.workspace }}/DiscordLab.sln
       - name: Build
