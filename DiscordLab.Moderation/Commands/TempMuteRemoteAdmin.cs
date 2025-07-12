@@ -5,11 +5,10 @@ using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands
 {
-    [CommandHandler(typeof(RemoteAdminCommandHandler))]
     public class TempMuteRemoteAdmin : ICommand, IUsageProvider
     {
         public string Command { get; } = "tempmute";
-        public string[] Aliases { get; } = ["tempm", "mutet"];
+        public string[] Aliases { get; } = ["tempm", "mutet", "temporarymute", "mutetemp", "mutetemporary"];
         public string Description { get; } = "Temporarily mutes a user.";
         
         public string[] Usage { get; } =

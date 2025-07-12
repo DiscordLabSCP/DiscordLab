@@ -1,3 +1,5 @@
+using System.ComponentModel;
+
 namespace DiscordLab.Moderation
 {
     public class Config
@@ -12,6 +14,10 @@ namespace DiscordLab.Moderation
 
         public ulong UnbanLogChannelId { get; set; } = 0;
 
+        [Description("Whether to add the Discord slash commands.")]
         public bool AddCommands { get; set; } = true;
+
+        [Description("Whether to enable the temp mute remote admin command.")]
+        public bool AddTempMuteCommand { get; set; } = true;
     }
 }

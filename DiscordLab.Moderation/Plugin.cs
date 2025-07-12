@@ -2,10 +2,12 @@
 using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Dependency;
+using DiscordLab.Moderation.Commands;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
 using LabApi.Features.Wrappers;
 using LabApi.Loader;
+using RemoteAdmin;
 
 namespace DiscordLab.Moderation
 {
@@ -31,6 +33,9 @@ namespace DiscordLab.Moderation
             
             if (Config.AddCommands)
                 SlashCommand.FindAll();
+            
+            if (Config.AddTempMuteCommand)
+                CommandProcessor.RemoteAdminCommandHandler.RegisterCommand(new TempMuteRemoteAdmin());
             
             CustomHandlersManager.RegisterEventsHandler(Events);
         }
