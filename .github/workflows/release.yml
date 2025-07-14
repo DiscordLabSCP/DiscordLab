@@ -6,6 +6,7 @@ on:
 
 jobs:
   notify:
+    if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
