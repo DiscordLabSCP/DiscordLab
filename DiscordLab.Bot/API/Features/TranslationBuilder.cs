@@ -288,6 +288,9 @@ namespace DiscordLab.Bot.API.Features
 
             foreach (KeyValuePair<string, Player> player in Players)
             {
+                if (player.Value is not { IsReady: true })
+                    continue;
+
                 returnTranslation = Regex.Replace(
                     returnTranslation,
                     ToParameterString(player.Key),
@@ -303,6 +306,10 @@ namespace DiscordLab.Bot.API.Features
                         replacement = replacer.Value(player.Value);
                     }
                     catch (NullReferenceException)
+                    {
+                        replacement = "Unknown";
+                    }
+                    catch (IndexOutOfRangeException)
                     {
                         replacement = "Unknown";
                     }
