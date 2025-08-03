@@ -56,7 +56,7 @@ namespace DiscordLab.Bot.API.Features
                         0,
                         (float)(DecontaminationController.Singleton.DecontaminationPhases[DecontaminationController.Singleton.DecontaminationPhases.Length - 1].TimeTrigger - DecontaminationController.GetServerTime))
                     .ToString(CultureInfo.InvariantCulture),
-            ["isdecontenabled"] = () => (DecontaminationController.Singleton.NetworkDecontaminationOverride == DecontaminationController.DecontaminationStatus.None).ToString(),
+            ["isdecontenabled"] = () => (DecontaminationController.Singleton.DecontaminationOverride == DecontaminationController.DecontaminationStatus.None).ToString(),
 
             // Round Replacers
             ["killcount"] = () => Round.TotalDeaths.ToString(),
