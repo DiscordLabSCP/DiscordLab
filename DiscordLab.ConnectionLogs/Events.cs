@@ -9,84 +9,83 @@ using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 
-namespace DiscordLab.ConnectionLogs
+namespace DiscordLab.ConnectionLogs;
+
+public class Events : CustomEventsHandler
 {
-    public class Events : CustomEventsHandler
+    public static Config Config => Plugin.Instance.Config;
+
+    public static Translation Translation => Plugin.Instance.Translation;
+
+    public override void OnPlayerJoined(PlayerJoinedEventArgs ev)
     {
-        public static Config Config => Plugin.Instance.Config;
+        if (!Round.IsRoundInProgress)
+            return;
+            
+        if (Config.JoinChannelId == 0)
+            return;
 
-        public static Translation Translation => Plugin.Instance.Translation;
-
-        public override void OnPlayerJoined(PlayerJoinedEventArgs ev)
+        if (!Client.TryGetOrAddChannel(Config.JoinChannelId, out SocketTextChannel channel))
         {
-            if (!Round.IsRoundInProgress)
-                return;
-            
-            if (Config.JoinChannelId == 0)
-                return;
-
-            if (!Client.TryGetOrAddChannel(Config.JoinChannelId, out SocketTextChannel channel))
-            {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("join log", Config.JoinChannelId, Config.GuildId));
-                return;
-            }
-            
-            channel.SendMessage(new TranslationBuilder(Translation.PlayerJoin, "player", ev.Player));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("join log", Config.JoinChannelId, Config.GuildId));
+            return;
         }
+            
+        channel.SendMessage(new TranslationBuilder(Translation.PlayerJoin, "player", ev.Player));
+    }
         
-        public override void OnPlayerLeft(PlayerLeftEventArgs ev)
+    public override void OnPlayerLeft(PlayerLeftEventArgs ev)
+    {
+        if (!Round.IsRoundInProgress)
+            return;
+            
+        if (Config.LeaveChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.LeaveChannelId, out SocketTextChannel channel))
         {
-            if (!Round.IsRoundInProgress)
-                return;
-            
-            if (Config.LeaveChannelId == 0)
-                return;
-
-            if (!Client.TryGetOrAddChannel(Config.LeaveChannelId, out SocketTextChannel channel))
-            {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("leave log", Config.LeaveChannelId, Config.GuildId));
-                return;
-            }
-            
-            channel.SendMessage(new TranslationBuilder(Translation.PlayerLeave, "player", ev.Player));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("leave log", Config.LeaveChannelId, Config.GuildId));
+            return;
         }
+            
+        channel.SendMessage(new TranslationBuilder(Translation.PlayerLeave, "player", ev.Player));
+    }
 
-        public override void OnServerRoundStarted()
+    public override void OnServerRoundStarted()
+    {
+        if (Config.RoundStartChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.RoundStartChannelId, out SocketTextChannel channel))
         {
-            if (Config.RoundStartChannelId == 0)
-                return;
-
-            if (!Client.TryGetOrAddChannel(Config.RoundStartChannelId, out SocketTextChannel channel))
-            {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundStartChannelId, Config.GuildId));
-                return;
-            }
-            
-            channel.SendMessage(new TranslationBuilder(Translation.RoundStart)
-            {
-                PlayerListItem = Translation.RoundPlayers
-            });
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundStartChannelId, Config.GuildId));
+            return;
         }
+            
+        channel.SendMessage(new TranslationBuilder(Translation.RoundStart)
+        {
+            PlayerListItem = Translation.RoundPlayers
+        });
+    }
         
-        public override void OnServerRoundEnded(RoundEndedEventArgs ev)
+    public override void OnServerRoundEnded(RoundEndedEventArgs ev)
+    {
+        if (Config.RoundEndChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.RoundEndChannelId, out SocketTextChannel channel))
         {
-            if (Config.RoundEndChannelId == 0)
-                return;
-
-            if (!Client.TryGetOrAddChannel(Config.RoundEndChannelId, out SocketTextChannel channel))
-            {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundEndChannelId, Config.GuildId));
-                return;
-            }
-
-            TranslationBuilder builder = new(Translation.RoundEnd)
-            {
-                PlayerListItem = Translation.RoundPlayers
-            };
-            
-            builder.CustomReplacers.Add("winner", () => ev.LeadingTeam.ToString());
-            
-            channel.SendMessage(builder);
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundEndChannelId, Config.GuildId));
+            return;
         }
+
+        TranslationBuilder builder = new(Translation.RoundEnd)
+        {
+            PlayerListItem = Translation.RoundPlayers
+        };
+            
+        builder.CustomReplacers.Add("winner", () => ev.LeadingTeam.ToString());
+            
+        channel.SendMessage(builder);
     }
 }

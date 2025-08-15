@@ -3,33 +3,32 @@ using DiscordLab.Dependency;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
 
-namespace DiscordLab.ConnectionLogs
+namespace DiscordLab.ConnectionLogs;
+
+public class Plugin : Plugin<Config, Translation>
 {
-    public class Plugin : Plugin<Config, Translation>
+    public static Plugin Instance;
+        
+    public override string Name { get; } = "DiscordLab.ConnectionLogs";
+    public override string Description { get; } = "Adds logging for connection based information";
+    public override string Author { get; } = "LumiFae";
+    public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
+    public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+
+    public Events Events = new();
+        
+    public override void Enable()
     {
-        public static Plugin Instance;
-        
-        public override string Name { get; } = "DiscordLab.ConnectionLogs";
-        public override string Description { get; } = "Adds logging for connection based information";
-        public override string Author { get; } = "LumiFae";
-        public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
-        public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
-
-        public Events Events = new();
-        
-        public override void Enable()
-        {
-            Instance = this;
+        Instance = this;
             
-            CustomHandlersManager.RegisterEventsHandler(Events);
-        }
+        CustomHandlersManager.RegisterEventsHandler(Events);
+    }
 
-        public override void Disable()
-        {
-            CustomHandlersManager.UnregisterEventsHandler(Events);
-            Events = null;
+    public override void Disable()
+    {
+        CustomHandlersManager.UnregisterEventsHandler(Events);
+        Events = null;
             
-            Instance = null;
-        }
+        Instance = null;
     }
 }

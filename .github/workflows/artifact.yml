@@ -13,24 +13,19 @@ jobs:
   build:
     runs-on: windows-2022
     steps:
-      - name: Setup MSBuild
-        uses: microsoft/setup-msbuild@v1.1.3
-        with:
-          vs-prerelease: false
-          msbuild-architecture: x64
-      - name: Setup NuGet
-        uses: NuGet/setup-nuget@v2
       - name: Checkout
         uses: actions/checkout@v4
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: 9.0.x
       - name: Get References
         shell: pwsh
         run: |
           Invoke-WebRequest -Uri ${{ env.EXILED_REFERENCES_URL }} -OutFile ${{ github.workspace }}/References.zip
           Expand-Archive -Path References.zip -DestinationPath ${{ env.SL_REFERENCES }} -Force
-      - name: Restore packages
-        run: nuget restore ${{ github.workspace }}/DiscordLab.sln
       - name: Build
-        run: msbuild.exe ${{ github.workspace }}/DiscordLab.sln /p:Configuration=Debug /p:Platform="Any CPU"
+        run: dotnet build -c:Release
       - name: Publish Artifact
         uses: actions/upload-artifact@v4
         with:

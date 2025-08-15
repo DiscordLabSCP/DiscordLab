@@ -1,46 +1,45 @@
-namespace DiscordLab.Bot.API.Utilities
+namespace DiscordLab.Bot.API.Utilities;
+
+using LabApi.Features.Wrappers;
+
+/// <summary>
+/// Utility methods for commands.
+/// </summary>
+public static class CommandUtils
 {
-    using LabApi.Features.Wrappers;
+    /// <summary>
+    /// Gets a player from an unparsed string id, will check if <see cref="Player.PlayerId"/> or <see cref="Player.UserId"/>.
+    /// </summary>
+    /// <param name="id">The ID to check.</param>
+    /// <returns>The player if found.</returns>
+    public static Player GetPlayerFromUnparsed(string id)
+    {
+        return TryGetPlayerFromUnparsed(id, out Player player) ? player : null;
+    }
 
     /// <summary>
-    /// Utility methods for commands.
+    /// Tries to get a player from an unparsed string id, will check if <see cref="Player.PlayerId"/> or <see cref="Player.UserId"/>.
     /// </summary>
-    public static class CommandUtils
+    /// <param name="id">The ID to check.</param>
+    /// <param name="player">The player if found.</param>
+    /// <returns>Whether the player was found.</returns>
+    public static bool TryGetPlayerFromUnparsed(string id, out Player player)
     {
-        /// <summary>
-        /// Gets a player from an unparsed string id, will check if <see cref="Player.PlayerId"/> or <see cref="Player.UserId"/>.
-        /// </summary>
-        /// <param name="id">The ID to check.</param>
-        /// <returns>The player if found.</returns>
-        public static Player GetPlayerFromUnparsed(string id)
+        if (int.TryParse(id, out int intId))
         {
-            return TryGetPlayerFromUnparsed(id, out Player player) ? player : null;
+            if (!Player.TryGet(intId, out player))
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (!Player.TryGet(id, out player))
+            {
+                return false;
+            }
         }
 
-        /// <summary>
-        /// Tries to get a player from an unparsed string id, will check if <see cref="Player.PlayerId"/> or <see cref="Player.UserId"/>.
-        /// </summary>
-        /// <param name="id">The ID to check.</param>
-        /// <param name="player">The player if found.</param>
-        /// <returns>Whether the player was found.</returns>
-        public static bool TryGetPlayerFromUnparsed(string id, out Player player)
-        {
-            if (int.TryParse(id, out int intId))
-            {
-                if (!Player.TryGet(intId, out player))
-                {
-                    return false;
-                }
-            }
-            else
-            {
-                if (!Player.TryGet(id, out player))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
+        return true;
     }
 }

@@ -1,7 +1,6 @@
-namespace DiscordLab.Moderation
+namespace DiscordLab.Moderation;
+
+public class TempMuteConfig
 {
-    public class TempMuteConfig
-    {
-        public Dictionary<string, DateTime> Mutes { get; set; } = new();
-    }
+    public Dictionary<string, DateTime> Mutes { get; set; } = new();
 }
