@@ -4,7 +4,7 @@ on:
   - push
 
 env:
-  EXILED_REFERENCES_URL: https://exslmod-team.github.io/SL-References/Dev.zip
+  EXILED_REFERENCES_URL: https://exmod-team.github.io/SL-References/Dev.zip
   XP_SYSTEM_URL: https://api.github.com/repos/RowpannSCP/XP/releases
   SL_REFERENCES: ${{ github.workspace }}/refs
   EXILED_REFERENCES: ${{ github.workspace }}/refs
