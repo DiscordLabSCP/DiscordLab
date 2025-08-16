@@ -5,7 +5,6 @@ namespace DiscordLab.Bot.API.Features;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Discord;
-using LabApi.Features.Extensions;
 using LabApi.Features.Wrappers;
 using LightContainmentZoneDecontamination;
 using Mirror.LiteNetLib4Mirror;
@@ -123,7 +122,7 @@ public class TranslationBuilder
         ["id"] = player => player.UserId,
         ["ip"] = player => player.IpAddress,
         ["userid"] = player => player.PlayerId.ToString(),
-        ["role"] = player => player.Role.GetFullName(),
+        ["role"] = player => player.RoleBase.RoleName,
         ["roletype"] = player => player.Role.ToString(),
         ["team"] = player => player.Team.ToString(),
         ["faction"] = player => player.Team.GetFaction().ToString(),
