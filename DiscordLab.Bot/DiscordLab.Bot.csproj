@@ -45,7 +45,7 @@
     </ItemGroup>
   
     <PropertyGroup>
-        <DependencyPath>$(MSBuildThisFileDirectory)bin\dependencies\</DependencyPath>
+        <DependencyPath>$(MSBuildThisFileDirectory)..\bin\dependencies\</DependencyPath>
     </PropertyGroup>
 
     <Target Name="CopyDependencies" AfterTargets="Build">
