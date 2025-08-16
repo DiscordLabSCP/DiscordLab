@@ -82,11 +82,19 @@ public class Events : CustomEventsHandler
         }
 
         EmbedBuilder builder = Translation.BanLogEmbed;
+        
+        TimeSpan timeSpan = TimeSpan.FromSeconds(ev.Duration);
+        DateTime expiration = DateTime.Now.Add(timeSpan);
             
         foreach (EmbedFieldBuilder field in builder.Fields)
         {
-            TranslationBuilder tBuilder = new((string)field.Value, "player", ev.Issuer);
-            tBuilder.CustomReplacers.Add("userid", () => ev.PlayerId);
+            TranslationBuilder tBuilder = new TranslationBuilder((string)field.Value, "player", ev.Issuer)
+                {
+                    Time = expiration
+                }
+                .AddCustomReplacer("userid", ev.PlayerId)
+                .AddCustomReplacer("reason", ev.Reason);
+            
             field.Value = tBuilder.Build();
         }
             
