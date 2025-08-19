@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using Discord;
+using DiscordLab.Bot.API.Features;
 using EmbedBuilder = DiscordLab.Bot.API.Features.Embed.EmbedBuilder;
 
 namespace DiscordLab.StatusChannel;
@@ -7,7 +8,7 @@ namespace DiscordLab.StatusChannel;
 public class Translation
 {
     [Description("What will show when the server has players.")]
-    public EmbedBuilder Embed { get; set; } = new()
+    public MessageContent Content { get; set; } = new EmbedBuilder
     {
         Title = "Server Status",
         Color = Color.Blue.ToString(),
@@ -15,7 +16,7 @@ public class Translation
     };
 
     [Description("What will show when the server is empty.")]
-    public EmbedBuilder EmbedEmpty { get; set; } = new()
+    public MessageContent EmptyContent { get; set; } = new EmbedBuilder
     {
         Title = "Server Status",
         Color = Color.Blue.ToString(),

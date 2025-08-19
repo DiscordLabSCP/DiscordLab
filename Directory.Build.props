@@ -1,31 +1,31 @@
 ﻿<Project>
-  <PropertyGroup>
-    <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
-  </PropertyGroup>
+    <PropertyGroup>
+        <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
+    </PropertyGroup>
 
-  <Target Name="CopyToSharedBin" AfterTargets="Build">
-    <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
-          DestinationFolder="$(SharedBinPath)"
-          SkipUnchangedFiles="true" />
-  </Target>
-  
-  <ItemGroup>
-    <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="false" Publicize="true" />
-    <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll" Private="false" />
-    <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll" Private="false" Publicize="true" />
-    <Reference Include="UnityEngine" HintPath="$(SL_REFERENCES)\UnityEngine.dll" Private="false" />
-    <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="false" />
-    <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false" />
-    <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll" Private="false" />
-    <Reference Include="mscorlib" HintPath="$(SL_REFERENCES)\mscorlib.dll" />
-  </ItemGroup>
-  
-  <ItemGroup Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
-    <ProjectReference Include="$(MSBuildThisFileDirectory)DiscordLab.Dependency\DiscordLab.Dependency.csproj" Private="false" PrivateAssets="none" IncludeAssets="all" />
-  </ItemGroup>
+    <Target Name="CopyToSharedBin" AfterTargets="Build">
+        <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
+              DestinationFolder="$(SharedBinPath)"
+              SkipUnchangedFiles="true"/>
+    </Target>
 
-  <ItemGroup>
-    <PackageReference Include="Northwood.LabAPI" Version="1.1.0" />
-    <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" ExcludeAssets="runtime" ReferenceOutputAssembly="false" Private="true" />
-  </ItemGroup>
+    <ItemGroup>
+        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="false" Publicize="true"/>
+        <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll" Private="false"/>
+        <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll" Private="false" Publicize="true"/>
+        <Reference Include="UnityEngine" HintPath="$(SL_REFERENCES)\UnityEngine.dll" Private="false"/>
+        <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="false"/>
+        <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false"/>
+        <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll" Private="false"/>
+        <Reference Include="mscorlib" HintPath="$(SL_REFERENCES)\mscorlib.dll"/>
+    </ItemGroup>
+
+    <ItemGroup Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
+        <ProjectReference Include="$(MSBuildThisFileDirectory)DiscordLab.Dependency\DiscordLab.Dependency.csproj" Private="false" PrivateAssets="none" IncludeAssets="all"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.0"/>
+        <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" ExcludeAssets="runtime" ReferenceOutputAssembly="false" Private="true"/>
+    </ItemGroup>
 </Project>

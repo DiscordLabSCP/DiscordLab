@@ -17,19 +17,19 @@ public class Events : CustomEventsHandler
     // events
 
     public override void OnServerWaitingForPlayers() => EditMessage();
-        
+
     public override void OnPlayerJoined(PlayerJoinedEventArgs _) => Process();
-        
+
     public static void OnPlayerLeave(ReferenceHub _) => Process();
 
     public override void OnServerRoundStarted() => EditMessage();
-        
+
     // static methods
-        
+
     public static Config Config => Plugin.Instance.Config;
 
     public static Translation Translation => Plugin.Instance.Translation;
-        
+
     public static SocketTextChannel Channel;
 
     public static IUserMessage Message;
@@ -41,7 +41,7 @@ public class Events : CustomEventsHandler
     {
         ReferenceHub.OnPlayerRemoved += OnPlayerLeave;
     }
-        
+
     [CallOnUnload]
     public static void Unregister()
     {
@@ -51,29 +51,13 @@ public class Events : CustomEventsHandler
 
         ReferenceHub.OnPlayerRemoved -= OnPlayerLeave;
     }
-        
+
     public static void Process()
     {
-        if(Round.IsRoundInProgress)
+        if (Round.IsRoundInProgress)
             EditMessage();
         else
             Queue.Process();
-    }
-
-    public static EmbedBuilder GetEmbed()
-    {
-        EmbedBuilder embed = !Player.ReadyList.Any() ? Translation.EmbedEmpty : Translation.Embed;
-            
-        TranslationBuilder builder = new(embed.Description);
-            
-        if (Player.ReadyList.Any())
-        {
-            builder.PlayerListItem = Translation.PlayerItem;
-        }
-
-        embed.Description = builder;
-
-        return embed;
     }
 
     public static void EditMessage()
@@ -87,18 +71,18 @@ public class Events : CustomEventsHandler
             });
             return;
         }
-            
-        Task.Run(async () =>
+
+        try
         {
-            try
+            (Player.ReadyList.Any() ? Translation.Content : Translation.EmptyContent).ModifyMessage(Message, new()
             {
-                await Message.ModifyAsync(x => x.Embed = GetEmbed().Build());
-            }
-            catch (Exception e)
-            {
-                Logger.Error(e);
-            }
-        });
+                PlayerListItem = Translation.PlayerItem
+            });
+        }
+        catch (Exception e)
+        {
+            Logger.Error(e);
+        }
     }
 
     [CallOnReady]
@@ -106,7 +90,8 @@ public class Events : CustomEventsHandler
     {
         if (!Client.TryGetOrAddChannel(Config.ChannelId, out Channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("status channel", Config.ChannelId, Config.GuildId));
+            Logger.Error(
+                LoggingUtils.GenerateMissingChannelMessage("status channel", Config.ChannelId, Config.GuildId));
             Plugin.Instance.Disable();
         }
     }
@@ -114,15 +99,14 @@ public class Events : CustomEventsHandler
     public static async Task GetOrCreateMessage()
     {
         ulong msgId = Plugin.Instance.MessageConfig.MessageId;
-        Message = msgId != 0 ? Channel.GetCachedMessage(msgId) as IUserMessage ??
-                               await Channel.GetMessageAsync(msgId) as IUserMessage : null;
-            
+        Message = msgId != 0
+            ? Channel.GetCachedMessage(msgId) as IUserMessage ??
+              await Channel.GetMessageAsync(msgId) as IUserMessage
+            : null;
+
         if (Message == null)
         {
-            EmbedBuilder embed = Plugin.Instance.Translation.EmbedEmpty;
-            embed.Description = new TranslationBuilder(embed.Description);
-
-            Message = await Channel.SendMessageAsync(embed: embed.Build());
+            Message = await Translation.EmptyContent.SendToChannelAsync(Channel, new());
 
             Plugin.Instance.MessageConfig.MessageId = Message.Id;
             Plugin.Instance.SaveConfig(Plugin.Instance.MessageConfig, "message_config.yml");

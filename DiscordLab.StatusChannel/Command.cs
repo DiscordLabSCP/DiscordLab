@@ -13,7 +13,7 @@ public class Command : SlashCommand
     };
 
     public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-        
+
     public override async Task Run(SocketSlashCommand command)
     {
         await command.RespondAsync(embed: Events.GetEmbed().Build());

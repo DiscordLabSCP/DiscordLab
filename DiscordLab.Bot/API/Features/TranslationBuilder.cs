@@ -20,7 +20,24 @@ public class TranslationBuilder
     private static readonly Regex TagRemoveRegex = new("<[^>]+>", RegexOptions.Compiled);
 
     private static readonly Regex UselessTextRemoveRegex =
-        new(@"<color=#00000000>(.*?)<\/color>", RegexOptions.Compiled);
+        new(@"<color=#00000000>(?:.*?)<\/color>", RegexOptions.Compiled);
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TranslationBuilder"/> class.
+    /// </summary>
+    public TranslationBuilder()
+    {
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="TranslationBuilder"/> class with a person added.
+    /// </summary>
+    /// <param name="playerPrefix">The player prefix.</param>
+    /// <param name="player">The player to use for the prefix.</param>
+    public TranslationBuilder(string playerPrefix, Player player)
+    {
+        AddPlayer(playerPrefix, player);
+    }
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TranslationBuilder"/> class.
@@ -157,9 +174,9 @@ public class TranslationBuilder
     public DateTime Time { get; set; } = DateTime.Now;
 
     /// <summary>
-    /// Gets the translation.
+    /// Gets or sets the translation.
     /// </summary>
-    public string Translation { get; }
+    public string Translation { get; set; }
 
     /// <summary>
     /// Gets or sets the item that will show for each player when the {players} placeholder is used. Defaults to null.
@@ -250,9 +267,15 @@ public class TranslationBuilder
     /// <summary>
     /// Builds this <see cref="TranslationBuilder"/> instance.
     /// </summary>
+    /// <param name="translation">The translation to build from, isn't needed if <see cref="Translation"/> is defined.</param>
     /// <returns>The translation built.</returns>
-    public string Build()
+    public string Build(string translation = null)
     {
+        translation ??= Translation;
+
+        if (string.IsNullOrEmpty(translation))
+            throw new ArgumentNullException($"{nameof(TranslationBuilder)} failed to build because of no valid translation.");
+
         if (PlayerListItem != null)
             SetupPlayerList();
 
