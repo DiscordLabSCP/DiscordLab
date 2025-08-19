@@ -19,4 +19,15 @@ public static class DiscordExtensions
     /// <remarks>Text, embed or embeds is required here.</remarks>
     public static void SendMessage(this SocketTextChannel channel, string text = null, bool isTts = false, Embed embed = null, Embed[] embeds = null) =>
         Task.Run(async () => await channel.SendMessageAsync(text, isTts, embed, embeds: embeds).ConfigureAwait(false));
+
+    /// <summary>
+    /// Gets an option from a list of slash command options.
+    /// </summary>
+    /// <param name="options">The options to check from.</param>
+    /// <param name="name">The option name to get.</param>
+    /// <typeparam name="T">The type that this option should return.</typeparam>
+    /// <returns>The found item, if any.</returns>
+    public static T GetOption<T>(this IReadOnlyCollection<SocketSlashCommandDataOption> options, string name) 
+        where T : class =>
+        options.FirstOrDefault(option => option.Name == name) as T;
 }

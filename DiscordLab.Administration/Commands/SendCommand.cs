@@ -1,6 +1,7 @@
 using CommandSystem;
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using LabApi.Features.Wrappers;
 using RemoteAdmin;
@@ -36,7 +37,7 @@ public class SendCommand : AutocompleteCommand
     {
         await command.DeferAsync();
 
-        string response = Server.RunCommand((string)command.Data.Options.First().Value);
+        string response = Server.RunCommand(command.Data.Options.GetOption<string>(Translation.SendCommandOptionName));
 
         TranslationBuilder builder = new TranslationBuilder()
             .AddCustomReplacer("response", response);
