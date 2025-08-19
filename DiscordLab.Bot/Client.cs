@@ -1,4 +1,5 @@
 // ReSharper disable MemberCanBePrivate.Global
+
 namespace DiscordLab.Bot;
 
 using System.Net;
@@ -66,17 +67,20 @@ public static class Client
         return text;
     }
 
+#nullable disable
     /// <summary>
     /// Tries to get or add a channel via its ID. Uses cache.
     /// </summary>
     /// <param name="id">The ID of the channel.</param>
     /// <param name="channel">The channel, if found.</param>
     /// <returns>Whether the channel was found.</returns>
-    public static bool TryGetOrAddChannel(ulong id, out SocketTextChannel? channel)
+    public static bool TryGetOrAddChannel(ulong id, out SocketTextChannel channel)
     {
         channel = GetOrAddChannel(id);
+
         return channel != null;
     }
+#nullable restore
 
     /// <summary>
     /// Starts the bot.
