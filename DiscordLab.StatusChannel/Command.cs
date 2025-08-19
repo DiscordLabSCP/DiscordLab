@@ -16,6 +16,9 @@ public class Command : SlashCommand
 
     public override async Task Run(SocketSlashCommand command)
     {
-        await command.RespondAsync(embed: Events.GetEmbed().Build());
+        await Events.UsableContent.InteractionRespond(command, new()
+        {
+            PlayerListItem = Plugin.Instance.Translation.PlayerItem
+        });
     }
 }

@@ -91,6 +91,22 @@ public class MessageContent
         }).ConfigureAwait(false));
     }
 
+    /// <summary>
+    /// Responds to a <see cref="SocketCommandBase"/> with this message and builder.
+    /// </summary>
+    /// <param name="command">The <see cref="SocketCommandBase"/> instance.</param>
+    /// <param name="builder">The <see cref="TranslationBuilder"/> instance to utilise.</param>
+    /// <returns>This task.</returns>
+    public async Task InteractionRespond(SocketCommandBase command, TranslationBuilder builder)
+    {
+        if (Embed == null && Message == null)
+            throw new ArgumentNullException($"Failed to respond to command {command.CommandName} because both embed and message contents were undefined.");
+
+        (Discord.Embed embed, string content) = Build(builder);
+
+        await command.RespondAsync(content, embed: embed);
+    }
+
     private (Discord.Embed Embed, string Content) Build(TranslationBuilder builder)
     {
         if (Embed == null)

@@ -60,6 +60,8 @@ public class Events : CustomEventsHandler
             Queue.Process();
     }
 
+    public static MessageContent UsableContent => Player.ReadyList.Any() ? Translation.Content : Translation.EmptyContent;
+
     public static void EditMessage()
     {
         if (Message == null)
@@ -74,7 +76,7 @@ public class Events : CustomEventsHandler
 
         try
         {
-            (Player.ReadyList.Any() ? Translation.Content : Translation.EmptyContent).ModifyMessage(Message, new()
+            UsableContent.ModifyMessage(Message, new()
             {
                 PlayerListItem = Translation.PlayerItem
             });
