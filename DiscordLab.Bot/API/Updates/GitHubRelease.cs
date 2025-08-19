@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace DiscordLab.Bot.API.Updates;
 
 using System.Text.Json.Serialization;
@@ -13,11 +15,15 @@ public class GitHubRelease
     [JsonPropertyName("tag_name")]
     public string TagName { get; set; }
 
+    // ReSharper disable CollectionNeverUpdated.Global
+
     /// <summary>
     /// Gets or sets the assets for this release.
     /// </summary>
     [JsonPropertyName("assets")]
     public List<GitHubReleaseAsset> Assets { get; set; }
+
+    // ReSharper restore CollectionNeverUpdated.Global
 
     /// <summary>
     /// Gets or sets a value indicating whether this is a prerelease release.

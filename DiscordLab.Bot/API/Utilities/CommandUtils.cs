@@ -12,9 +12,9 @@ public static class CommandUtils
     /// </summary>
     /// <param name="id">The ID to check.</param>
     /// <returns>The player if found.</returns>
-    public static Player GetPlayerFromUnparsed(string id)
+    public static Player? GetPlayerFromUnparsed(string id)
     {
-        return TryGetPlayerFromUnparsed(id, out Player player) ? player : null;
+        return TryGetPlayerFromUnparsed(id, out Player? player) ? player : null;
     }
 
     /// <summary>
@@ -23,7 +23,7 @@ public static class CommandUtils
     /// <param name="id">The ID to check.</param>
     /// <param name="player">The player if found.</param>
     /// <returns>Whether the player was found.</returns>
-    public static bool TryGetPlayerFromUnparsed(string id, out Player player)
+    public static bool TryGetPlayerFromUnparsed(string id, out Player? player)
     {
         if (int.TryParse(id, out int intId))
         {

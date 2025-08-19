@@ -13,7 +13,7 @@ public class CallOnUnloadAttribute : Attribute
     /// Find all <see cref="CallOnUnloadAttribute"/> attributes in your plugin and calls them.
     /// </summary>
     /// <param name="assembly">The assembly you wish to check, defaults to the current one.</param>
-    public static void Unload(Assembly assembly = null)
+    public static void Unload(Assembly? assembly = null)
     {
         assembly ??= Assembly.GetCallingAssembly();
 

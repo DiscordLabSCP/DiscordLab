@@ -1,3 +1,5 @@
+#nullable disable
+
 namespace DiscordLab.Bot.API.Updates;
 
 using System.Text.Json.Serialization;

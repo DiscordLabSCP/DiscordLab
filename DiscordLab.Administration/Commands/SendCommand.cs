@@ -31,7 +31,7 @@ public class SendCommand : AutocompleteCommand
         ]
     };
 
-    public override ulong GuildId { get; } = Config.GuildId;
+    protected override ulong GuildId { get; } = Config.GuildId;
         
     public override async Task Run(SocketSlashCommand command)
     {

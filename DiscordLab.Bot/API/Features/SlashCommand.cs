@@ -28,13 +28,13 @@ public abstract class SlashCommand
     /// <summary>
     /// Gets the guild ID to assign this command to.
     /// </summary>
-    public abstract ulong GuildId { get; }
+    protected abstract ulong GuildId { get; }
 
     /// <summary>
     /// Finds and creates all slash commands in your plugin. There is no method to delete all your commands, as that is handled by the bot itself.
     /// </summary>
     /// <param name="assembly">The assembly you wish to check, defaults to the current one.</param>
-    public static void FindAll(Assembly assembly = null)
+    public static void FindAll(Assembly? assembly = null)
     {
         assembly ??= Assembly.GetCallingAssembly();
 
@@ -43,7 +43,8 @@ public abstract class SlashCommand
             if (type.IsAbstract || !typeof(SlashCommand).IsAssignableFrom(type))
                 continue;
 
-            SlashCommand init = Activator.CreateInstance(type) as SlashCommand;
+            if (Activator.CreateInstance(type) is not SlashCommand init)
+                continue;
             Commands.Add(init);
         }
     }
@@ -65,7 +66,7 @@ public abstract class SlashCommand
     private static void Unload()
     {
         Commands.CollectionChanged -= OnCollectionChanged;
-        Commands = null;
+        Commands.Clear();
     }
 
     [CallOnReady]
@@ -90,7 +91,7 @@ public abstract class SlashCommand
     {
         foreach (IGrouping<ulong, SlashCommand> cmds in commands.GroupBy(cmd => cmd.GuildId))
         {
-            SocketGuild guild = Client.GetGuild(cmds.Key);
+            SocketGuild? guild = Client.GetGuild(cmds.Key);
             if (guild == null)
             {
                 Logger.Warn($"Could not find guild {cmds.Key}, so could not register the commands {string.Join(",", cmds.Select(cmd => cmd.Data.Name))}");

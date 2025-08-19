@@ -1,3 +1,4 @@
+// ReSharper disable MemberCanBePrivate.Global
 namespace DiscordLab.Bot;
 
 using System.Net;
@@ -18,7 +19,7 @@ public static class Client
     /// <summary>
     /// Gets the websocket client for the Discord bot.
     /// </summary>
-    public static DiscordSocketClient SocketClient { get; private set; }
+    public static DiscordSocketClient SocketClient { get; private set; } = null!;
 
     /// <summary>
     /// Gets a value indicating whether the client is in the ready state.
@@ -33,7 +34,7 @@ public static class Client
     /// <summary>
     /// Gets the default guild for the plugin.
     /// </summary>
-    public static SocketGuild DefaultGuild { get; private set; }
+    public static SocketGuild? DefaultGuild { get; private set; }
 
     private static Config Config => Plugin.Instance.Config;
 
@@ -42,7 +43,7 @@ public static class Client
     /// </summary>
     /// <param name="id">The guild ID.</param>
     /// <returns>If the ID is 0, then the default guild (if it exists), if else then it will return the found guild, or null.</returns>
-    public static SocketGuild GetGuild(ulong id)
+    public static SocketGuild? GetGuild(ulong id)
     {
         return id == 0 ? DefaultGuild : SocketClient.GetGuild(id);
     }
@@ -52,8 +53,18 @@ public static class Client
     /// </summary>
     /// <param name="id">The ID of the channel.</param>
     /// <returns>The channel, if found.</returns>
-    public static SocketTextChannel GetOrAddChannel(ulong id) =>
-        SavedTextChannels.GetOrAdd(id, () => SocketClient.GetChannel(id) as SocketTextChannel);
+    public static SocketTextChannel? GetOrAddChannel(ulong id)
+    {
+        if (SavedTextChannels.TryGetValue(id, out SocketTextChannel ret))
+            return ret;
+
+        SocketChannel channel = SocketClient.GetChannel(id);
+        if (channel is not SocketTextChannel text)
+            return null;
+
+        SavedTextChannels.Add(id, text);
+        return text;
+    }
 
     /// <summary>
     /// Tries to get or add a channel via its ID. Uses cache.
@@ -61,7 +72,7 @@ public static class Client
     /// <param name="id">The ID of the channel.</param>
     /// <param name="channel">The channel, if found.</param>
     /// <returns>Whether the channel was found.</returns>
-    public static bool TryGetOrAddChannel(ulong id, out SocketTextChannel channel)
+    public static bool TryGetOrAddChannel(ulong id, out SocketTextChannel? channel)
     {
         channel = GetOrAddChannel(id);
         return channel != null;
@@ -112,7 +123,7 @@ public static class Client
     [CallOnUnload]
     internal static void Disable()
     {
-        SavedTextChannels = null;
+        SavedTextChannels.Clear();
 
         SocketClient.Log -= OnLog;
         SocketClient.Ready -= OnReady;
@@ -169,7 +180,7 @@ public static class Client
     private static Task SlashCommandHandler(SocketSlashCommand command)
     {
         DebugLog($"{command.Data.Name} requested a response, finding the command...");
-        SlashCommand cmd = SlashCommand.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
+        SlashCommand? cmd = SlashCommand.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
 
         cmd?.Run(command);
         return Task.CompletedTask;
@@ -178,7 +189,7 @@ public static class Client
     private static Task AutocompleteHandler(SocketAutocompleteInteraction autocomplete)
     {
         DebugLog($"{autocomplete.Data.CommandName} requested a response, finding the command...");
-        AutocompleteCommand command = SlashCommand.Commands.FirstOrDefault(c => c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
+        AutocompleteCommand? command = SlashCommand.Commands.FirstOrDefault(c => c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
 
         command?.Autocomplete(autocomplete);
         return Task.CompletedTask;

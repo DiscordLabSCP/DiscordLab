@@ -37,7 +37,7 @@ public class EmbedBuilder
     /// <summary>
     /// Gets or sets the color of the embed. In string so #, 0x or the raw hex value will work.
     /// </summary>
-    public string Color
+    public string? Color
     {
         get => Builder.Color?.ToString();
         set

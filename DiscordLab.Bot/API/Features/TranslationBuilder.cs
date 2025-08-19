@@ -176,13 +176,13 @@ public class TranslationBuilder
     /// <summary>
     /// Gets or sets the translation.
     /// </summary>
-    public string Translation { get; set; }
+    public string? Translation { get; set; }
 
     /// <summary>
     /// Gets or sets the item that will show for each player when the {players} placeholder is used. Defaults to null.
     /// </summary>
     /// <remarks>If you want the {players} placeholder to not work, set this to null.</remarks>
-    public string PlayerListItem { get; set; }
+    public string? PlayerListItem { get; set; }
 
     /// <summary>
     /// Gets or sets the separator between items in <see cref="PlayerListItem"/>.
@@ -192,7 +192,7 @@ public class TranslationBuilder
     /// <summary>
     /// Gets or sets the player list that will be used for <see cref="PlayerListItem"/>.
     /// </summary>
-    public IEnumerable<Player> PlayerList { get; set; }
+    public IEnumerable<Player>? PlayerList { get; set; }
 
     /// <summary>
     /// <inheritdoc cref="Build"/>.
@@ -269,7 +269,7 @@ public class TranslationBuilder
     /// </summary>
     /// <param name="translation">The translation to build from, isn't needed if <see cref="Translation"/> is defined.</param>
     /// <returns>The translation built.</returns>
-    public string Build(string translation = null)
+    public string Build(string? translation = null)
     {
         translation ??= Translation;
 
@@ -279,7 +279,7 @@ public class TranslationBuilder
         if (PlayerListItem != null)
             SetupPlayerList();
 
-        string returnTranslation = Translation;
+        string returnTranslation = translation!;
 
         foreach (KeyValuePair<string, Func<string>> replacer in CustomReplacers)
         {
@@ -364,6 +364,9 @@ public class TranslationBuilder
 
     private void SetupPlayerList()
     {
+        if (string.IsNullOrEmpty(PlayerListItem))
+            throw new ArgumentException($"Invalid {nameof(PlayerListItem)} provided, it was either null or empty.");
+
         Player[] readyPlayers = (PlayerList ?? Player.ReadyList).ToArray();
 
         int length = readyPlayers.Length;
@@ -374,7 +377,7 @@ public class TranslationBuilder
         for (int i = 0; i < length; i++)
         {
             string playerKey = $"player{i}";
-            playerItems.Add(PlayerListItem.Replace("{player", "{" + $"{playerKey}"));
+            playerItems.Add(PlayerListItem!.Replace("{player", "{" + $"{playerKey}"));
             playerDictionary[playerKey] = readyPlayers[i];
         }
 

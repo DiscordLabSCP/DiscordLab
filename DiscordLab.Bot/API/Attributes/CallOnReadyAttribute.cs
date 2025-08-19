@@ -15,7 +15,7 @@ public class CallOnReadyAttribute : Attribute
     /// Locates all <see cref="CallOnReadyAttribute"/>'s in your plugin and prepares them to be called.
     /// </summary>
     /// <param name="assembly">The assembly you wish to check, defaults to the current one.</param>
-    public static void Load(Assembly assembly = null)
+    public static void Load(Assembly? assembly = null)
     {
         assembly ??= Assembly.GetCallingAssembly();
 
@@ -51,6 +51,6 @@ public class CallOnReadyAttribute : Attribute
             }
         }
 
-        instances = null;
+        instances.Clear();
     }
 }

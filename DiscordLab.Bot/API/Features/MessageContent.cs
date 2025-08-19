@@ -1,5 +1,4 @@
 // ReSharper disable MemberCanBePrivate.Global
-
 namespace DiscordLab.Bot.API.Features;
 
 using Discord.Rest;
@@ -16,13 +15,13 @@ public class MessageContent
     /// Gets or sets the embed to send, if any.
     /// </summary>
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
-    public Embed.EmbedBuilder Embed { get; set; }
+    public Embed.EmbedBuilder? Embed { get; set; }
 
     /// <summary>
     /// Gets or sets the string to send, if any.
     /// </summary>
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
-    public string Message { get; set; }
+    public string? Message { get; set; }
 
     /// <summary>
     /// Converts an embed into a <see cref="MessageContent"/> instance.
@@ -48,7 +47,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"A message failed to send to {channel.Name} ({channel.Id}) because both embed and message contents were undefined.");
 
-        (Discord.Embed embed, string content) = Build(builder);
+        (Discord.Embed? embed, string? content) = Build(builder);
 
         channel.SendMessage(content, embed: embed);
     }
@@ -64,7 +63,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"A message failed to send to {channel.Name} ({channel.Id}) because both embed and message contents were undefined.");
 
-        (Discord.Embed embed, string content) = Build(builder);
+        (Discord.Embed? embed, string? content) = Build(builder);
 
         return await channel.SendMessageAsync(content, embed: embed);
     }
@@ -79,7 +78,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"Message {message.Id} (in #{message.Channel.Name} ({message.Channel.Id})) failed to be edited because both embed and message contents were undefined.");
 
-        (Discord.Embed embed, string content) = Build(builder);
+        (Discord.Embed? embed, string? content) = Build(builder);
 
         Task.Run(async () => await message.ModifyAsync(msg =>
         {
@@ -102,7 +101,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"Failed to respond to command {command.CommandName} because both embed and message contents were undefined.");
 
-        (Discord.Embed embed, string content) = Build(builder);
+        (Discord.Embed? embed, string? content) = Build(builder);
 
         await command.RespondAsync(content, embed: embed);
     }
@@ -118,7 +117,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"Failed to modify command {command.CommandName}'s response because both embed and message contents were undefined.");
 
-        (Discord.Embed embed, string content) = Build(builder);
+        (Discord.Embed? embed, string? content) = Build(builder);
 
         await command.ModifyOriginalResponseAsync(msg =>
         {
@@ -130,7 +129,7 @@ public class MessageContent
         });
     }
 
-    private (Discord.Embed Embed, string Content) Build(TranslationBuilder builder)
+    private (Discord.Embed? Embed, string? Content) Build(TranslationBuilder builder)
     {
         if (Embed == null)
             return (null, Message != null ? builder.Build(Message) : null);
@@ -144,6 +143,6 @@ public class MessageContent
             field.Value = builder.Build((string)field.Value);
         }
 
-        return (embed?.Build(), Message != null ? builder.Build(Message) : null);
+        return (embed.Build(), Message != null ? builder.Build(Message) : null);
     }
 }

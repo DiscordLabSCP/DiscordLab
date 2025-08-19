@@ -13,7 +13,7 @@ public class CallOnLoadAttribute : Attribute
     /// Find all <see cref="CallOnLoadAttribute"/> attributes in your plugin and calls them.
     /// </summary>
     /// <param name="assembly">The assembly you wish to check, defaults to the current one.</param>
-    public static void Load(Assembly assembly = null)
+    public static void Load(Assembly? assembly = null)
     {
         assembly ??= Assembly.GetCallingAssembly();
 

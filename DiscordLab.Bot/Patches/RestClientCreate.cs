@@ -18,14 +18,14 @@ public static class RestClientCreate
     /// Gets the target method to patch.
     /// </summary>
     /// <returns>The method.</returns>
-    public static MethodBase TargetMethod()
+    public static MethodBase? TargetMethod()
     {
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            Type type = assembly.GetTypes().FirstOrDefault(t => t.Name == "DefaultRestClient");
+            Type? type = assembly.GetTypes().FirstOrDefault(t => t.Name == "DefaultRestClient");
             if (type == null)
                 continue;
-            ConstructorInfo constructor = type.GetConstructors().FirstOrDefault();
+            ConstructorInfo? constructor = type.GetConstructors().FirstOrDefault();
             if (constructor != null)
                 return constructor;
         }

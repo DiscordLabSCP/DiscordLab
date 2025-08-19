@@ -122,7 +122,7 @@ public static class Updater
     [CallOnUnload]
     private static void Disable()
     {
-        Client = null;
-        DownloadClient = null;
+        Client.Dispose();
+        DownloadClient.Dispose();
     }
 }

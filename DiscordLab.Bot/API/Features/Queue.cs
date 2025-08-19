@@ -12,7 +12,7 @@ public class Queue
     /// </summary>
     /// <param name="duration">The duration you wish to wait before calling the method.</param>
     /// <param name="defaultAction">The default action to run. Can be null.</param>
-    public Queue(float duration, Action defaultAction = null)
+    public Queue(float duration, Action? defaultAction = null)
     {
         Duration = duration;
         DefaultAction = defaultAction;
@@ -31,13 +31,13 @@ public class Queue
     /// <summary>
     /// Gets the action to be run during <see cref="Process"/> when an action isn't provided. Can be null.
     /// </summary>
-    public Action DefaultAction { get; }
+    public Action? DefaultAction { get; }
 
     /// <summary>
     /// Runs the queue process, either using the action parameter or default action.
     /// </summary>
     /// <param name="action">The action to run. Defaults to <see cref="DefaultAction"/>.</param>
-    public void Process(Action action = null)
+    public void Process(Action? action = null)
     {
         if (IsBusy)
             return;

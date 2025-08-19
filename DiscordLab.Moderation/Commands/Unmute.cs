@@ -27,7 +27,7 @@ public class Unmute : AutocompleteCommand
         ]
     };
 
-    public override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
         
     public override async Task Run(SocketSlashCommand command)
     {

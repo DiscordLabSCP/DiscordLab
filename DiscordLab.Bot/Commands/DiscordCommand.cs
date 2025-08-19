@@ -53,7 +53,7 @@ public class DiscordCommand : AutocompleteCommand
     };
 
     /// <inheritdoc />
-    public override ulong GuildId { get; } = 0;
+    protected override ulong GuildId { get; } = 0;
 
     /// <inheritdoc />
     public override async Task Run(SocketSlashCommand command)
@@ -78,7 +78,7 @@ public class DiscordCommand : AutocompleteCommand
                     return;
                 }
 
-                Module module = Module.CurrentModules.FirstOrDefault(s => string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ?? Module.CurrentModules.FirstOrDefault(s => s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
+                Module? module = Module.CurrentModules.FirstOrDefault(s => string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ?? Module.CurrentModules.FirstOrDefault(s => s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
                 if (module == null)
                 {
                     await command.ModifyOriginalResponseAsync(m => m.Content = "Module not found.");

@@ -31,14 +31,14 @@ public class LocalAdminCommand : ICommand
 
             case "install":
             {
-                string moduleName = arguments.ElementAtOrDefault(1);
+                string? moduleName = arguments.ElementAtOrDefault(1);
                 if (string.IsNullOrWhiteSpace(moduleName))
                 {
                     response = "Please provide a module name.";
                     return false;
                 }
 
-                Module module = Module.CurrentModules.FirstOrDefault(s => string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ?? Module.CurrentModules.FirstOrDefault(s => s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
+                Module? module = Module.CurrentModules.FirstOrDefault(s => string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ?? Module.CurrentModules.FirstOrDefault(s => s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
                 if (module == null)
                 {
                     response = "Module not found.";

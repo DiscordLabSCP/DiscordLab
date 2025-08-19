@@ -15,7 +15,7 @@ public sealed class Plugin : Plugin<Config>
     /// <summary>
     /// Gets the current instance of this plugin.
     /// </summary>
-    public static Plugin Instance { get; private set; }
+    public static Plugin Instance { get; private set; } = null!;
 
     /// <inheritdoc />
     public override string Name { get; } = "DiscordLab";
@@ -38,7 +38,7 @@ public sealed class Plugin : Plugin<Config>
     /// <summary>
     /// Gets the current config for the plugin.
     /// </summary>
-    public new Config Config { get; private set; }
+    public new Config Config { get; private set; } = null!;
 
     private Harmony Harmony { get; } = new($"DiscordLab.Bot-{DateTime.Now.Ticks}");
 
@@ -73,7 +73,7 @@ public sealed class Plugin : Plugin<Config>
 
         CallOnUnloadAttribute.Unload();
 
-        Config = null;
-        Instance = null;
+        Config = null!;
+        Instance = null!;
     }
 }
