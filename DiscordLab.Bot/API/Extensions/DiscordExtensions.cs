@@ -27,7 +27,7 @@ public static class DiscordExtensions
     /// <param name="name">The option name to get.</param>
     /// <typeparam name="T">The type that this option should return.</typeparam>
     /// <returns>The found item, if any.</returns>
-    public static T GetOption<T>(this IReadOnlyCollection<SocketSlashCommandDataOption> options, string name) 
+    public static T GetOption<T>(this IReadOnlyCollection<SocketSlashCommandDataOption> options, string name)
         where T : class =>
-        options.FirstOrDefault(option => option.Name == name) as T;
+        options.FirstOrDefault(option => option.Name == name)?.Value as T;
 }
