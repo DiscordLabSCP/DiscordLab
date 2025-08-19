@@ -1,4 +1,5 @@
 using System.ComponentModel;
+using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Features.Embed;
 
 namespace DiscordLab.Moderation;
@@ -46,16 +47,16 @@ public class Translation
 
     public string UnbanSuccess { get; set; } = "Player {userid} has been unbanned.";
 
-    public string PermMuteLog { get; set; } = "Player {target} has been muted by {player}.";
+    public MessageContent PermMuteLog { get; set; } = "Player {target} has been muted by {player}.";
 
-    public string TempMuteLog { get; set; } =
+    public MessageContent TempMuteLog { get; set; } =
         "Player {target} has been muted by {player} for {timef}, they will be unmuted in {timer}";
 
-    public string UnmuteLog { get; set; } = "Player {target} has been unmuted by {player}.";
+    public MessageContent UnmuteLog { get; set; } = "Player {target} has been unmuted by {player}.";
 
     [Description(
         "Every field value accepts placeholders, even if you add more. player in this case is the issuer.")]
-    public EmbedBuilder BanLogEmbed { get; set; } = new()
+    public MessageContent BanLogEmbed { get; set; } = new EmbedBuilder
     {
         Title = "Ban Log",
         Description = "A user has been banned",
@@ -75,10 +76,15 @@ public class Translation
             {
                 Name = "Duration",
                 Value = "{timer} ({timef})"
+            },
+            new()
+            {
+                Name = "Reason",
+                Value = "{reason}"
             }
         ]
     };
 
     [Description("Normal player things may not work here, but playerid always will, unless somehow banned by something without an ID.")]
-    public string UnbanLog { get; set; } = "Player {username} ({userid}) has been unbanned by {playerid}";
+    public MessageContent UnbanLog { get; set; } = "Player {username} ({userid}) has been unbanned by {playerid}";
 }

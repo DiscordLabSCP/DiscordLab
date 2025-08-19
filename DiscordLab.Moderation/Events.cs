@@ -37,11 +37,11 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder(Translation.UnmuteLog)
+        TranslationBuilder builder = new TranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Issuer);
-            
-        channel.SendMessage(builder);
+        
+        Translation.UnmuteLog.SendToChannel(channel, builder);
     }
 
     public override void OnPlayerMuted(PlayerMutedEventArgs ev)
@@ -55,19 +55,21 @@ public class Events : CustomEventsHandler
             return;
         }
             
-        string translation = Translation.PermMuteLog;
+        MessageContent translation = Translation.PermMuteLog;
 
         if (TempMuteManager.MuteConfig.Mutes.TryGetValue(ev.Player.UserId, out DateTime time))
         {
             translation = Translation.TempMuteLog;
         }
             
-        TranslationBuilder builder = new TranslationBuilder(translation)
+        TranslationBuilder builder = new TranslationBuilder
         {
             Time = time
-        }.AddPlayer("player", ev.Issuer).AddPlayer("target", ev.Player);
+        }
+            .AddPlayer("player", ev.Issuer)
+            .AddPlayer("target", ev.Player);
             
-        channel.SendMessage(builder);
+        translation.SendToChannel(channel, builder);
     }
 
     public override void OnPlayerBanned(PlayerBannedEventArgs ev)
@@ -77,28 +79,22 @@ public class Events : CustomEventsHandler
 
         if (!Client.TryGetOrAddChannel(Config.BanLogChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("ban logs", Config.BanLogChannelId, Config.GuildId));
+            Logger.Error(
+                LoggingUtils.GenerateMissingChannelMessage("ban logs", Config.BanLogChannelId, Config.GuildId));
             return;
         }
 
-        EmbedBuilder builder = Translation.BanLogEmbed;
-        
         TimeSpan timeSpan = TimeSpan.FromSeconds(ev.Duration);
         DateTime expiration = DateTime.Now.Add(timeSpan);
+
+        TranslationBuilder builder = new TranslationBuilder("player", ev.Issuer)
+            {
+                Time = expiration
+            }
+            .AddCustomReplacer("userid", ev.PlayerId)
+            .AddCustomReplacer("reason", ev.Reason);
             
-        foreach (EmbedFieldBuilder field in builder.Fields)
-        {
-            TranslationBuilder tBuilder = new TranslationBuilder((string)field.Value, "player", ev.Issuer)
-                {
-                    Time = expiration
-                }
-                .AddCustomReplacer("userid", ev.PlayerId)
-                .AddCustomReplacer("reason", ev.Reason);
-            
-            field.Value = tBuilder.Build();
-        }
-            
-        channel.SendMessage(embed:builder.Build());
+        Translation.BanLogEmbed.SendToChannel(channel, builder);
     }
         
     public override void OnServerBanRevoked(BanRevokedEventArgs ev)
@@ -112,15 +108,11 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new(Translation.UnbanLog);
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddCustomReplacer("userid", ev.BanDetails.Id)
+            .AddCustomReplacer("username", ev.BanDetails.OriginalName)
+            .AddCustomReplacer("playerid", ev.BanDetails.Issuer);
             
-        builder.CustomReplacers.Add("userid", () => ev.BanDetails.Id);
-        builder.CustomReplacers.Add("username", () => ev.BanDetails.OriginalName);
-        builder.CustomReplacers.Add("playerid", () => ev.BanDetails.Issuer);
-
-        if (Player.TryGet(ev.BanDetails.Issuer, out Player player))
-            builder.AddPlayer("player", player);
-            
-        channel.SendMessage(builder);
+        Translation.UnbanLog.SendToChannel(channel, builder);
     }
 }

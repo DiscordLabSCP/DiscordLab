@@ -51,7 +51,7 @@ public class Events : CustomEventsHandler
             return;
         }
             
-        channel.SendMessage(Translation.ServerStart);
+        Translation.ServerStart.SendToChannel(channel, new());
     }
 
     public override void OnServerCommandExecuted(CommandExecutedEventArgs ev)
@@ -60,14 +60,15 @@ public class Events : CustomEventsHandler
             return;
             
         SocketTextChannel channel;
-        TranslationBuilder builder;
-
-        Dictionary<string, Func<string>> customReplacers = new()
+        TranslationBuilder builder = new("player", player)
         {
-            ["type"] = () => ev.CommandType.ToString(),
-            ["arguments"] = () => string.Join(" ", ev.Arguments),
-            ["command"] = () => ev.Command.Command,
-            ["commanddescription"] = () => ev.Command.Description,
+            CustomReplacers = new()
+            {
+                ["type"] = () => ev.CommandType.ToString(),
+                ["arguments"] = () => string.Join(" ", ev.Arguments),
+                ["command"] = () => ev.Command.Command,
+                ["commanddescription"] = () => ev.Command.Description,
+            }
         };
             
         if (ev.CommandType == CommandType.RemoteAdmin)
@@ -80,13 +81,8 @@ public class Events : CustomEventsHandler
                 Logger.Error(LoggingUtils.GenerateMissingChannelMessage("remote admin logs", Config.RemoteAdminChannelId, Config.GuildId));
                 return;
             }
-
-            builder = new(Translation.RemoteAdmin, "player", player)
-            {
-                CustomReplacers = customReplacers
-            };
                 
-            channel.SendMessage(builder);
+            Translation.RemoteAdmin.SendToChannel(channel, builder);
             return;
         }
 
@@ -99,11 +95,6 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        builder = new(Translation.CommandLog, "player", player)
-        {
-            CustomReplacers = customReplacers
-        };
-            
-        channel.SendMessage(builder);
+        Translation.CommandLog.SendToChannel(channel, builder);
     }
 }

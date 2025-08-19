@@ -23,9 +23,9 @@ public static class ErrorLog
             return;
         }
 
-        TranslationBuilder builder = new(Plugin.Instance.Translation.ErrorLog);
-        builder.CustomReplacers.Add("error", message.ToString);
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddCustomReplacer("error", message.ToString());
             
-        channel.SendMessage(builder);
+        Plugin.Instance.Translation.ErrorLog.SendToChannel(channel, builder);
     }
 }

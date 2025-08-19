@@ -55,13 +55,13 @@ public static class Events
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder(Translation.TeamKill)
+        TranslationBuilder builder = new TranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler))
             .AddCustomReplacer("role", ev.Player.Team.GetFaction().ToString());
             
-        channel.SendMessage(builder);
+        Translation.TeamKill.SendToChannel(channel, builder);
     }
 
     public static void OnCuffKill(PlayerDyingEventArgs ev)
@@ -79,12 +79,12 @@ public static class Events
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder(Translation.CuffedPlayerDeath)
+        TranslationBuilder builder = new TranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
-            
-        channel.SendMessage(builder);
+        
+        Translation.CuffedPlayerDeath.SendToChannel(channel, builder);
     }
 
     public static void OnDeath(PlayerDyingEventArgs ev)
@@ -103,12 +103,12 @@ public static class Events
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder(Translation.PlayerDeath)
+        TranslationBuilder builder = new TranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
             
-        channel.SendMessage(builder);
+        Translation.PlayerDeath.SendToChannel(channel, builder);
     }
 
     public static void OnOwnDeath(PlayerDyingEventArgs ev)
@@ -132,11 +132,11 @@ public static class Events
         if (converted == "Unknown")
             return;
 
-        TranslationBuilder builder = new TranslationBuilder(Translation.PlayerDeathSelf)
+        TranslationBuilder builder = new TranslationBuilder()
             .AddPlayer("player", ev.Player)
             .AddCustomReplacer("cause", converted);
             
-        channel.SendMessage(builder);
+        Translation.PlayerDeathSelf.SendToChannel(channel, builder);
     }
         
     private static Dictionary<byte, string> _translations = new()

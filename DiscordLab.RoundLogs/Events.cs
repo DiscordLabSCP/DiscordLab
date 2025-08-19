@@ -25,18 +25,19 @@ public class Events : CustomEventsHandler
         if (ev.ChangeReason is RoleChangeReason.Respawn or RoleChangeReason.RoundStart
             or RoleChangeReason.RespawnMiniwave or RoleChangeReason.LateJoin or RoleChangeReason.Died or RoleChangeReason.Destroyed)
             return;
-            
-        Dictionary<string, Func<string>> customReplacers = new()
-        {
-            ["oldrole"] = () => ev.OldRole.GetFullName(),
-            ["newrole"] = () => ev.NewRole.RoleName,
-            ["reason"] = () => ev.ChangeReason.ToString(),
-            ["spawnflags"] = () => string.Join(", ", ev.SpawnFlags.GetFlags())
-        };
 
         SocketTextChannel channel;
 
-        TranslationBuilder builder;
+        TranslationBuilder builder = new("player", ev.Player)
+        {
+            CustomReplacers = new()
+            {
+                ["oldrole"] = () => ev.OldRole.GetFullName(),
+                ["newrole"] = () => ev.NewRole.RoleName,
+                ["reason"] = () => ev.ChangeReason.ToString(),
+                ["spawnflags"] = () => string.Join(", ", ev.SpawnFlags.GetFlags())
+            }
+        };
             
         if (ev.NewRole.Team == ev.OldRole.GetTeam() && ev.NewRole.Team == Team.SCPs)
         {
@@ -49,12 +50,7 @@ public class Events : CustomEventsHandler
                 return;
             }
 
-            builder = new(Translation.ScpSwapLog, "player", ev.Player)
-            {
-                CustomReplacers = customReplacers
-            };
-                
-            channel.SendMessage(builder);
+            Translation.ScpSwapLog.SendToChannel(channel, builder);
             return;
         }
             
@@ -65,13 +61,8 @@ public class Events : CustomEventsHandler
         {
             Logger.Error(LoggingUtils.GenerateMissingChannelMessage("Role change logs", Config.RoleChangeChannelId, Config.GuildId));
         }
-
-        builder = new(Translation.RoleChangeLog, "player", ev.Player)
-        {
-            CustomReplacers = customReplacers
-        };
             
-        channel.SendMessage(builder);
+        Translation.RoleChangeLog.SendToChannel(channel, builder);
     }
 
     public override void OnServerWaveRespawned(WaveRespawnedEventArgs ev)
@@ -89,13 +80,15 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new(isFoundation ? Translation.NtfSpawn : Translation.ChaosSpawn)
+        MessageContent content = isFoundation ? Translation.NtfSpawn : Translation.ChaosSpawn;
+        
+        TranslationBuilder builder = new()
         {
             PlayerListItem = Translation.PlayerListItem,
             PlayerList = ev.Players
         };
             
-        channel.SendMessage(builder);
+        content.SendToChannel(channel, builder);
     }
 
     public override void OnPlayerCuffed(PlayerCuffedEventArgs ev)
@@ -109,12 +102,11 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new(Translation.Cuffed);
-
-        builder.AddPlayer("target", ev.Target);
-        builder.AddPlayer("player", ev.Player);
-            
-        channel.SendMessage(builder);
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddPlayer("target", ev.Target)
+            .AddPlayer("player", ev.Player);
+        
+        Translation.Cuffed.SendToChannel(channel, builder);
     }
 
     public override void OnPlayerUncuffed(PlayerUncuffedEventArgs ev)
@@ -128,12 +120,11 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new(Translation.Uncuffed);
-
-        builder.AddPlayer("target", ev.Target);
-        builder.AddPlayer("player", ev.Player);
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddPlayer("target", ev.Target)
+            .AddPlayer("player", ev.Player);
             
-        channel.SendMessage(builder);
+        Translation.Uncuffed.SendToChannel(channel, builder);
     }
 
     public override void OnServerRoundStarted()
@@ -146,10 +137,8 @@ public class Events : CustomEventsHandler
             Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start logs", Config.CuffedChannelId, Config.GuildId));
             return;
         }
-
-        TranslationBuilder builder = new(Translation.RoundStart);
             
-        channel.SendMessage(builder);
+        Translation.RoundStart.SendToChannel(channel, new());
     }
 
     public override void OnServerRoundEnded(RoundEndedEventArgs ev)
@@ -163,11 +152,10 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new(Translation.RoundEnd);
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddCustomReplacer("winner", ev.LeadingTeam.ToString());
             
-        builder.CustomReplacers.Add("winner", () => ev.LeadingTeam.ToString());
-            
-        channel.SendMessage(builder);
+        Translation.RoundEnd.SendToChannel(channel, builder);
     }
 
     public override void OnServerLczDecontaminationStarted()
@@ -181,6 +169,6 @@ public class Events : CustomEventsHandler
             return;
         }
             
-        channel.SendMessage(new TranslationBuilder(Translation.Decontamination));
+        Translation.Decontamination.SendToChannel(channel, new());
     }
 }

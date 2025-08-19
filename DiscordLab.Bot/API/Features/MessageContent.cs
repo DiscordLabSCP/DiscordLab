@@ -107,6 +107,29 @@ public class MessageContent
         await command.RespondAsync(content, embed: embed);
     }
 
+    /// <summary>
+    /// Modifies a <see cref="SocketCommandBase"/>'s response with the new message and builder.
+    /// </summary>
+    /// <param name="command">The <see cref="SocketCommandBase"/> instance.</param>
+    /// <param name="builder">The <see cref="TranslationBuilder"/> instance to utilise.</param>
+    /// <returns>This task.</returns>
+    public async Task ModifyInteraction(SocketCommandBase command, TranslationBuilder builder)
+    {
+        if (Embed == null && Message == null)
+            throw new ArgumentNullException($"Failed to modify command {command.CommandName}'s response because both embed and message contents were undefined.");
+
+        (Discord.Embed embed, string content) = Build(builder);
+
+        await command.ModifyOriginalResponseAsync(msg =>
+        {
+            if (!string.IsNullOrEmpty(content))
+                msg.Content = content;
+
+            if (embed != null)
+                msg.Embed = embed;
+        });
+    }
+
     private (Discord.Embed Embed, string Content) Build(TranslationBuilder builder)
     {
         if (Embed == null)

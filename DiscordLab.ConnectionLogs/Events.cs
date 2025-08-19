@@ -31,7 +31,7 @@ public class Events : CustomEventsHandler
             return;
         }
             
-        channel.SendMessage(new TranslationBuilder(Translation.PlayerJoin, "player", ev.Player));
+        Translation.PlayerJoin.SendToChannel(channel, new( "player", ev.Player));
     }
         
     public override void OnPlayerLeft(PlayerLeftEventArgs ev)
@@ -48,7 +48,7 @@ public class Events : CustomEventsHandler
             return;
         }
             
-        channel.SendMessage(new TranslationBuilder(Translation.PlayerLeave, "player", ev.Player));
+        Translation.PlayerLeave.SendToChannel(channel, new("player", ev.Player));
     }
 
     public override void OnServerRoundStarted()
@@ -61,8 +61,8 @@ public class Events : CustomEventsHandler
             Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundStartChannelId, Config.GuildId));
             return;
         }
-            
-        channel.SendMessage(new TranslationBuilder(Translation.RoundStart)
+        
+        Translation.RoundStart.SendToChannel(channel, new()
         {
             PlayerListItem = Translation.RoundPlayers
         });
@@ -79,13 +79,12 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new(Translation.RoundEnd)
+        TranslationBuilder builder = new TranslationBuilder()
         {
             PlayerListItem = Translation.RoundPlayers
-        };
+        }
+        .AddCustomReplacer("winner", ev.LeadingTeam.ToString());
             
-        builder.CustomReplacers.Add("winner", () => ev.LeadingTeam.ToString());
-            
-        channel.SendMessage(builder);
+        Translation.RoundEnd.SendToChannel(channel, builder);
     }
 }

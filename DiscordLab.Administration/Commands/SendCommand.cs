@@ -38,10 +38,10 @@ public class SendCommand : AutocompleteCommand
 
         string response = Server.RunCommand((string)command.Data.Options.First().Value);
 
-        TranslationBuilder builder = new(Translation.SendCommandResponse);
-        builder.CustomReplacers.Add("response", () => response);
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddCustomReplacer("response", response);
 
-        await command.ModifyOriginalResponseAsync(m => m.Content = builder);
+        await Translation.SendCommandResponse.ModifyInteraction(command, builder);
     }
 
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
