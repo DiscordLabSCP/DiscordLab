@@ -122,8 +122,8 @@ public class TranslationBuilder
         ["timer"] = time => $"<t:{time}:R>",
         ["elapsedtimerelative"] = time => $"<t:{time - Round.Duration.TotalSeconds}:R>",
         ["roundstart"] = time => $"<t:{time - Round.Duration.TotalSeconds}:T>",
-        ["secondssince"] = time => new DateTimeOffset(time, Round.Duration).Second.ToString(),
-        ["minutessince"] = time => new DateTimeOffset(time, Round.Duration).Minute.ToString(),
+        ["secondssince"] = time => TimeSince(time).Seconds.ToString(CultureInfo.InvariantCulture),
+        ["minutessince"] = time => TimeSince(time).Minutes.ToString(CultureInfo.InvariantCulture),
     };
 
     /// <summary>
@@ -300,6 +300,7 @@ public class TranslationBuilder
         }
 
         long unix = new DateTimeOffset(Time).ToUnixTimeSeconds();
+
         foreach (KeyValuePair<string, Func<long, string>> replacer in TimeReplacers)
         {
             returnTranslation = Regex.Replace(
@@ -361,6 +362,9 @@ public class TranslationBuilder
                 .TimeTrigger - DecontaminationController.GetServerTime))
         .ToString(CultureInfo.InvariantCulture);
 #pragma warning restore SA1118
+
+    private static TimeSpan TimeSince(long time) =>
+        Round.Duration - (DateTimeOffset.Now - DateTimeOffset.FromUnixTimeSeconds(time));
 
     private void SetupPlayerList()
     {
