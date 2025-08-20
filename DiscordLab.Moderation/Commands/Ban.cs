@@ -22,7 +22,8 @@ public class Ban : AutocompleteCommand
                 Name = Translation.BanUserOptionName,
                 Description = Translation.BanUserOptionDescription,
                 Type = ApplicationCommandOptionType.String,
-                IsRequired = true
+                IsRequired = true,
+                IsAutocomplete = true
             },
             new()
             {
@@ -78,6 +79,6 @@ public class Ban : AutocompleteCommand
 
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
+        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
     }
 }

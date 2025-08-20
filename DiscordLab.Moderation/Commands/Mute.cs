@@ -23,7 +23,8 @@ public class Mute : AutocompleteCommand
                 Name = Translation.MuteUserOptionName,
                 Description = Translation.MuteUserOptionDescription,
                 Type = ApplicationCommandOptionType.String,
-                IsRequired = true
+                IsRequired = true,
+                IsAutocomplete = true
             },
             new()
             {
@@ -75,6 +76,6 @@ public class Mute : AutocompleteCommand
 
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
+        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
     }
 }

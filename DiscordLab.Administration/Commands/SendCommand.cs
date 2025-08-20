@@ -3,6 +3,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
+using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 using RemoteAdmin;
 
@@ -26,7 +27,8 @@ public class SendCommand : AutocompleteCommand
                 Name = Translation.SendCommandOptionName,
                 Description = Translation.SendCommandOptionDescription,
                 Type = ApplicationCommandOptionType.String,
-                IsRequired = true
+                IsRequired = true,
+                IsAutocomplete = true
             }
         ]
     };
@@ -37,7 +39,7 @@ public class SendCommand : AutocompleteCommand
     {
         await command.DeferAsync();
 
-        string response = Server.RunCommand(command.Data.Options.GetOption<string>(Translation.SendCommandOptionName));
+        string response = Server.RunCommand(command.Data.Options.GetOption<string>(Translation.SendCommandOptionName)!);
 
         TranslationBuilder builder = new TranslationBuilder()
             .AddCustomReplacer("response", response);
@@ -52,6 +54,6 @@ public class SendCommand : AutocompleteCommand
             ..CommandProcessor.GetAllCommands().Select(x => "/" + x.Command),
             ..QueryProcessor.DotCommandHandler.AllCommands.Select(x => "." + x.Command)
         ];
-        await autocomplete.RespondAsync(commands.Select(x => new AutocompleteResult(x, x)));
+        await autocomplete.RespondAsync(commands.Where(x => x.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult(x, x)));
     }
 }

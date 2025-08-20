@@ -22,7 +22,8 @@ public class Unmute : AutocompleteCommand
                 Name = Translation.UnbanUserOptionName,
                 Description = Translation.UnbanUserOptionDescription,
                 Type = ApplicationCommandOptionType.String,
-                IsRequired = true
+                IsRequired = true,
+                IsAutocomplete = true
             },
         ]
     };
@@ -48,6 +49,6 @@ public class Unmute : AutocompleteCommand
         
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults);
+        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
     }
 }

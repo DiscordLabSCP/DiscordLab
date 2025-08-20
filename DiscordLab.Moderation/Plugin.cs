@@ -58,6 +58,6 @@ public class Plugin : Plugin<Config, Translation>
         base.LoadConfigs();
     }
 
-    public static IEnumerable<AutocompleteResult> PlayersAutocompleteResults =>
-        Player.ReadyList.Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
+    public static IEnumerable<AutocompleteResult> PlayersAutocompleteResults(object current) =>
+        Player.ReadyList.Where(p => p.Nickname.Contains((string)current) || p.UserId.Contains((string)current) || (int.TryParse((string)current, out int id) && p.PlayerId == id)).Take(25).Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
 }

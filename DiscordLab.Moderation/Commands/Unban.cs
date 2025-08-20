@@ -20,7 +20,8 @@ public class Unban : AutocompleteCommand
                 Name = Translation.UnbanUserOptionName,
                 Description = Translation.UnbanUserOptionDescription,
                 Type = ApplicationCommandOptionType.String,
-                IsRequired = true
+                IsRequired = true,
+                IsAutocomplete = true
             },
         ]
     };
@@ -51,6 +52,6 @@ public class Unban : AutocompleteCommand
             ..BanHandler.GetBans(BanHandler.BanType.UserId),
             ..BanHandler.GetBans(BanHandler.BanType.IP)
         ];
-        await autocomplete.RespondAsync(response.Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
+        await autocomplete.RespondAsync(response.Where(x => x.Id.Contains((string)autocomplete.Data.Current.Value) || x.OriginalName.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
     }
 }

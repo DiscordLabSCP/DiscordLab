@@ -110,6 +110,6 @@ public class DiscordCommand : AutocompleteCommand
     /// <inheritdoc />
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        await autocomplete.RespondAsync(Module.CurrentModules.Where(x => x.Name != "DiscordLab.Bot").Select(x => new AutocompleteResult(x.Name, x.Name)));
+        await autocomplete.RespondAsync(Module.CurrentModules.Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult(x.Name, x.Name)));
     }
 }
