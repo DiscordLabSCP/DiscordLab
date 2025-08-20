@@ -17,7 +17,7 @@ public class Plugin : Plugin<Config, Translation>
     public override string Name { get; } = "DiscordLab.BotStatus";
     public override string Description { get; } = "Allows your bot's status to update with player counts.";
     public override string Author { get; } = "LumiFae";
-    public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
+    public override Version Version { get; } = new(2, 0, 0);
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
         
     public override void Enable()

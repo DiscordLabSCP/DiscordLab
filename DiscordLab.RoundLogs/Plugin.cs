@@ -13,7 +13,7 @@ public class Plugin : Plugin<Config, Translation>
     public override string Name { get; } = "DiscordLab.RoundLogs";
     public override string Description { get; } = "Allows you to log specific details about the round.";
     public override string Author { get; } = "LumiFae";
-    public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
+    public override Version Version { get; } = new(2, 0, 0);
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
 
     public Events Events = new();

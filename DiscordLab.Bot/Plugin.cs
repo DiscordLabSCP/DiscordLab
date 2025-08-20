@@ -27,7 +27,7 @@ public sealed class Plugin : Plugin<Config>
     public override string Author { get; } = "LumiFae";
 
     /// <inheritdoc />
-    public override Version Version { get; } = typeof(Plugin).Assembly.GetName().Version;
+    public override Version Version => GetType().Assembly.GetName().Version;
 
     /// <inheritdoc />
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
