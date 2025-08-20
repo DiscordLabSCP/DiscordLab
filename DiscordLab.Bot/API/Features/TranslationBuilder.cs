@@ -276,7 +276,7 @@ public class TranslationBuilder
         if (string.IsNullOrEmpty(translation))
             throw new ArgumentNullException($"{nameof(TranslationBuilder)} failed to build because of no valid translation.");
 
-        if (PlayerListItem != null)
+        if (PlayerListItem != null && !CustomReplacers.ContainsKey("players"))
             SetupPlayerList();
 
         string returnTranslation = translation!;
