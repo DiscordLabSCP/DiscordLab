@@ -18,7 +18,7 @@ public class Plugin : Plugin<Config, Translation>
         "Allows you to update/send a status message in a specific channel and have it update automatically.";
 
     public override string Author { get; } = "LumiFae";
-    public override Version Version { get; } = new(2, 0, 0);
+    public override Version Version => GetType().Assembly.GetName().Version;
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
 
     public MessageConfig MessageConfig { get; set; }

@@ -1,5 +1,6 @@
 ﻿<Project>
     <PropertyGroup>
+        <GenerateAssemblyInformationVersionAttribute>false</GenerateAssemblyInformationVersionAttribute>
         <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
     </PropertyGroup>
 
