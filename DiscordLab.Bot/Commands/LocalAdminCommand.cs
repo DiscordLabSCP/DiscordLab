@@ -18,13 +18,13 @@ public class LocalAdminCommand : ICommand
     public string Description { get; } = "Do things directly with DiscordLab.";
 
     /// <inheritdoc />
-    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, [UnscopedRef] out string response)
+    public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
         switch (arguments.FirstOrDefault())
         {
             case "list":
             {
-                string modules = string.Join("\n", Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot").Select(s => s.Name));
+                string modules = string.Join("\n", Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot").Select(s => $"{s.Name} (v{s.Version})"));
                 response = "List of available DiscordLab modules:\n\n" + modules;
                 return true;
             }

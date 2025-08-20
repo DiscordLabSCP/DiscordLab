@@ -2,7 +2,7 @@
 
 namespace DiscordLab.Bot.API.Updates;
 
-using System.Text.Json.Serialization;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Gets details for a GitHub release asset.
@@ -12,12 +12,12 @@ public class GitHubReleaseAsset
     /// <summary>
     /// Gets or sets the name of the asset.
     /// </summary>
-    [JsonPropertyName("name")]
+    [JsonProperty("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the download name of the asset.
     /// </summary>
-    [JsonPropertyName("browser_download_url")]
+    [JsonProperty("browser_download_url")]
     public string DownloadUrl { get; set; }
 }

@@ -3,8 +3,7 @@ namespace DiscordLab.Bot.API.Updates;
 using System.Net.Http;
 using DiscordLab.Bot.API.Attributes;
 using LabApi.Features.Console;
-using LabApi.Loader;
-using Utf8Json;
+using Newtonsoft.Json;
 
 /// <summary>
 /// Handle updates within DiscordLab.
@@ -38,9 +37,9 @@ public static class Updater
             return [];
         }
 
-        using Stream stream = await response.Content.ReadAsStreamAsync();
+        string str = await response.Content.ReadAsStringAsync();
 
-        GitHubRelease[] releases = JsonSerializer.Deserialize<GitHubRelease[]>(stream);
+        GitHubRelease[] releases = JsonConvert.DeserializeObject<GitHubRelease[]>(str) ?? [];
 
         List<Module> modules = [];
 
@@ -48,15 +47,20 @@ public static class Updater
         {
             if (release.Prerelease || release.Draft)
                 continue;
-            if (release.TagName.Count(c => c == '.') == 3)
+            if (release.TagName.Count(c => c == '.') > 2)
                 continue;
             Version version = new(release.TagName.Split('-').First());
 
             if (version.Major != Plugin.Instance.Version.Major)
                 continue;
 
-            foreach (GitHubReleaseAsset asset in from asset in release.Assets let name = asset.Name.Replace(".dll", string.Empty) where !modules.Any(module => module.Name == name && module.Version > version) select asset)
+            foreach (GitHubReleaseAsset asset in release.Assets)
             {
+                if (asset.Name is "dependencies.zip" or "DiscordLab.Bot.dll")
+                    continue;
+                string projectName = asset.Name.Replace(".dll", string.Empty);
+                if (modules.Any(module => module.Name == projectName && module.Version >= version))
+                    continue;
                 modules.Add(new(release, asset));
             }
         }

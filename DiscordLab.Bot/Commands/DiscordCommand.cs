@@ -64,7 +64,7 @@ public class DiscordCommand : AutocompleteCommand
         {
             case "list":
             {
-                string modules = string.Join("\n", Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot").Select(s => s.Name));
+                string modules = string.Join("\n", Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot").Select(s => $"{s.Name} (v{s.Version})"));
                 await command.ModifyOriginalResponseAsync(m => m.Content = "List of available DiscordLab modules:\n\n" + modules);
                 break;
             }
@@ -110,6 +110,6 @@ public class DiscordCommand : AutocompleteCommand
     /// <inheritdoc />
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        await autocomplete.RespondAsync(Module.CurrentModules.Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult(x.Name, x.Name)));
+        await autocomplete.RespondAsync(Module.CurrentModules.Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult($"{x.Name} (v{x.Version})", x.Name)));
     }
 }
