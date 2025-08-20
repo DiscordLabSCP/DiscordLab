@@ -5,6 +5,34 @@ on:
     types: [published]
 
 jobs:
+  nuget:
+    if: github.event.release.prerelease == false
+    runs-on: windows-2022
+    env:
+      EXILED_REFERENCES_URL: https://exmod-team.github.io/SL-References/Dev.zip
+      SL_REFERENCES: ${{ github.workspace }}/refs
+      EXILED_REFERENCES: ${{ github.workspace }}/refs
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Setup Dotnet
+        uses: actions/setup-dotnet@v4.0.1
+        with:
+          dotnet-version: 9.0.x
+      - name: Get References
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri ${{ env.EXILED_REFERENCES_URL }} -OutFile ${{ github.workspace }}/References.zip
+          Expand-Archive -Path References.zip -DestinationPath ${{ env.SL_REFERENCES }} -Force
+      - name: Rename Assembly-CSharp (because Exiled removes the normal version)
+        shell: pwsh
+        run: Move-Item -Path ${{ env.SL_REFERENCES }}/Assembly-CSharp-Publicized.dll -Destination ${{ env.SL_REFERENCES }}/Assembly-CSharp.dll
+      - name: Build
+        run: dotnet build -c:Release ${{ github.workspace }}/DiscordLab.Bot/DiscordLab.Bot.csproj
+      - name: Publish
+        run: dotnet nuget push ${{ github.workspace }}/DiscordLab.Bot/bin/Release/DiscordLab.Bot.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }}
+        env:
+          NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
   notify:
     if: github.event.release.prerelease == false
     runs-on: ubuntu-latest
