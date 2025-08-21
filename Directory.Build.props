@@ -4,9 +4,15 @@
         <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
     </PropertyGroup>
 
-    <Target Name="CopyToSharedBin" AfterTargets="Build">
+    <Target Name="CopyToSharedBin" AfterTargets="Build" Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
         <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
               DestinationFolder="$(SharedBinPath)"
+              SkipUnchangedFiles="true"/>
+    </Target>
+    
+    <Target Name="CopyToDependencies" AfterTargets="Build" Condition="$(AssemblyName) == 'DiscordLab.Dependency'">
+        <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
+              DestinationFolder="$(SharedBinPath)\dependencies"
               SkipUnchangedFiles="true"/>
     </Target>
 
@@ -26,7 +32,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Northwood.LabAPI" Version="1.1.0"/>
+        <PackageReference Include="Northwood.LabAPI" Version="1.1.1"/>
         <PackageReference Include="BepInEx.AssemblyPublicizer.MSBuild" Version="0.4.2" PrivateAssets="all" ExcludeAssets="runtime" ReferenceOutputAssembly="false" Private="true"/>
     </ItemGroup>
 </Project>
