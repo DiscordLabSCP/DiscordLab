@@ -37,7 +37,7 @@
     
     <ItemGroup>
         <PackageReference Include="Discord.Net.WebSocket" Version="3.17.4" PrivateAssets="none" IncludeAssets="all" />
-        <PackageReference Include="Discord.Net.Rest" Version="3.17.4" PrivateAssets="none" IncludeAssets="all" Publicize="true" />
+        <PackageReference Include="Discord.Net.Rest" Version="3.17.4" PrivateAssets="none" IncludeAssets="all" />
         <PackageReference Include="Lib.Harmony" Version="2.2.2" />
         <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" IncludeAssets="all" PrivateAssets="all" />
         <PackageReference Include="System.Net.Http" Version="4.3.4" />
