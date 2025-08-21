@@ -28,7 +28,6 @@ public class EmbedBuilder
     /// <summary>
     /// Gets or sets the embed fields.
     /// </summary>
-    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
     public IEnumerable<EmbedFieldBuilder> Fields
     {
         get => Base.Fields.Select(x => new EmbedFieldBuilder(x));

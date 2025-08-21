@@ -1,6 +1,6 @@
-using YamlDotNet.Serialization;
-
 namespace DiscordLab.Bot.API.Features.Embed;
+
+using YamlDotNet.Serialization;
 
 /// <summary>
 /// Contains information about an author field in an embed.
@@ -55,6 +55,9 @@ public class EmbedAuthorBuilder
         set => Base.Url = value;
     }
 
+    /// <summary>
+    /// Gets the base of this builder.
+    /// </summary>
     [YamlIgnore]
     public Discord.EmbedAuthorBuilder Base { get; init; }
 }
