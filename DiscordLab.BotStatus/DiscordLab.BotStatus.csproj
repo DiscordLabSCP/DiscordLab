@@ -8,8 +8,8 @@
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
         <Version>2.0.0</Version>
     </PropertyGroup>
-    
+
     <ItemGroup>
-        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj" />
+        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj"/>
     </ItemGroup>
 </Project>

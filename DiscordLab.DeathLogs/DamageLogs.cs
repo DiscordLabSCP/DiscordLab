@@ -22,7 +22,7 @@ public static class DamageLogs
     public static SocketTextChannel Channel;
 
     private static Queue queue = new(5, SendLog);
-        
+
     [CallOnLoad]
     public static void Register()
     {
@@ -46,12 +46,12 @@ public static class DamageLogs
 
         if (ev.DamageHandler is not StandardDamageHandler handler)
             return;
-            
+
         if (handler.Damage <= 0) return;
 
         string type = Events.ConvertToString(ev.DamageHandler);
 
-            
+
         // passive damage checkers, don't want these spamming console.
         switch (type)
         {
@@ -59,14 +59,15 @@ public static class DamageLogs
             case "Unknown" when Mathf.Approximately(handler.Damage, 2.1f):
                 return;
         }
-        if (ev.Player.HasEffect<Corroding>() && type == "SCP-106") 
+
+        if (ev.Player.HasEffect<Corroding>() && type == "SCP-106")
             return;
-        if (ev.Player.HasEffect<PocketCorroding>() && type == "SCP-106") 
+        if (ev.Player.HasEffect<PocketCorroding>() && type == "SCP-106")
             return;
-        if (type == "Strangled") 
+        if (type == "Strangled")
             return;
-            
-        if (ev.Player.IsSCP && ev.Attacker.IsSCP && Plugin.Instance.Config.IgnoreScpDamage) 
+
+        if (ev.Player.IsSCP && ev.Attacker.IsSCP && Plugin.Instance.Config.IgnoreScpDamage)
             return;
 
         string log = new TranslationBuilder(Plugin.Instance.Translation.DamageLogEntry)
@@ -74,9 +75,9 @@ public static class DamageLogs
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("damage", handler.Damage.ToString(CultureInfo.InvariantCulture))
             .AddCustomReplacer("cause", type);
-            
+
         DamageLogEntries.Add(log);
-            
+
         queue.Process();
     }
 
@@ -86,42 +87,42 @@ public static class DamageLogs
         {
             Logger.Error(
                 LoggingUtils.GenerateMissingChannelMessage(
-                    "damage logs", 
-                    Plugin.Instance.Config.DamageLogChannelId, 
+                    "damage logs",
+                    Plugin.Instance.Config.DamageLogChannelId,
                     Plugin.Instance.Config.GuildId));
             return;
         }
-            
-        Channel.SendMessage(embeds:CreateEmbeds());
-            
+
+        Channel.SendMessage(embeds: CreateEmbeds());
+
         DamageLogEntries.Clear();
     }
 
     public static Embed[] CreateEmbeds()
     {
         List<Embed> embeds = new();
-    
+
         if (DamageLogEntries.Count == 0)
             return embeds.ToArray();
-    
+
         int currentIndex = 0;
-    
+
         while (currentIndex < DamageLogEntries.Count)
         {
             EmbedBuilder embed = Plugin.Instance.Translation.DamageLogEmbed;
-        
+
             List<string> currentEmbedLogs = new();
             int currentLength = 0;
-        
+
             while (currentIndex < DamageLogEntries.Count)
             {
                 string logEntry = DamageLogEntries[currentIndex];
-            
+
                 int newLength = currentLength + logEntry.Length + (currentEmbedLogs.Count > 0 ? 1 : 0);
-            
+
                 if (newLength > EmbedBuilder.MaxDescriptionLength && currentEmbedLogs.Count > 0)
                     break;
-            
+
                 if (logEntry.Length > EmbedBuilder.MaxDescriptionLength)
                 {
                     logEntry = logEntry.Substring(0, EmbedBuilder.MaxDescriptionLength - 3) + "...";
@@ -129,17 +130,19 @@ public static class DamageLogs
                     currentIndex++;
                     break;
                 }
-            
+
                 currentEmbedLogs.Add(logEntry);
                 currentLength = newLength;
                 currentIndex++;
             }
 
             if (currentEmbedLogs.Count <= 0) continue;
-            embed.Description = new TranslationBuilder(embed.Description).AddCustomReplacer("entries", string.Join("\n", currentEmbedLogs));
+            embed.Description =
+                new TranslationBuilder(embed.Description).AddCustomReplacer("entries",
+                    string.Join("\n", currentEmbedLogs));
             embeds.Add(embed.Build());
         }
-    
+
         return embeds.ToArray();
     }
 }

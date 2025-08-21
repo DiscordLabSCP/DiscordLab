@@ -60,7 +60,8 @@ public class Events : CustomEventsHandler
             Queue.Process();
     }
 
-    public static MessageContent UsableContent => Player.ReadyList.Any() ? Translation.Content : Translation.EmptyContent;
+    public static MessageContent UsableContent =>
+        Player.ReadyList.Any() ? Translation.Content : Translation.EmptyContent;
 
     public static void EditMessage()
     {

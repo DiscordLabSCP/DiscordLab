@@ -34,7 +34,7 @@ public class SendCommand : AutocompleteCommand
     };
 
     protected override ulong GuildId { get; } = Config.GuildId;
-        
+
     public override async Task Run(SocketSlashCommand command)
     {
         await command.DeferAsync();
@@ -54,6 +54,7 @@ public class SendCommand : AutocompleteCommand
             ..CommandProcessor.GetAllCommands().Select(x => "/" + x.Command),
             ..QueryProcessor.DotCommandHandler.AllCommands.Select(x => "." + x.Command)
         ];
-        await autocomplete.RespondAsync(commands.Where(x => x.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult(x, x)));
+        await autocomplete.RespondAsync(commands.Where(x => x.Contains((string)autocomplete.Data.Current.Value))
+            .Take(25).Select(x => new AutocompleteResult(x, x)));
     }
 }

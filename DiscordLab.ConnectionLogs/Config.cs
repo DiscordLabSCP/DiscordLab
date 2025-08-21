@@ -12,7 +12,7 @@ public class Config
 
     [Description("The channel where the round start logs will be sent.")]
     public ulong RoundStartChannelId { get; set; } = 0;
-        
+
     [Description("The channel where the round end logs will be sent. Optional.")]
     public ulong RoundEndChannelId { get; set; } = 0;
 

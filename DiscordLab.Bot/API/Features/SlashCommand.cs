@@ -94,11 +94,13 @@ public abstract class SlashCommand
             SocketGuild? guild = Client.GetGuild(cmds.Key);
             if (guild == null)
             {
-                Logger.Warn($"Could not find guild {cmds.Key}, so could not register the commands {string.Join(",", cmds.Select(cmd => cmd.Data.Name))}");
+                Logger.Warn(
+                    $"Could not find guild {cmds.Key}, so could not register the commands {string.Join(",", cmds.Select(cmd => cmd.Data.Name))}");
                 continue;
             }
 
-            await guild.BulkOverwriteApplicationCommandAsync(cmds.Select(cmd => cmd.Data.Build()).ToArray<ApplicationCommandProperties>());
+            await guild.BulkOverwriteApplicationCommandAsync(cmds.Select(cmd => cmd.Data.Build())
+                .ToArray<ApplicationCommandProperties>());
         }
     }
 }

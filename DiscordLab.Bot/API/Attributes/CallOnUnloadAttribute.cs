@@ -19,7 +19,8 @@ public class CallOnUnloadAttribute : Attribute
 
         foreach (Type type in assembly.GetTypes())
         {
-            foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public |
+                                                          BindingFlags.NonPublic))
             {
                 CallOnUnloadAttribute attribute = method.GetCustomAttribute<CallOnUnloadAttribute>();
                 if (attribute == null)

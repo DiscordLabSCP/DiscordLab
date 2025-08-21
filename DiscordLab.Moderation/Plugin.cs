@@ -14,7 +14,7 @@ namespace DiscordLab.Moderation;
 public class Plugin : Plugin<Config, Translation>
 {
     public static Plugin Instance;
-        
+
     public override string Name { get; } = "DiscordLab.Moderation";
     public override string Description { get; } = "Adds logging and commands for moderation based operations";
     public override string Author { get; } = "LumiFae";
@@ -24,40 +24,43 @@ public class Plugin : Plugin<Config, Translation>
     public TempMuteConfig MuteConfig;
 
     public Events Events = new();
-        
+
     public override void Enable()
     {
         Instance = this;
-            
+
         CallOnLoadAttribute.Load();
-            
+
         if (Config.AddCommands)
             SlashCommand.FindAll();
-            
+
         if (Config.AddTempMuteCommand)
             CommandProcessor.RemoteAdminCommandHandler.RegisterCommand(new TempMuteRemoteAdmin());
-            
+
         CustomHandlersManager.RegisterEventsHandler(Events);
     }
 
     public override void Disable()
     {
         CustomHandlersManager.UnregisterEventsHandler(Events);
-            
+
         CallOnUnloadAttribute.Unload();
-            
+
         Events = null;
-            
+
         Instance = null;
     }
 
     public override void LoadConfigs()
     {
         this.TryLoadConfig("mute-config.yml", out MuteConfig);
-            
+
         base.LoadConfigs();
     }
 
     public static IEnumerable<AutocompleteResult> PlayersAutocompleteResults(object current) =>
-        Player.ReadyList.Where(p => p.Nickname.Contains((string)current) || p.UserId.Contains((string)current) || (int.TryParse((string)current, out int id) && p.PlayerId == id)).Take(25).Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
+        Player.ReadyList
+            .Where(p => p.Nickname.Contains((string)current) || p.UserId.Contains((string)current) ||
+                        (int.TryParse((string)current, out int id) && p.PlayerId == id)).Take(25)
+            .Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
 }

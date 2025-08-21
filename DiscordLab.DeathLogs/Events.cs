@@ -20,7 +20,7 @@ public static class Events
     public static Config Config => Plugin.Instance.Config;
 
     public static Translation Translation => Plugin.Instance.Translation;
-        
+
     // have to do this here over CustomEventsHandler because easier to maintain different logs in this case.
     [CallOnLoad]
     public static void Register()
@@ -50,7 +50,8 @@ public static class Events
 
         if (!Client.TryGetOrAddChannel(Config.TeamKillChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("team kill logs", Config.TeamKillChannelId, Config.GuildId));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("team kill logs", Config.TeamKillChannelId,
+                Config.GuildId));
 
             return;
         }
@@ -60,7 +61,7 @@ public static class Events
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler))
             .AddCustomReplacer("role", ev.Player.Team.GetFaction().ToString());
-            
+
         Translation.TeamKill.SendToChannel(channel, builder);
     }
 
@@ -74,7 +75,8 @@ public static class Events
 
         if (!Client.TryGetOrAddChannel(Config.CuffedChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("cuff kill logs", Config.CuffedChannelId, Config.GuildId));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("cuff kill logs", Config.CuffedChannelId,
+                Config.GuildId));
 
             return;
         }
@@ -83,7 +85,7 @@ public static class Events
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
-        
+
         Translation.CuffedPlayerDeath.SendToChannel(channel, builder);
     }
 
@@ -92,7 +94,7 @@ public static class Events
         if (ev.Attacker == null || ev.Player.IsDisarmed ||
             ev.Attacker.Team.GetFaction() == ev.Player.Team.GetFaction())
             return;
-            
+
         if (Config.ChannelId == 0)
             return;
 
@@ -107,7 +109,7 @@ public static class Events
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
-            
+
         Translation.PlayerDeath.SendToChannel(channel, builder);
     }
 
@@ -115,17 +117,18 @@ public static class Events
     {
         if (ev.Attacker != null)
             return;
-            
+
         if (Config.SelfChannelId == 0)
             return;
 
         if (!Client.TryGetOrAddChannel(Config.SelfChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("self kill logs", Config.SelfChannelId, Config.GuildId));
+            Logger.Error(
+                LoggingUtils.GenerateMissingChannelMessage("self kill logs", Config.SelfChannelId, Config.GuildId));
 
             return;
         }
-            
+
         string converted = ConvertToString(ev.DamageHandler);
 
         // usually because of disconnect, only way to really track rn
@@ -135,10 +138,10 @@ public static class Events
         TranslationBuilder builder = new TranslationBuilder()
             .AddPlayer("player", ev.Player)
             .AddCustomReplacer("cause", converted);
-            
+
         Translation.PlayerDeathSelf.SendToChannel(channel, builder);
     }
-        
+
     private static Dictionary<byte, string> _translations = new()
     {
         { DeathTranslations.Asphyxiated.Id, "Asphyxiation" },
@@ -170,7 +173,7 @@ public static class Events
         { DeathTranslations.MarshmallowMan.Id, "Marshmellow" },
         { DeathTranslations.Scp1344.Id, "Severed Eyes" },
     };
-        
+
     internal static string ConvertToString(DamageHandlerBase handler)
     {
         switch (handler)
@@ -221,7 +224,7 @@ public static class Events
 
                 if (_translations.TryGetValue(translation.Id, out string s))
                     return s;
-                        
+
                 break;
             }
             case FirearmDamageHandler firearm:

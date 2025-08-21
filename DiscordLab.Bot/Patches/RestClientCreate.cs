@@ -74,8 +74,8 @@ public static class RestClientCreate
                 new CodeInstruction(OpCodes.Ldarg_0),
                 new CodeInstruction(OpCodes.Ldc_I4_3), // DecompressionMethods.GZip | DecompressionMethods.Deflate
                 new CodeInstruction(OpCodes.Ldc_I4_0), // UseCookies = false
-                new CodeInstruction(OpCodes.Ldarg_2),  // useProxy parameter
-                new CodeInstruction(OpCodes.Ldarg_3),  // webProxy parameter
+                new CodeInstruction(OpCodes.Ldarg_2), // useProxy parameter
+                new CodeInstruction(OpCodes.Ldarg_3), // webProxy parameter
                 new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(RestClientCreate), nameof(CreateHttpClientHandler))));
 
         Logger.Debug("Transpiler end", Plugin.Instance.Config.Debug);

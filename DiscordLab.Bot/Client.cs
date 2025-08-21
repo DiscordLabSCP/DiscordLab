@@ -193,7 +193,9 @@ public static class Client
     private static Task AutocompleteHandler(SocketAutocompleteInteraction autocomplete)
     {
         DebugLog($"{autocomplete.Data.CommandName} requested a response, finding the command...");
-        AutocompleteCommand? command = SlashCommand.Commands.FirstOrDefault(c => c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
+        AutocompleteCommand? command =
+            SlashCommand.Commands.FirstOrDefault(c =>
+                c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
 
         command?.Autocomplete(autocomplete);
         return Task.CompletedTask;

@@ -10,10 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj" />
+        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <PackageReference Include="Lib.Harmony" Version="2.2.2" />
+        <PackageReference Include="Lib.Harmony" Version="2.2.2"/>
     </ItemGroup>
 </Project>

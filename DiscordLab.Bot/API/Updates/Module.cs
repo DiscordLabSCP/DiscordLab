@@ -19,7 +19,9 @@ public class Module
         Asset = asset;
         Name = asset.Name.Replace(".dll", string.Empty);
         Version = new(release.TagName.Split('-').First());
-        ExistingPlugin = PluginLoader.Plugins.Keys.FirstOrDefault(x => Name == "DiscordLab.Bot" ? x.Name == "DiscordLab" : x.Name == Name);
+        ExistingPlugin =
+            PluginLoader.Plugins.Keys.FirstOrDefault(x =>
+                Name == "DiscordLab.Bot" ? x.Name == "DiscordLab" : x.Name == Name);
     }
 
     /// <summary>

@@ -10,10 +10,10 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj" />
+        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" />
+        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll"/>
     </ItemGroup>
 </Project>

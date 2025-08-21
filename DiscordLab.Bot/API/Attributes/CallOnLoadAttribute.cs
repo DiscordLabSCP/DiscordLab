@@ -19,7 +19,8 @@ public class CallOnLoadAttribute : Attribute
 
         foreach (Type type in assembly.GetTypes())
         {
-            foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public |
+                                                          BindingFlags.NonPublic))
             {
                 CallOnLoadAttribute attribute = method.GetCustomAttribute<CallOnLoadAttribute>();
                 if (attribute == null)

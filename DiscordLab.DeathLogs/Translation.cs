@@ -16,7 +16,8 @@ public class Translation
 
     [Description(
         "The message that will be sent when a player dies by their own actions, or just they died because of something else.")]
-    public MessageContent PlayerDeathSelf { get; set; } = "`{player}` (`{playerrole}`) has died. They died from: `{cause}`";
+    public MessageContent PlayerDeathSelf { get; set; } =
+        "`{player}` (`{playerrole}`) has died. They died from: `{cause}`";
 
     [Description("The message that will be sent when a player dies due to someone on their own team.")]
     public MessageContent TeamKill { get; set; } =
@@ -31,5 +32,6 @@ public class Translation
     };
 
     [Description("What each instance of damage will look like in the logs.")]
-    public string DamageLogEntry { get; set; } = "{timetlong} | `{player}` did `{damage}` damage to `{target}` | Cause: `{cause}`";
+    public string DamageLogEntry { get; set; } =
+        "{timetlong} | `{player}` did `{damage}` damage to `{target}` | Cause: `{cause}`";
 }

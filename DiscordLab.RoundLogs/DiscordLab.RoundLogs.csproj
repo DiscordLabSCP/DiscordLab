@@ -10,6 +10,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj" />
+        <ProjectReference Include="..\DiscordLab.Bot\DiscordLab.Bot.csproj"/>
     </ItemGroup>
 </Project>

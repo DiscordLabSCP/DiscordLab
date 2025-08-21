@@ -13,30 +13,30 @@ namespace DiscordLab.BotStatus;
 public class Plugin : Plugin<Config, Translation>
 {
     public static Plugin Instance;
-        
+
     public override string Name { get; } = "DiscordLab.BotStatus";
     public override string Description { get; } = "Allows your bot's status to update with player counts.";
     public override string Author { get; } = "LumiFae";
     public override Version Version => GetType().Assembly.GetName().Version;
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
-        
+
     public override void Enable()
     {
         Instance = this;
 
         PlayerEvents.Joined += OnPlayerJoin;
         ReferenceHub.OnPlayerRemoved += OnPlayerLeave;
-            
+
         ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
     }
 
     public override void Disable()
     {
         ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
-            
+
         PlayerEvents.Joined -= OnPlayerJoin;
         ReferenceHub.OnPlayerRemoved -= OnPlayerLeave;
-            
+
         Instance = null;
     }
 
@@ -47,7 +47,7 @@ public class Plugin : Plugin<Config, Translation>
 
     public static void OnPlayerJoin(PlayerJoinedEventArgs _)
     {
-        if(Round.IsRoundInProgress)
+        if (Round.IsRoundInProgress)
             UpdateStatus();
         else
             Queue.Process();
@@ -55,18 +55,21 @@ public class Plugin : Plugin<Config, Translation>
 
     public static void OnPlayerLeave(ReferenceHub _)
     {
-        if(Round.IsRoundInProgress)
+        if (Round.IsRoundInProgress)
             UpdateStatus();
         else
             Queue.Process();
     }
 
     private static Queue Queue { get; } = new(5, UpdateStatus);
-        
+
     private static void UpdateStatus()
     {
-        TranslationBuilder builder = new(Server.PlayerCount == 0 ? Instance.Translation.EmptyContent : Instance.Translation.NormalContent);
-        Task.Run(async () => await Client.SocketClient.SetGameAsync(builder, type:Instance.Config.ActivityType).ConfigureAwait(false));
+        TranslationBuilder builder = new(Server.PlayerCount == 0
+            ? Instance.Translation.EmptyContent
+            : Instance.Translation.NormalContent);
+        Task.Run(async () => await Client.SocketClient.SetGameAsync(builder, type: Instance.Config.ActivityType)
+            .ConfigureAwait(false));
         switch (Server.PlayerCount)
         {
             case 0 when Instance.Config.IdleOnEmpty:

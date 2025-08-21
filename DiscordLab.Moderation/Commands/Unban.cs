@@ -27,7 +27,7 @@ public class Unban : AutocompleteCommand
     };
 
     protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-        
+
     public override async Task Run(SocketSlashCommand command)
     {
         await command.DeferAsync();
@@ -38,12 +38,12 @@ public class Unban : AutocompleteCommand
 
         TranslationBuilder builder = new TranslationBuilder(Translation.UnbanSuccess)
             .AddCustomReplacer("userid", id);
-            
-        await command.ModifyOriginalResponseAsync(m => 
-            m.Content = 
+
+        await command.ModifyOriginalResponseAsync(m =>
+            m.Content =
                 builder);
     }
-        
+
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
         IEnumerable<BanDetails> response =
@@ -51,6 +51,9 @@ public class Unban : AutocompleteCommand
             ..BanHandler.GetBans(BanHandler.BanType.UserId),
             ..BanHandler.GetBans(BanHandler.BanType.IP)
         ];
-        await autocomplete.RespondAsync(response.Where(x => x.Id.Contains((string)autocomplete.Data.Current.Value) || x.OriginalName.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
+        await autocomplete.RespondAsync(response
+            .Where(x => x.Id.Contains((string)autocomplete.Data.Current.Value) ||
+                        x.OriginalName.Contains((string)autocomplete.Data.Current.Value)).Take(25)
+            .Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
     }
 }

@@ -34,16 +34,19 @@ public class Translation
     public string UnbanUserOptionDescription { get; set; } = "The user to unban";
 
     public string InvalidUser { get; set; } = "Please provide a valid user to use this command on.";
-        
-    public string TempMuteSuccess { get; set; } = "Player {player} has been temporarily muted for {duration}. They will get unmuted at {timef}";
+
+    public string TempMuteSuccess { get; set; } =
+        "Player {player} has been temporarily muted for {duration}. They will get unmuted at {timef}";
 
     public string UnmuteSuccess { get; set; } = "Player {player} has been successfully unmuted.";
-        
+
     public string PermMuteSuccess { get; set; } = "Player {player} has been muted.";
 
-    public string BanFailure { get; set; } = "Failed to ban {userid}. Please make sure the data is valid and try again...";
+    public string BanFailure { get; set; } =
+        "Failed to ban {userid}. Please make sure the data is valid and try again...";
 
-    public string BanSuccess { get; set; } = "Successfully banned {userid} for {reason}. They will get unbanned in {timer}";
+    public string BanSuccess { get; set; } =
+        "Successfully banned {userid} for {reason}. They will get unbanned in {timer}";
 
     public string UnbanSuccess { get; set; } = "Player {userid} has been unbanned.";
 
@@ -85,6 +88,7 @@ public class Translation
         ]
     };
 
-    [Description("Normal player things may not work here, but playerid always will, unless somehow banned by something without an ID.")]
+    [Description(
+        "Normal player things may not work here, but playerid always will, unless somehow banned by something without an ID.")]
     public MessageContent UnbanLog { get; set; } = "Player {username} ({userid}) has been unbanned by {playerid}";
 }

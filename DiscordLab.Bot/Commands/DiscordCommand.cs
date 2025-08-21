@@ -38,7 +38,6 @@ public class DiscordCommand : AutocompleteCommand
                         IsRequired = true,
                         IsAutocomplete = true,
                     }
-
                 ],
             },
 
@@ -48,7 +47,6 @@ public class DiscordCommand : AutocompleteCommand
                 Name = "check",
                 Description = "Check for DiscordLab updates",
             }
-
         ],
     };
 
@@ -64,8 +62,12 @@ public class DiscordCommand : AutocompleteCommand
         {
             case "list":
             {
-                string modules = string.Join("\n", Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot").Select(s => $"{s.Name} (v{s.Version})"));
-                await command.ModifyOriginalResponseAsync(m => m.Content = "List of available DiscordLab modules:\n\n" + modules);
+                string modules = string.Join(
+                    "\n",
+                    Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot")
+                        .Select(s => $"{s.Name} (v{s.Version})"));
+                await command.ModifyOriginalResponseAsync(m =>
+                    m.Content = "List of available DiscordLab modules:\n\n" + modules);
                 break;
             }
 
@@ -78,7 +80,11 @@ public class DiscordCommand : AutocompleteCommand
                     return;
                 }
 
-                Module? module = Module.CurrentModules.FirstOrDefault(s => string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ?? Module.CurrentModules.FirstOrDefault(s => s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
+                Module? module =
+                    Module.CurrentModules.FirstOrDefault(s =>
+                        string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ??
+                    Module.CurrentModules.FirstOrDefault(s =>
+                        s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
                 if (module == null)
                 {
                     await command.ModifyOriginalResponseAsync(m => m.Content = "Module not found.");
@@ -87,7 +93,8 @@ public class DiscordCommand : AutocompleteCommand
 
                 await module.Download();
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
-                await command.ModifyOriginalResponseAsync(m => m.Content = "Downloaded module. Server will restart next round.");
+                await command.ModifyOriginalResponseAsync(m =>
+                    m.Content = "Downloaded module. Server will restart next round.");
                 break;
             }
 
@@ -110,6 +117,8 @@ public class DiscordCommand : AutocompleteCommand
     /// <inheritdoc />
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        await autocomplete.RespondAsync(Module.CurrentModules.Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25).Select(x => new AutocompleteResult($"{x.Name} (v{x.Version})", x.Name)));
+        await autocomplete.RespondAsync(Module.CurrentModules
+            .Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25)
+            .Select(x => new AutocompleteResult($"{x.Name} (v{x.Version})", x.Name)));
     }
 }

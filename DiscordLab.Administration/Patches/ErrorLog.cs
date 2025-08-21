@@ -19,13 +19,14 @@ public static class ErrorLog
         if (!Client.TryGetOrAddChannel(Plugin.Instance.Config.ErrorLogChannelId, out SocketTextChannel channel))
         {
             Logger.Raw(
-                $"[ERROR] [{Plugin.Instance.Name}] {LoggingUtils.GenerateMissingChannelMessage("error logs", Plugin.Instance.Config.ErrorLogChannelId, Plugin.Instance.Config.GuildId)}", ConsoleColor.Red);
+                $"[ERROR] [{Plugin.Instance.Name}] {LoggingUtils.GenerateMissingChannelMessage("error logs", Plugin.Instance.Config.ErrorLogChannelId, Plugin.Instance.Config.GuildId)}",
+                ConsoleColor.Red);
             return;
         }
 
         TranslationBuilder builder = new TranslationBuilder()
             .AddCustomReplacer("error", message.ToString());
-            
+
         Plugin.Instance.Translation.ErrorLog.SendToChannel(channel, builder);
     }
 }

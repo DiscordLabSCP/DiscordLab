@@ -10,13 +10,13 @@ public class TempMuteRemoteAdmin : ICommand, IUsageProvider
     public string Command { get; } = "tempmute";
     public string[] Aliases { get; } = ["tempm", "mutet", "temporarymute", "mutetemp", "mutetemporary"];
     public string Description { get; } = "Temporarily mutes a user.";
-        
+
     public string[] Usage { get; } =
     [
         "player",
         "duration"
     ];
-        
+
     public bool Execute(ArraySegment<string> arguments, ICommandSender sender, out string response)
     {
         if (!sender.CheckPermission([
@@ -25,7 +25,7 @@ public class TempMuteRemoteAdmin : ICommand, IUsageProvider
                 PlayerPermissions.PlayersManagement
             ], out response))
             return false;
-            
+
         if (arguments.Count < 2)
         {
             response = "To execute this command provide at least 2 arguments!\nUsage: " + this.DisplayCommandUsage();
@@ -43,14 +43,15 @@ public class TempMuteRemoteAdmin : ICommand, IUsageProvider
         }
 
         DateTime time = TempMuteManager.GetExpireDate(arguments.At(1));
-            
+
         TempMuteManager.MutePlayer(target, time, player);
 
-        TranslationBuilder builder = new TranslationBuilder(Plugin.Instance.Translation.TempMuteSuccess, "player", target)
-        {
-            Time = time
-        }
-        .AddCustomReplacer("duration", () => arguments.At(1));
+        TranslationBuilder builder =
+            new TranslationBuilder(Plugin.Instance.Translation.TempMuteSuccess, "player", target)
+                {
+                    Time = time
+                }
+                .AddCustomReplacer("duration", () => arguments.At(1));
 
         response = builder;
         return true;

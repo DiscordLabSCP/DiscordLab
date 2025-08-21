@@ -24,7 +24,10 @@ public class LocalAdminCommand : ICommand
         {
             case "list":
             {
-                string modules = string.Join("\n", Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot").Select(s => $"{s.Name} (v{s.Version})"));
+                string modules = string.Join(
+                    "\n",
+                    Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot")
+                        .Select(s => $"{s.Name} (v{s.Version})"));
                 response = "List of available DiscordLab modules:\n\n" + modules;
                 return true;
             }
@@ -38,7 +41,11 @@ public class LocalAdminCommand : ICommand
                     return false;
                 }
 
-                Module? module = Module.CurrentModules.FirstOrDefault(s => string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ?? Module.CurrentModules.FirstOrDefault(s => s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
+                Module? module =
+                    Module.CurrentModules.FirstOrDefault(s =>
+                        string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ??
+                    Module.CurrentModules.FirstOrDefault(s =>
+                        s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
                 if (module == null)
                 {
                     response = "Module not found.";

@@ -19,9 +19,9 @@ public class Events : CustomEventsHandler
     public static Config Config => Plugin.Instance.Config;
 
     public static Translation Translation => Plugin.Instance.Translation;
-        
+
     private static bool IsSubscribed { get; set; }
-        
+
     [CallOnLoad]
     public static void Load()
     {
@@ -36,7 +36,7 @@ public class Events : CustomEventsHandler
         ServerEvents.WaitingForPlayers -= OnServerStart;
         IsSubscribed = false;
     }
-        
+
     public static void OnServerStart()
     {
         ServerEvents.WaitingForPlayers -= OnServerStart;
@@ -47,10 +47,11 @@ public class Events : CustomEventsHandler
 
         if (!Client.TryGetOrAddChannel(Config.ServerStartChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("server start logs", Config.ServerStartChannelId, Config.GuildId));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("server start logs", Config.ServerStartChannelId,
+                Config.GuildId));
             return;
         }
-            
+
         Translation.ServerStart.SendToChannel(channel, new());
     }
 
@@ -58,14 +59,14 @@ public class Events : CustomEventsHandler
     {
         if (ev.Sender == null || !Player.TryGet(ev.Sender, out Player player))
             return;
-            
+
         SocketTextChannel channel;
         TranslationBuilder builder = new TranslationBuilder("player", player)
             .AddCustomReplacer("type", ev.CommandType.ToString())
             .AddCustomReplacer("arguments", () => string.Join(" ", ev.Arguments))
             .AddCustomReplacer("command", ev.Command.Command)
             .AddCustomReplacer("commanddescription", ev.Command.Description);
-            
+
         if (ev.CommandType == CommandType.RemoteAdmin)
         {
             if (Config.RemoteAdminChannelId == 0)
@@ -73,10 +74,11 @@ public class Events : CustomEventsHandler
 
             if (!Client.TryGetOrAddChannel(Config.RemoteAdminChannelId, out channel))
             {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("remote admin logs", Config.RemoteAdminChannelId, Config.GuildId));
+                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("remote admin logs",
+                    Config.RemoteAdminChannelId, Config.GuildId));
                 return;
             }
-                
+
             Translation.RemoteAdmin.SendToChannel(channel, builder);
             return;
         }
@@ -86,7 +88,8 @@ public class Events : CustomEventsHandler
 
         if (!Client.TryGetOrAddChannel(Config.CommandLogChannelId, out channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("command logs", Config.CommandLogChannelId, Config.GuildId));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("command logs", Config.CommandLogChannelId,
+                Config.GuildId));
             return;
         }
 

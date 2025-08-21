@@ -9,7 +9,7 @@
               DestinationFolder="$(SharedBinPath)"
               SkipUnchangedFiles="true"/>
     </Target>
-    
+
     <Target Name="CopyToDependencies" AfterTargets="Build" Condition="$(AssemblyName) == 'DiscordLab.Dependency'">
         <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
               DestinationFolder="$(SharedBinPath)\dependencies"

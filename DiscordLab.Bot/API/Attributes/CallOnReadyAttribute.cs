@@ -21,7 +21,8 @@ public class CallOnReadyAttribute : Attribute
 
         foreach (Type type in assembly.GetTypes())
         {
-            foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic))
+            foreach (MethodInfo method in type.GetMethods(BindingFlags.Static | BindingFlags.Public |
+                                                          BindingFlags.NonPublic))
             {
                 CallOnReadyAttribute attribute = method.GetCustomAttribute<CallOnReadyAttribute>();
                 if (attribute == null)

@@ -29,7 +29,7 @@ public class Unmute : AutocompleteCommand
     };
 
     protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-        
+
     public override async Task Run(SocketSlashCommand command)
     {
         await command.DeferAsync();
@@ -41,12 +41,12 @@ public class Unmute : AutocompleteCommand
         }
 
         TempMuteManager.RemoveMute(player);
-            
-        await command.ModifyOriginalResponseAsync(m => 
-            m.Content = 
+
+        await command.ModifyOriginalResponseAsync(m =>
+            m.Content =
                 new TranslationBuilder(Translation.UnmuteSuccess, "player", player));
     }
-        
+
     public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
         await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));

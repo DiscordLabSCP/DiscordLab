@@ -9,7 +9,7 @@ namespace DiscordLab.RoundLogs;
 public class Plugin : Plugin<Config, Translation>
 {
     public static Plugin Instance;
-        
+
     public override string Name { get; } = "DiscordLab.RoundLogs";
     public override string Description { get; } = "Allows you to log specific details about the round.";
     public override string Author { get; } = "LumiFae";
@@ -17,11 +17,11 @@ public class Plugin : Plugin<Config, Translation>
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
 
     public Events Events = new();
-        
+
     public override void Enable()
     {
         Instance = this;
-            
+
         CustomHandlersManager.RegisterEventsHandler(Events);
     }
 
@@ -30,7 +30,7 @@ public class Plugin : Plugin<Config, Translation>
         CustomHandlersManager.UnregisterEventsHandler(Events);
 
         Events = null;
-            
+
         Instance = null;
     }
 }

@@ -1,4 +1,5 @@
 // ReSharper disable MemberCanBePrivate.Global
+
 namespace DiscordLab.Bot.API.Features;
 
 using Discord.Rest;
@@ -138,7 +139,8 @@ public class MessageContent
         if (!string.IsNullOrEmpty(embed.Description))
             embed.Description = builder.Build(embed.Description);
 
-        foreach (Discord.EmbedFieldBuilder field in embed.Fields.Where(field => field.Value is string value && !string.IsNullOrEmpty(value)))
+        foreach (Discord.EmbedFieldBuilder field in embed.Fields.Where(field =>
+                     field.Value is string value && !string.IsNullOrEmpty(value)))
         {
             field.Value = builder.Build((string)field.Value);
         }

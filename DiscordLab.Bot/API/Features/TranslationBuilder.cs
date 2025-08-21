@@ -1,5 +1,6 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
+
 namespace DiscordLab.Bot.API.Features;
 
 using System.Globalization;
@@ -69,7 +70,8 @@ public class TranslationBuilder
         [CreateRegex("seed")] = () => Map.Seed.ToString(),
         [CreateRegex("isdecont")] = () => Decontamination.IsDecontaminating.ToString(),
         [CreateRegex("remainingdeconttime")] = GetRemainingDecontaminationTime,
-        [CreateRegex("isdecontenabled")] = () => (Decontamination.Status == DecontaminationController.DecontaminationStatus.None).ToString(),
+        [CreateRegex("isdecontenabled")] = () =>
+            (Decontamination.Status == DecontaminationController.DecontaminationStatus.None).ToString(),
 
         // Round Replacers
         [CreateRegex("killcount")] = () => Round.TotalDeaths.ToString(),
@@ -219,7 +221,8 @@ public class TranslationBuilder
     /// </summary>
     /// <param name="placeholder">The placeholder.</param>
     /// <returns>The new regex.</returns>
-    public static Regex CreateRegex(string placeholder) => new(ToParameterString(placeholder), RegexOptions.IgnoreCase | RegexOptions.Compiled);
+    public static Regex CreateRegex(string placeholder) =>
+        new(ToParameterString(placeholder), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     /// <summary>
     /// Adds multiple players to the <see cref="Players"/> list.

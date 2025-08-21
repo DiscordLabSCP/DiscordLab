@@ -11,9 +11,9 @@ namespace DiscordLab.Moderation;
 public static class TempMuteManager
 {
     public static TempMuteConfig MuteConfig => Plugin.Instance.MuteConfig;
-        
+
     public static Dictionary<string, CoroutineHandle> Handles { get; private set; } = new();
-        
+
     [CallOnLoad]
     public static void Start()
     {
@@ -26,6 +26,7 @@ public static class TempMuteManager
                 RemoveMute(dict.Key);
                 continue;
             }
+
             AddHandle(dict.Key, time);
         }
     }
@@ -43,7 +44,7 @@ public static class TempMuteManager
 
     public static void AddHandle(string userId, DateTime time) =>
         AddHandle(userId, time - DateTime.Now);
-        
+
     public static void AddHandle(string userId, TimeSpan time) =>
         Handles.Add(userId,
             Timing.CallDelayed((float)time.TotalSeconds, () => RemoveMute(userId)));
@@ -61,17 +62,17 @@ public static class TempMuteManager
         GetExpireDate(Misc.RelativeTimeToSeconds(duration, 60));
 
     public static DateTime GetExpireDate(long duration) => DateTime.Now.AddSeconds(duration);
-        
-    public static void MutePlayer(Player player, DateTime time, Player sender = null) => 
+
+    public static void MutePlayer(Player player, DateTime time, Player sender = null) =>
         MutePlayer(player.UserId, time, sender?.ReferenceHub);
 
     public static void MutePlayer(string player, DateTime time, ReferenceHub sender = null)
     {
         sender ??= Server.Host?.ReferenceHub;
         VoiceChatMutes.IssueLocalMute(player);
-        if(Player.TryGet(player, out Player p) && sender)
+        if (Player.TryGet(player, out Player p) && sender)
             PlayerEvents.OnMuted(new(p.ReferenceHub, sender, false));
-            
+
         MuteConfig.Mutes.Add(player, time);
         AddHandle(player, time);
         Plugin.Instance.SaveConfig(MuteConfig, "mute-config.yml");
@@ -88,10 +89,10 @@ public static class TempMuteManager
         sender ??= Server.Host?.ReferenceHub;
 
         VoiceChatMutes.RevokeLocalMute(player);
-            
+
         MuteConfig.Mutes.Remove(player);
         Plugin.Instance.SaveConfig(MuteConfig, "mute-config.yml");
-        if(Player.TryGet(player, out Player p) && sender)
+        if (Player.TryGet(player, out Player p) && sender)
             PlayerEvents.OnUnmuted(new(p.ReferenceHub, sender, false));
 
         if (Handles.ContainsKey(player))

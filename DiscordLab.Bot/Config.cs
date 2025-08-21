@@ -28,7 +28,8 @@ public sealed class Config
     /// <summary>
     /// Gets or sets the proxy URL. Shouldn't be set if proxy is not needed.
     /// </summary>
-    [Description("The proxy URL to use. Should only be used in very specific cases like Discord being banned in your country. Please set to empty to not use.")]
+    [Description(
+        "The proxy URL to use. Should only be used in very specific cases like Discord being banned in your country. Please set to empty to not use.")]
     public string ProxyUrl { get; set; } = string.Empty;
 
     /// <summary>

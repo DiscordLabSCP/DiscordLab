@@ -37,7 +37,7 @@ public class Mute : AutocompleteCommand
     };
 
     protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-        
+
     public override async Task Run(SocketSlashCommand command)
     {
         await command.DeferAsync();
@@ -55,12 +55,12 @@ public class Mute : AutocompleteCommand
             string duration = (string)command.Data.Options.ElementAt(1).Value;
             DateTime time = TempMuteManager.GetExpireDate(duration);
             TempMuteManager.MutePlayer(player, time);
-                
+
             builder = new TranslationBuilder(Translation.TempMuteSuccess, "player", player)
-            {
-                Time = time
-            }
-            .AddCustomReplacer("duration", duration);
+                {
+                    Time = time
+                }
+                .AddCustomReplacer("duration", duration);
 
             await command.ModifyOriginalResponseAsync(m => m.Content = builder);
             return;

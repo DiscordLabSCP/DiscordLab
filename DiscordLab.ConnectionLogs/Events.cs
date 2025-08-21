@@ -21,7 +21,7 @@ public class Events : CustomEventsHandler
     {
         if (!Round.IsRoundInProgress)
             return;
-            
+
         if (Config.JoinChannelId == 0)
             return;
 
@@ -30,24 +30,25 @@ public class Events : CustomEventsHandler
             Logger.Error(LoggingUtils.GenerateMissingChannelMessage("join log", Config.JoinChannelId, Config.GuildId));
             return;
         }
-            
-        Translation.PlayerJoin.SendToChannel(channel, new( "player", ev.Player));
+
+        Translation.PlayerJoin.SendToChannel(channel, new("player", ev.Player));
     }
-        
+
     public override void OnPlayerLeft(PlayerLeftEventArgs ev)
     {
         if (!Round.IsRoundInProgress)
             return;
-            
+
         if (Config.LeaveChannelId == 0)
             return;
 
         if (!Client.TryGetOrAddChannel(Config.LeaveChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("leave log", Config.LeaveChannelId, Config.GuildId));
+            Logger.Error(
+                LoggingUtils.GenerateMissingChannelMessage("leave log", Config.LeaveChannelId, Config.GuildId));
             return;
         }
-            
+
         Translation.PlayerLeave.SendToChannel(channel, new("player", ev.Player));
     }
 
@@ -58,16 +59,17 @@ public class Events : CustomEventsHandler
 
         if (!Client.TryGetOrAddChannel(Config.RoundStartChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundStartChannelId, Config.GuildId));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundStartChannelId,
+                Config.GuildId));
             return;
         }
-        
+
         Translation.RoundStart.SendToChannel(channel, new()
         {
             PlayerListItem = Translation.RoundPlayers
         });
     }
-        
+
     public override void OnServerRoundEnded(RoundEndedEventArgs ev)
     {
         if (Config.RoundEndChannelId == 0)
@@ -75,16 +77,17 @@ public class Events : CustomEventsHandler
 
         if (!Client.TryGetOrAddChannel(Config.RoundEndChannelId, out SocketTextChannel channel))
         {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundEndChannelId, Config.GuildId));
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start log", Config.RoundEndChannelId,
+                Config.GuildId));
             return;
         }
 
         TranslationBuilder builder = new TranslationBuilder()
-        {
-            PlayerListItem = Translation.RoundPlayers
-        }
-        .AddCustomReplacer("winner", ev.LeadingTeam.ToString());
-            
+            {
+                PlayerListItem = Translation.RoundPlayers
+            }
+            .AddCustomReplacer("winner", ev.LeadingTeam.ToString());
+
         Translation.RoundEnd.SendToChannel(channel, builder);
     }
 }

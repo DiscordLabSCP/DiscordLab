@@ -31,7 +31,8 @@ public class EmbedBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
     public IEnumerable<EmbedFieldBuilder> Fields
     {
-        get => Builder.Fields.Select(x => new EmbedFieldBuilder { Name = x.Name, Value = x.Value.ToString(), IsInline = x.IsInline });
+        get => Builder.Fields.Select(x => new EmbedFieldBuilder
+            { Name = x.Name, Value = x.Value.ToString(), IsInline = x.IsInline });
         set => Builder.Fields = value.Select(x => x.Builder).ToList();
     }
 

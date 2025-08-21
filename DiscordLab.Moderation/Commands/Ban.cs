@@ -43,7 +43,7 @@ public class Ban : AutocompleteCommand
     };
 
     protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-        
+
     public override async Task Run(SocketSlashCommand command)
     {
         await command.DeferAsync();
@@ -53,22 +53,22 @@ public class Ban : AutocompleteCommand
         string reason = (string)command.Data.Options.ElementAt(2).Value;
 
         TranslationBuilder successBuilder = new TranslationBuilder(Translation.BanSuccess)
-        {
-            Time = TempMuteManager.GetExpireDate(duration)
-        }
-        .AddCustomReplacer("userid", userId);
+            {
+                Time = TempMuteManager.GetExpireDate(duration)
+            }
+            .AddCustomReplacer("userid", userId);
         TranslationBuilder failBuilder = new TranslationBuilder(Translation.BanFailure)
             .AddCustomReplacer("userid", userId);
-            
+
         if (!CommandUtils.TryGetPlayerFromUnparsed(userId, out Player player))
         {
-            bool result = userId.Contains("@") ? 
-                Server.BanUserId(userId, reason, duration) : 
-                Server.BanIpAddress(userId, reason, duration);
+            bool result = userId.Contains("@")
+                ? Server.BanUserId(userId, reason, duration)
+                : Server.BanIpAddress(userId, reason, duration);
 
             await command.ModifyOriginalResponseAsync(m =>
                 m.Content = !result ? failBuilder : successBuilder);
-                
+
             return;
         }
 
