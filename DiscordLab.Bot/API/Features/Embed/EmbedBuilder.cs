@@ -12,8 +12,8 @@ public class EmbedBuilder
     /// </summary>
     public string Title
     {
-        get => Builder.Title;
-        set => Builder.Title = value;
+        get => Base.Title;
+        set => Base.Title = value;
     }
 
     /// <summary>
@@ -21,8 +21,8 @@ public class EmbedBuilder
     /// </summary>
     public string Description
     {
-        get => Builder.Description;
-        set => Builder.Description = value;
+        get => Base.Description;
+        set => Base.Description = value;
     }
 
     /// <summary>
@@ -31,9 +31,8 @@ public class EmbedBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
     public IEnumerable<EmbedFieldBuilder> Fields
     {
-        get => Builder.Fields.Select(x => new EmbedFieldBuilder
-            { Name = x.Name, Value = x.Value.ToString(), IsInline = x.IsInline });
-        set => Builder.Fields = value.Select(x => x.Builder).ToList();
+        get => Base.Fields.Select(x => new EmbedFieldBuilder(x));
+        set => Base.Fields = value.Select(x => x.Base).ToList();
     }
 
     /// <summary>
@@ -42,16 +41,16 @@ public class EmbedBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? Color
     {
-        get => Builder.Color?.ToString();
+        get => Base.Color?.ToString();
         set
         {
             if (value == null)
             {
-                Builder.Color = null;
+                Base.Color = null;
                 return;
             }
 
-            Builder.Color = Discord.Color.Parse(value);
+            Base.Color = Discord.Color.Parse(value);
         }
     }
 
@@ -61,8 +60,8 @@ public class EmbedBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? ThumbnailUrl
     {
-        get => Builder.ThumbnailUrl;
-        set => Builder.ThumbnailUrl = value;
+        get => Base.ThumbnailUrl;
+        set => Base.ThumbnailUrl = value;
     }
 
     /// <summary>
@@ -71,8 +70,8 @@ public class EmbedBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? ImageUrl
     {
-        get => Builder.ImageUrl;
-        set => Builder.ImageUrl = value;
+        get => Base.ImageUrl;
+        set => Base.ImageUrl = value;
     }
 
     /// <summary>
@@ -81,12 +80,32 @@ public class EmbedBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? Url
     {
-        get => Builder.Url;
-        set => Builder.Url = value;
+        get => Base.Url;
+        set => Base.Url = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the footer of the embed.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public EmbedFooterBuilder? Footer
+    {
+        get => Base.Footer != null ? new(Base.Footer) : null;
+        set => Base.Footer = value?.Base;
+    }
+
+    /// <summary>
+    /// Gets or sets the author of the embed.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public EmbedAuthorBuilder? Author
+    {
+        get => Base.Author != null ? new(Base.Author) : null;
+        set => Base.Author = value?.Base;
     }
 
     [YamlIgnore]
-    private Discord.EmbedBuilder Builder { get; } = new();
+    private Discord.EmbedBuilder Base { get; } = new();
 
     /// <summary>
     /// Changes a <see cref="EmbedBuilder"/> into a <see cref="Discord.EmbedBuilder"/> instance.
@@ -97,34 +116,34 @@ public class EmbedBuilder
     {
         Discord.EmbedBuilder copy = new();
 
-        if (builder.Builder.Title != null)
-            copy.WithTitle(builder.Builder.Title);
+        if (builder.Base.Title != null)
+            copy.WithTitle(builder.Base.Title);
 
-        if (builder.Builder.Description != null)
-            copy.WithDescription(builder.Builder.Description);
+        if (builder.Base.Description != null)
+            copy.WithDescription(builder.Base.Description);
 
-        if (builder.Builder.Color.HasValue)
-            copy.WithColor(builder.Builder.Color.Value);
+        if (builder.Base.Color.HasValue)
+            copy.WithColor(builder.Base.Color.Value);
 
-        if (builder.Builder.Url != null)
-            copy.WithUrl(builder.Builder.Url);
+        if (builder.Base.Url != null)
+            copy.WithUrl(builder.Base.Url);
 
-        if (builder.Builder.ImageUrl != null)
-            copy.WithImageUrl(builder.Builder.ImageUrl);
+        if (builder.Base.ImageUrl != null)
+            copy.WithImageUrl(builder.Base.ImageUrl);
 
-        if (builder.Builder.ThumbnailUrl != null)
-            copy.WithThumbnailUrl(builder.Builder.ThumbnailUrl);
+        if (builder.Base.ThumbnailUrl != null)
+            copy.WithThumbnailUrl(builder.Base.ThumbnailUrl);
 
-        if (builder.Builder.Timestamp.HasValue)
-            copy.WithTimestamp(builder.Builder.Timestamp.Value);
+        if (builder.Base.Timestamp.HasValue)
+            copy.WithTimestamp(builder.Base.Timestamp.Value);
 
-        if (builder.Builder.Footer != null)
-            copy.WithFooter(builder.Builder.Footer);
+        if (builder.Base.Footer != null)
+            copy.WithFooter(builder.Base.Footer);
 
-        if (builder.Builder.Author != null)
-            copy.WithAuthor(builder.Builder.Author);
+        if (builder.Base.Author != null)
+            copy.WithAuthor(builder.Base.Author);
 
-        foreach (Discord.EmbedFieldBuilder field in builder.Builder.Fields)
+        foreach (Discord.EmbedFieldBuilder field in builder.Base.Fields)
         {
             copy.AddField(field.Name, field.Value, field.IsInline);
         }

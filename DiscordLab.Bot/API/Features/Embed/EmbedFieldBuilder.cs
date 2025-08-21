@@ -8,12 +8,30 @@ using YamlDotNet.Serialization;
 public class EmbedFieldBuilder
 {
     /// <summary>
+    /// Initializes a new instance of the <see cref="EmbedFieldBuilder"/> class.
+    /// </summary>
+    public EmbedFieldBuilder()
+    {
+        Base = new();
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the <see cref="EmbedFieldBuilder"/> class.
+    /// Replaces the base with the <see cref="Discord.EmbedFieldBuilder"/> instance.
+    /// </summary>
+    /// <param name="builder">The <see cref="Discord.EmbedFieldBuilder"/> instance.</param>
+    public EmbedFieldBuilder(Discord.EmbedFieldBuilder builder)
+    {
+        Base = builder;
+    }
+
+    /// <summary>
     /// Gets or sets the field name.
     /// </summary>
     public string Name
     {
-        get => Builder.Name;
-        set => Builder.Name = value;
+        get => Base.Name;
+        set => Base.Name = value;
     }
 
     /// <summary>
@@ -21,8 +39,8 @@ public class EmbedFieldBuilder
     /// </summary>
     public string Value
     {
-        get => Builder.Value.ToString();
-        set => Builder.Value = value;
+        get => Base.Value.ToString();
+        set => Base.Value = value;
     }
 
     /// <summary>
@@ -31,13 +49,13 @@ public class EmbedFieldBuilder
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
     public bool IsInline
     {
-        get => Builder.IsInline;
-        set => Builder.IsInline = value;
+        get => Base.IsInline;
+        set => Base.IsInline = value;
     }
 
     /// <summary>
     /// Gets the base builder.
     /// </summary>
     [YamlIgnore]
-    internal Discord.EmbedFieldBuilder Builder { get; } = new();
+    public Discord.EmbedFieldBuilder Base { get; init; }
 }
