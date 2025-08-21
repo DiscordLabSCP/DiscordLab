@@ -55,6 +55,36 @@ public class EmbedBuilder
         }
     }
 
+    /// <summary>
+    /// Gets or sets the thumbnail URL of the embed.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? ThumbnailUrl
+    {
+        get => Builder.ThumbnailUrl;
+        set => Builder.ThumbnailUrl = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the image URL of the embed.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? ImageUrl
+    {
+        get => Builder.ImageUrl;
+        set => Builder.ImageUrl = value;
+    }
+
+    /// <summary>
+    /// Gets or sets the URL of the embed.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
+    public string? Url
+    {
+        get => Builder.Url;
+        set => Builder.Url = value;
+    }
+
     [YamlIgnore]
     private Discord.EmbedBuilder Builder { get; } = new();
 
