@@ -26,6 +26,7 @@ public class Events : CustomEventsHandler
     public static void Load()
     {
         ServerEvents.WaitingForPlayers += OnServerStart;
+        Shutdown.OnQuit += OnServerQuit;
         IsSubscribed = true;
     }
 
@@ -34,7 +35,22 @@ public class Events : CustomEventsHandler
     {
         if (!IsSubscribed) return;
         ServerEvents.WaitingForPlayers -= OnServerStart;
+        Shutdown.OnQuit -= OnServerQuit;
         IsSubscribed = false;
+    }
+
+    public static void OnServerQuit()
+    {
+        if (Config.ServerShutdownChannelId == 0)
+            return;
+        
+        if (!Client.TryGetOrAddChannel(Config.ServerShutdownChannelId, out SocketTextChannel channel))
+        {
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("server quit logs", Config.ServerShutdownChannelId, Config.GuildId));
+            return;
+        }
+        
+        Translation.ServerShutdown.SendToChannel(channel, new());
     }
 
     public static void OnServerStart()

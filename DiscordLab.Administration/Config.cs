@@ -9,6 +9,9 @@ public class Config
     [Description("The channel to send server start logs")]
     public ulong ServerStartChannelId { get; set; } = 0;
 
+    [Description("Where server shutdown logs should be sent")]
+    public ulong ServerShutdownChannelId { get; set; } = 0;
+
     [Description("The channel to send error logs")]
     public ulong ErrorLogChannelId { get; set; } = 0;
 

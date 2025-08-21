@@ -1,5 +1,3 @@
-using System.ComponentModel;
-using Discord;
 using DiscordLab.Bot.API.Features;
 
 namespace DiscordLab.Administration;
@@ -7,6 +5,8 @@ namespace DiscordLab.Administration;
 public class Translation
 {
     public MessageContent ServerStart { get; set; } = "Server has started";
+
+    public MessageContent ServerShutdown { get; set; } = "Server has shutdown";
 
     public MessageContent ErrorLog { get; set; } = "An error has occured:\n{error}";
 
