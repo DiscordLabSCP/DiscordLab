@@ -36,9 +36,8 @@ public class Unban : AutocompleteCommand
 
         BanHandler.RemoveBan(id, id.Contains("@") ? BanHandler.BanType.UserId : BanHandler.BanType.IP);
 
-        TranslationBuilder builder = new(Translation.UnbanSuccess);
-            
-        builder.CustomReplacers.Add("userid", () => id);
+        TranslationBuilder builder = new TranslationBuilder(Translation.UnbanSuccess)
+            .AddCustomReplacer("userid", id);
             
         await command.ModifyOriginalResponseAsync(m => 
             m.Content = 

@@ -60,16 +60,11 @@ public class Events : CustomEventsHandler
             return;
             
         SocketTextChannel channel;
-        TranslationBuilder builder = new("player", player)
-        {
-            CustomReplacers = new()
-            {
-                ["type"] = () => ev.CommandType.ToString(),
-                ["arguments"] = () => string.Join(" ", ev.Arguments),
-                ["command"] = () => ev.Command.Command,
-                ["commanddescription"] = () => ev.Command.Description,
-            }
-        };
+        TranslationBuilder builder = new TranslationBuilder("player", player)
+            .AddCustomReplacer("type", ev.CommandType.ToString())
+            .AddCustomReplacer("arguments", () => string.Join(" ", ev.Arguments))
+            .AddCustomReplacer("command", ev.Command.Command)
+            .AddCustomReplacer("commanddescription", ev.Command.Description);
             
         if (ev.CommandType == CommandType.RemoteAdmin)
         {

@@ -63,67 +63,66 @@ public class TranslationBuilder
     /// <summary>
     /// Gets the dictionary of replacers that have no argument.
     /// </summary>
-    public static Dictionary<string, Func<string>> StaticReplacers { get; } = new()
+    public static Dictionary<Regex, Func<string>> StaticReplacers { get; } = new()
     {
         // Map Replacers
-        ["seed"] = () => Map.Seed.ToString(),
-        ["isdecont"] = () => DecontaminationController.Singleton.IsDecontaminating.ToString(),
-        ["remainingdeconttime"] = GetRemainingDecontaminationTime,
-        ["isdecontenabled"] = () =>
-            (DecontaminationController.Singleton.DecontaminationOverride == DecontaminationController.DecontaminationStatus.None).ToString(),
+        [CreateRegex("seed")] = () => Map.Seed.ToString(),
+        [CreateRegex("isdecont")] = () => Decontamination.IsDecontaminating.ToString(),
+        [CreateRegex("remainingdeconttime")] = GetRemainingDecontaminationTime,
+        [CreateRegex("isdecontenabled")] = () => (Decontamination.Status == DecontaminationController.DecontaminationStatus.None).ToString(),
 
         // Round Replacers
-        ["killcount"] = () => Round.TotalDeaths.ToString(),
-        ["elapsedtime"] = () => Round.Duration.ToString(),
-        ["escapedscientistscount"] = () => Round.EscapedScientists.ToString(),
-        ["inprogress"] = () => Round.IsRoundInProgress.ToString(),
-        ["isended"] = () => Round.IsRoundEnded.ToString(),
-        ["isstarted"] = () => Round.IsRoundStarted.ToString(),
-        ["islocked"] = () => Round.IsLocked.ToString(),
-        ["changedintozombiescount"] = () => Round.ChangedIntoZombies.ToString(),
-        ["escapeddclassescount"] = () => Round.EscapedClassD.ToString(),
-        ["islobbylocked"] = () => Round.IsLobbyLocked.ToString(),
-        ["scpkillcount"] = () => Round.KilledBySCPs.ToString(),
-        ["alivescpcount"] = () => Round.SurvivingSCPs.ToString(),
-        ["roundcount"] = () => RoundRestart.UptimeRounds.ToString(),
+        [CreateRegex("killcount")] = () => Round.TotalDeaths.ToString(),
+        [CreateRegex("elapsedtime")] = () => Round.Duration.ToString(),
+        [CreateRegex("escapedscientistscount")] = () => Round.EscapedScientists.ToString(),
+        [CreateRegex("inprogress")] = () => Round.IsRoundInProgress.ToString(),
+        [CreateRegex("isended")] = () => Round.IsRoundEnded.ToString(),
+        [CreateRegex("isstarted")] = () => Round.IsRoundStarted.ToString(),
+        [CreateRegex("islocked")] = () => Round.IsLocked.ToString(),
+        [CreateRegex("changedintozombiescount")] = () => Round.ChangedIntoZombies.ToString(),
+        [CreateRegex("escapeddclassescount")] = () => Round.EscapedClassD.ToString(),
+        [CreateRegex("islobbylocked")] = () => Round.IsLobbyLocked.ToString(),
+        [CreateRegex("scpkillcount")] = () => Round.KilledBySCPs.ToString(),
+        [CreateRegex("alivescpcount")] = () => Round.SurvivingSCPs.ToString(),
+        [CreateRegex("roundcount")] = () => RoundRestart.UptimeRounds.ToString(),
 
         // Server Replacers
-        ["maxplayers"] = () => Server.MaxPlayers.ToString(),
-        ["name"] = () => Server.ServerListName,
-        ["nameparsed"] = () =>
+        [CreateRegex("maxplayers")] = () => Server.MaxPlayers.ToString(),
+        [CreateRegex("name")] = () => Server.ServerListName,
+        [CreateRegex("nameparsed")] = () =>
         {
             string result = UselessTextRemoveRegex.Replace(Server.ServerListName, string.Empty);
             result = TagRemoveRegex.Replace(result, string.Empty);
 
             return result;
         },
-        ["port"] = () => Server.Port.ToString(),
-        ["ip"] = () => Server.IpAddress,
-        ["playercount"] = () => Server.PlayerCount.ToString(),
-        ["playercountnonpcs"] = () => Player.ReadyList.Count(p => !p.IsNpc).ToString(),
-        ["tps"] = () => Server.Tps.ToString(CultureInfo.CurrentCulture),
-        ["version"] = () => GameCore.Version.VersionString,
-        ["isbeta"] = () => (GameCore.Version.PublicBeta || GameCore.Version.PublicBeta).ToString(),
-        ["isfriendlyfire"] = () => Server.FriendlyFire.ToString(),
+        [CreateRegex("port")] = () => Server.Port.ToString(),
+        [CreateRegex("ip")] = () => Server.IpAddress,
+        [CreateRegex("playercount")] = () => Server.PlayerCount.ToString(),
+        [CreateRegex("playercountnonpcs")] = () => Player.ReadyList.Count(p => !p.IsNpc).ToString(),
+        [CreateRegex("tps")] = () => Server.Tps.ToString(CultureInfo.CurrentCulture),
+        [CreateRegex("version")] = () => GameCore.Version.VersionString,
+        [CreateRegex("isbeta")] = () => (GameCore.Version.PublicBeta || GameCore.Version.PublicBeta).ToString(),
+        [CreateRegex("isfriendlyfire")] = () => Server.FriendlyFire.ToString(),
     };
 
     /// <summary>
     /// Gets time based replacers. The <see cref="long"/> type is the unix timestamp. Can be got with <see cref="DateTimeOffset.ToUnixTimeSeconds"/>.
     /// </summary>
-    public static Dictionary<string, Func<long, string>> TimeReplacers { get; } = new()
+    public static Dictionary<Regex, Func<long, string>> TimeReplacers { get; } = new()
     {
-        ["time"] = time => $"<t:{time}>",
-        ["timet"] = time => $"<t:{time}:t>",
-        ["timetlong"] = time => $"<t:{time}:T>",
-        ["timed"] = time => $"<t:{time}:d>",
-        ["timedlong"] = time => $"<t:{time}:D>",
-        ["timef"] = time => $"<t:{time}:f>",
-        ["timeflong"] = time => $"<t:{time}:F>",
-        ["timer"] = time => $"<t:{time}:R>",
-        ["elapsedtimerelative"] = time => $"<t:{time - Round.Duration.TotalSeconds}:R>",
-        ["roundstart"] = time => $"<t:{time - Round.Duration.TotalSeconds}:T>",
-        ["secondssince"] = time => TimeSince(time).Seconds.ToString(CultureInfo.InvariantCulture),
-        ["minutessince"] = time => TimeSince(time).Minutes.ToString(CultureInfo.InvariantCulture),
+        [CreateRegex("time")] = time => $"<t:{time}>",
+        [CreateRegex("timet")] = time => $"<t:{time}:t>",
+        [CreateRegex("timetlong")] = time => $"<t:{time}:T>",
+        [CreateRegex("timed")] = time => $"<t:{time}:d>",
+        [CreateRegex("timedlong")] = time => $"<t:{time}:D>",
+        [CreateRegex("timef")] = time => $"<t:{time}:f>",
+        [CreateRegex("timeflong")] = time => $"<t:{time}:F>",
+        [CreateRegex("timer")] = time => $"<t:{time}:R>",
+        [CreateRegex("elapsedtimerelative")] = time => $"<t:{time - Round.Duration.TotalSeconds}:R>",
+        [CreateRegex("roundstart")] = time => $"<t:{time - Round.Duration.TotalSeconds}:T>",
+        [CreateRegex("secondssince")] = time => TimeSince(time).Seconds.ToString(CultureInfo.InvariantCulture),
+        [CreateRegex("minutessince")] = time => TimeSince(time).Minutes.ToString(CultureInfo.InvariantCulture),
     };
 
     /// <summary>
@@ -161,7 +160,7 @@ public class TranslationBuilder
     /// <summary>
     /// Gets or sets a Dictionary of custom replacers. Key is the text to replace and value is the factory to replace with.
     /// </summary>
-    public Dictionary<string, Func<string>> CustomReplacers { get; set; } = new();
+    public Dictionary<Regex, Func<string>> CustomReplacers { get; set; } = new();
 
     /// <summary>
     /// Gets or sets the players that need to be translated for, if any.
@@ -195,6 +194,11 @@ public class TranslationBuilder
     public IEnumerable<Player>? PlayerList { get; set; }
 
     /// <summary>
+    /// Gets a Dictionary of cached regexes that are unknown.
+    /// </summary>
+    private static Dictionary<string, Regex> CachedRegex { get; } = new();
+
+    /// <summary>
     /// <inheritdoc cref="Build"/>.
     /// </summary>
     /// <param name="builder">The <see cref="TranslationBuilder"/> instance.</param>
@@ -209,6 +213,13 @@ public class TranslationBuilder
     /// <returns><inheritdoc cref="Build"/></returns>
     public static implicit operator Optional<string>(TranslationBuilder builder) =>
         builder.Build();
+
+    /// <summary>
+    /// Creates a compatible placeholder regex.
+    /// </summary>
+    /// <param name="placeholder">The placeholder.</param>
+    /// <returns>The new regex.</returns>
+    public static Regex CreateRegex(string placeholder) => new(ToParameterString(placeholder), RegexOptions.IgnoreCase | RegexOptions.Compiled);
 
     /// <summary>
     /// Adds multiple players to the <see cref="Players"/> list.
@@ -241,10 +252,10 @@ public class TranslationBuilder
     /// <summary>
     /// Adds a custom replacer to the <see cref="CustomReplacers"/> dictionary.
     /// </summary>
-    /// <param name="toReplace">The text to replace.</param>
+    /// <param name="toReplace">The regex to replace.</param>
     /// <param name="replacer">The string factory to replace with.</param>
     /// <returns>The <see cref="TranslationBuilder"/> instance.</returns>
-    public TranslationBuilder AddCustomReplacer(string toReplace, Func<string> replacer)
+    public TranslationBuilder AddCustomReplacer(Regex toReplace, Func<string> replacer)
     {
         CustomReplacers.Add(toReplace, replacer);
 
@@ -252,17 +263,22 @@ public class TranslationBuilder
     }
 
     /// <summary>
-    /// Adds a custom replacer to the <see cref="CustomReplacers"/> dictionary.
+    /// <inheritdoc cref="AddCustomReplacer(System.Text.RegularExpressions.Regex,System.Func{string})"/>
+    /// </summary>
+    /// <param name="toReplace">The text to replace.</param>
+    /// <param name="replacer">The string factory to replace with.</param>
+    /// <returns>The <see cref="TranslationBuilder"/> instance.</returns>
+    public TranslationBuilder AddCustomReplacer(string toReplace, Func<string> replacer) =>
+        AddCustomReplacer(CreateRegex(toReplace), replacer);
+
+    /// <summary>
+    /// <inheritdoc cref="AddCustomReplacer(System.Text.RegularExpressions.Regex,System.Func{string})"/>
     /// </summary>
     /// <param name="toReplace">The text to replace.</param>
     /// <param name="replacer">The text to replace with.</param>
     /// <returns>The <see cref="TranslationBuilder"/> instance.</returns>
-    public TranslationBuilder AddCustomReplacer(string toReplace, string replacer)
-    {
+    public TranslationBuilder AddCustomReplacer(string toReplace, string replacer) =>
         AddCustomReplacer(toReplace, () => replacer);
-
-        return this;
-    }
 
     /// <summary>
     /// Builds this <see cref="TranslationBuilder"/> instance.
@@ -276,38 +292,28 @@ public class TranslationBuilder
         if (string.IsNullOrEmpty(translation))
             throw new ArgumentNullException($"{nameof(TranslationBuilder)} failed to build because of no valid translation.");
 
-        if (PlayerListItem != null && !CustomReplacers.ContainsKey("players"))
+        if (PlayerListItem != null && CustomReplacers.All(replacer => replacer.Key.ToString() != "{players}"))
             SetupPlayerList();
 
         string returnTranslation = translation!;
 
-        foreach (KeyValuePair<string, Func<string>> replacer in CustomReplacers)
+        foreach (KeyValuePair<Regex, Func<string>> replacer in CustomReplacers)
         {
-            returnTranslation = Regex.Replace(
-                returnTranslation,
-                ToParameterString(replacer.Key),
-                replacer.Value(),
-                RegexOptions.IgnoreCase);
+            returnTranslation = replacer.Key.Replace(returnTranslation, replacer.Value());
         }
 
-        foreach (KeyValuePair<string, Func<string>> replacer in StaticReplacers)
+        foreach (KeyValuePair<Regex, Func<string>> replacer in StaticReplacers)
         {
-            returnTranslation = Regex.Replace(
-                returnTranslation,
-                ToParameterString(replacer.Key),
-                replacer.Value(),
-                RegexOptions.IgnoreCase);
+            returnTranslation = replacer.Key.Replace(returnTranslation, replacer.Value());
         }
 
         long unix = new DateTimeOffset(Time).ToUnixTimeSeconds();
 
-        foreach (KeyValuePair<string, Func<long, string>> replacer in TimeReplacers)
+        foreach (KeyValuePair<Regex, Func<long, string>> replacer in TimeReplacers)
         {
-            returnTranslation = Regex.Replace(
+            returnTranslation = replacer.Key.Replace(
                 returnTranslation,
-                ToParameterString(replacer.Key),
-                replacer.Value(unix),
-                RegexOptions.IgnoreCase);
+                replacer.Value(unix));
         }
 
         foreach (KeyValuePair<string, Player> player in Players)
@@ -315,11 +321,9 @@ public class TranslationBuilder
             if (player.Value is not { IsReady: true })
                 continue;
 
-            returnTranslation = Regex.Replace(
-                returnTranslation,
-                ToParameterString(player.Key),
-                player.Value.Nickname,
-                RegexOptions.IgnoreCase);
+            Regex baseRegex = CachedRegex.GetOrAdd(player.Key, () => CreateRegex(player.Key));
+
+            returnTranslation = baseRegex.Replace(returnTranslation, player.Value.Nickname);
 
             foreach (KeyValuePair<string, Func<Player, string>> replacer in PlayerReplacers)
             {
@@ -341,11 +345,11 @@ public class TranslationBuilder
                 if (string.IsNullOrEmpty(replacement))
                     replacement = "Unknown";
 
-                returnTranslation = Regex.Replace(
-                    returnTranslation,
-                    ToParameterString($"{player.Key}{replacer.Key}"),
-                    replacement,
-                    RegexOptions.IgnoreCase);
+                Regex regex = CachedRegex.GetOrAdd(
+                    $"{player.Key}{replacer.Key}",
+                    () => CreateRegex($"{player.Key}{replacer.Key}"));
+
+                returnTranslation = regex.Replace(returnTranslation, replacement);
             }
         }
 

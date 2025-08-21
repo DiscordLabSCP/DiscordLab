@@ -28,16 +28,11 @@ public class Events : CustomEventsHandler
 
         SocketTextChannel channel;
 
-        TranslationBuilder builder = new("player", ev.Player)
-        {
-            CustomReplacers = new()
-            {
-                ["oldrole"] = () => ev.OldRole.GetFullName(),
-                ["newrole"] = () => ev.NewRole.RoleName,
-                ["reason"] = () => ev.ChangeReason.ToString(),
-                ["spawnflags"] = () => string.Join(", ", ev.SpawnFlags.GetFlags())
-            }
-        };
+        TranslationBuilder builder = new TranslationBuilder("player", ev.Player)
+            .AddCustomReplacer("oldrole", () => ev.OldRole.GetFullName())
+            .AddCustomReplacer("newrole", ev.NewRole.RoleName)
+            .AddCustomReplacer("reason", ev.ChangeReason.ToString())
+            .AddCustomReplacer("spawnflags", string.Join(", ", ev.SpawnFlags.GetFlags()));
             
         if (ev.NewRole.Team == ev.OldRole.GetTeam() && ev.NewRole.Team == Team.SCPs)
         {

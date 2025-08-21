@@ -52,14 +52,13 @@ public class Ban : AutocompleteCommand
         long duration = Misc.RelativeTimeToSeconds((string)command.Data.Options.ElementAt(1).Value, 60);
         string reason = (string)command.Data.Options.ElementAt(2).Value;
 
-        TranslationBuilder successBuilder = new(Translation.BanSuccess)
+        TranslationBuilder successBuilder = new TranslationBuilder(Translation.BanSuccess)
         {
             Time = TempMuteManager.GetExpireDate(duration)
-        };
-        TranslationBuilder failBuilder = new(Translation.BanFailure);
-            
-        successBuilder.CustomReplacers.Add("userid", () => userId);
-        failBuilder.CustomReplacers.Add("userid", () => userId);
+        }
+        .AddCustomReplacer("userid", userId);
+        TranslationBuilder failBuilder = new TranslationBuilder(Translation.BanFailure)
+            .AddCustomReplacer("userid", userId);
             
         if (!CommandUtils.TryGetPlayerFromUnparsed(userId, out Player player))
         {

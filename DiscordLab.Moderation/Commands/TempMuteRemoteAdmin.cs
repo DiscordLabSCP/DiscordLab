@@ -46,12 +46,11 @@ public class TempMuteRemoteAdmin : ICommand, IUsageProvider
             
         TempMuteManager.MutePlayer(target, time, player);
 
-        TranslationBuilder builder = new(Plugin.Instance.Translation.TempMuteSuccess, "player", target)
+        TranslationBuilder builder = new TranslationBuilder(Plugin.Instance.Translation.TempMuteSuccess, "player", target)
         {
             Time = time
-        };
-            
-        builder.CustomReplacers.Add("duration", () => arguments.At(1));
+        }
+        .AddCustomReplacer("duration", () => arguments.At(1));
 
         response = builder;
         return true;

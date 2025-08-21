@@ -56,12 +56,11 @@ public class Mute : AutocompleteCommand
             DateTime time = TempMuteManager.GetExpireDate(duration);
             TempMuteManager.MutePlayer(player, time);
                 
-            builder = new(Translation.TempMuteSuccess, "player", player)
+            builder = new TranslationBuilder(Translation.TempMuteSuccess, "player", player)
             {
                 Time = time
-            };
-            
-            builder.CustomReplacers.Add("duration", () => duration);
+            }
+            .AddCustomReplacer("duration", duration);
 
             await command.ModifyOriginalResponseAsync(m => m.Content = builder);
             return;
