@@ -22,12 +22,20 @@ public static class RestClientCreate
     {
         foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
         {
-            Type? type = assembly.GetTypes().FirstOrDefault(t => t.Name == "DefaultRestClient");
-            if (type == null)
-                continue;
-            ConstructorInfo? constructor = type.GetConstructors().FirstOrDefault();
-            if (constructor != null)
-                return constructor;
+            try
+            {
+                Type? type = assembly.GetTypes().FirstOrDefault(t => t.Name == "DefaultRestClient");
+                if (type == null)
+                    continue;
+                ConstructorInfo? constructor = type.GetConstructors().FirstOrDefault();
+                Logger.Info(constructor != null);
+                if (constructor != null)
+                    return constructor;
+            }
+            catch
+            {
+                // ignored because sometimes missing dependencies in underlying dependencies... idk why lol, but this works.
+            }
         }
 
         return null;
