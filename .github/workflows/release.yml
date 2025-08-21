@@ -27,8 +27,8 @@ jobs:
       - name: Rename Assembly-CSharp (because Exiled removes the normal version)
         shell: pwsh
         run: Move-Item -Path ${{ env.SL_REFERENCES }}/Assembly-CSharp-Publicized.dll -Destination ${{ env.SL_REFERENCES }}/Assembly-CSharp.dll
-      - name: Build
-        run: dotnet build -c:Release ${{ github.workspace }}/DiscordLab.Bot/DiscordLab.Bot.csproj
+      - name: Build and Pack
+        run: dotnet pack -c:Release ${{ github.workspace }}/DiscordLab.Bot/DiscordLab.Bot.csproj
       - name: Publish
         run: dotnet nuget push ${{ github.workspace }}/DiscordLab.Bot/bin/Release/DiscordLab.Bot.*.nupkg --api-key ${{ secrets.NUGET_API_KEY }}
         env:
