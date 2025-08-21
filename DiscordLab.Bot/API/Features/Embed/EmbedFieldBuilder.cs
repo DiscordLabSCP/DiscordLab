@@ -28,6 +28,7 @@ public class EmbedFieldBuilder
     /// <summary>
     /// Gets or sets a value indicating whether the field is inline.
     /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
     public bool IsInline
     {
         get => Builder.IsInline;

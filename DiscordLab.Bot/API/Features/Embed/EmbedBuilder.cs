@@ -28,6 +28,7 @@ public class EmbedBuilder
     /// <summary>
     /// Gets or sets the embed fields.
     /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
     public IEnumerable<EmbedFieldBuilder> Fields
     {
         get => Builder.Fields.Select(x => new EmbedFieldBuilder { Name = x.Name, Value = x.Value.ToString(), IsInline = x.IsInline });
@@ -37,6 +38,7 @@ public class EmbedBuilder
     /// <summary>
     /// Gets or sets the color of the embed. In string so #, 0x or the raw hex value will work.
     /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? Color
     {
         get => Builder.Color?.ToString();
