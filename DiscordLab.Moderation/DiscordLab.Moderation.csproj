@@ -16,4 +16,8 @@
     <ItemGroup>
         <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" />
     </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Update="Northwood.LabAPI" Version="1.1.1" />
+    </ItemGroup>
 </Project>
