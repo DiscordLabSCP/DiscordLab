@@ -28,7 +28,6 @@ public static class RestClientCreate
                 if (type == null)
                     continue;
                 ConstructorInfo? constructor = type.GetConstructors().FirstOrDefault();
-                Logger.Info(constructor != null);
                 if (constructor != null)
                     return constructor;
             }
