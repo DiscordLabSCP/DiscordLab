@@ -60,16 +60,12 @@ jobs:
 
           $roleMap = @{
             "DiscordLab.Bot" = "1326565513392033844"
-            "DiscordLab.AdvancedLogging" = "1326565584334225469"
             "DiscordLab.BotStatus" = "1326565625249660990"
             "DiscordLab.ConnectionLogs" = "1326565678601212016"
             "DiscordLab.DeathLogs" = "1326565793856622628"
-            "DiscordLab.Moderation" = "1326565888962596966"
-            "DiscordLab.ModerationLogs" = "1326565923242639492"
-            "DiscordLab.SCPSwap" = "1326565946915295365"
+            "DiscordLab.Moderation" = "1326565923242639492"
             "DiscordLab.StatusChannel" = "1326565978125107211"
-            "DiscordLab.XPSystem" = "1326566015861260298"
-            "DiscordLab.AdminLogs" = "1327362549368361000"
+            "DiscordLab.Administration" = "1327362549368361000"
             "DiscordLab.RoundLogs" = "1327631517769531453"
           }
 
