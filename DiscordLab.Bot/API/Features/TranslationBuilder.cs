@@ -72,6 +72,7 @@ public class TranslationBuilder
         [CreateRegex("remainingdeconttime")] = GetRemainingDecontaminationTime,
         [CreateRegex("isdecontenabled")] = () =>
             (Decontamination.Status == DecontaminationController.DecontaminationStatus.None).ToString(),
+        [CreateRegex("decontstate")] = () => Decontamination.Status.ToString(),
 
         // Round Replacers
         [CreateRegex("killcount")] = () => Round.TotalDeaths.ToString(),
