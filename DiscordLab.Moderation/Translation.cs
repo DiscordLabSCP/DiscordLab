@@ -43,17 +43,17 @@ public class Translation
     public string PermMuteSuccess { get; set; } = "Player {player} has been muted.";
 
     public string BanFailure { get; set; } =
-        "Failed to ban {userid}. Please make sure the data is valid and try again...";
+        "Failed to ban `{userid}`. Please make sure the data is valid and try again...";
 
     public string BanSuccess { get; set; } =
-        "Successfully banned {userid} for {reason}. They will get unbanned at {timef} ({timer})";
+        "Successfully banned `{userid}` for `{reason}`. They will get unbanned at {timef} ({timer})";
 
-    public string UnbanSuccess { get; set; } = "Player {userid} has been unbanned.";
+    public string UnbanSuccess { get; set; } = "Player `{userid}` has been unbanned.";
 
     public MessageContent PermMuteLog { get; set; } = "Player {target} has been muted by {player}.";
 
     public MessageContent TempMuteLog { get; set; } =
-        "Player {target} has been muted by {player} for {timef}, they will be unmuted {timer}";
+        "Player {target} has been muted by {player}. They will get unbanned at {timef} ({timer})";
 
     public MessageContent UnmuteLog { get; set; } = "Player {target} has been unmuted by {player}.";
 
