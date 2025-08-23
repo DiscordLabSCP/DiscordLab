@@ -18,6 +18,7 @@
         <RepositoryType>git</RepositoryType>
         <RepositoryUrl>https://github.com/DiscordLabSCP/DiscordLab</RepositoryUrl>
         <PackageReadmeFile>README.md</PackageReadmeFile>
+        <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
     </PropertyGroup>
 
     <PropertyGroup>
