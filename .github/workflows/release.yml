@@ -7,7 +7,7 @@ on:
 jobs:
   nuget:
     if: github.event.release.prerelease == false
-    runs-on: windows-2022
+    runs-on: ubuntu-latest
     env:
       EXILED_REFERENCES_URL: https://exmod-team.github.io/SL-References/Dev.zip
       SL_REFERENCES: ${{ github.workspace }}/refs
