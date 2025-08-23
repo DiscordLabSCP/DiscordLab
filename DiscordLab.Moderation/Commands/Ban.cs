@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Wrappers;
@@ -48,15 +49,17 @@ public class Ban : AutocompleteCommand
     {
         await command.DeferAsync();
 
-        string userId = (string)command.Data.Options.ElementAt(0).Value;
-        long duration = Misc.RelativeTimeToSeconds((string)command.Data.Options.ElementAt(1).Value, 60);
-        string reason = (string)command.Data.Options.ElementAt(2).Value;
+        string userId = command.Data.Options.GetOption<string>(Translation.BanUserOptionName)!;
+        long duration = Misc.RelativeTimeToSeconds(command.Data.Options.GetOption<string>(Translation.BanDurationOptionName)!, 60);
+        string reason = command.Data.Options.GetOption<string>(Translation.BanReasonOptionName)!;
 
         TranslationBuilder successBuilder = new TranslationBuilder(Translation.BanSuccess)
             {
                 Time = TempMuteManager.GetExpireDate(duration)
             }
-            .AddCustomReplacer("userid", userId);
+            .AddCustomReplacer("userid", userId)
+            .AddCustomReplacer("reason", reason);
+        
         TranslationBuilder failBuilder = new TranslationBuilder(Translation.BanFailure)
             .AddCustomReplacer("userid", userId);
 
