@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 
 namespace DiscordLab.Moderation.Commands;
@@ -32,7 +33,7 @@ public class Unban : AutocompleteCommand
     {
         await command.DeferAsync();
 
-        string id = (string)command.Data.Options.First().Value;
+        string id = command.Data.Options.GetOption<string>(Translation.UnbanUserOptionName)!;
 
         BanHandler.RemoveBan(id, id.Contains("@") ? BanHandler.BanType.UserId : BanHandler.BanType.IP);
 
