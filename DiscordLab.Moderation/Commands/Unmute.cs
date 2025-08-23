@@ -1,5 +1,6 @@
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Wrappers;
@@ -19,8 +20,8 @@ public class Unmute : AutocompleteCommand
         [
             new()
             {
-                Name = Translation.UnbanUserOptionName,
-                Description = Translation.UnbanUserOptionDescription,
+                Name = Translation.UnmuteUserOptionName,
+                Description = Translation.UnmuteUserOptionDescription,
                 Type = ApplicationCommandOptionType.String,
                 IsRequired = true,
                 IsAutocomplete = true
@@ -34,7 +35,7 @@ public class Unmute : AutocompleteCommand
     {
         await command.DeferAsync();
 
-        if (!CommandUtils.TryGetPlayerFromUnparsed((string)command.Data.Options.First().Value, out Player player))
+        if (!CommandUtils.TryGetPlayerFromUnparsed(command.Data.Options.GetOption<string>(Translation.UnmuteUserOptionName)!, out Player player))
         {
             await command.ModifyOriginalResponseAsync(m => m.Content = Translation.InvalidUser);
             return;
