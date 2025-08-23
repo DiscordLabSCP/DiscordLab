@@ -33,9 +33,10 @@ public class Events : CustomEventsHandler
     [CallOnUnload]
     public static void Unload()
     {
+        Shutdown.OnQuit -= OnServerQuit;
+        
         if (!IsSubscribed) return;
         ServerEvents.WaitingForPlayers -= OnServerStart;
-        Shutdown.OnQuit -= OnServerQuit;
         IsSubscribed = false;
     }
 
