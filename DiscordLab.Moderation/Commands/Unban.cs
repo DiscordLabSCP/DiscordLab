@@ -1,58 +1,59 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Moderation.Handlers;
-using Exiled.API.Features;
+using DiscordLab.Bot.API.Features;
 
-namespace DiscordLab.Moderation.Commands
+namespace DiscordLab.Moderation.Commands;
+
+public class Unban : AutocompleteCommand
 {
-    public class Unban : ISlashCommand
+    public static Translation Translation => Plugin.Instance.Translation;
+
+    public override SlashCommandBuilder Data { get; } = new()
     {
-        private static Translation Translation => Plugin.Instance.Translation;
-
-        public SlashCommandBuilder Data { get; } = new()
-        {
-            Name = Translation.UnbanCommandName,
-            Description = Translation.UnbanCommandDescription,
-            DefaultMemberPermissions = GuildPermission.ManageGuild,
-            Options = new()
+        Name = Translation.UnbanCommandName,
+        Description = Translation.UnbanCommandDescription,
+        DefaultMemberPermissions = GuildPermission.ModerateMembers,
+        Options =
+        [
+            new()
             {
-                new()
-                {
-                    Name = Translation.UnbanCommandUserOptionName,
-                    Description = Translation.UnbanCommandUserOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                }
-            }
-        };
-        
-        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
+                Name = Translation.UnbanUserOptionName,
+                Description = Translation.UnbanUserOptionDescription,
+                Type = ApplicationCommandOptionType.String,
+                IsRequired = true,
+                IsAutocomplete = true
+            },
+        ]
+    };
 
-        public async Task Run(SocketSlashCommand command)
-        {
-            await command.DeferAsync(true);
-            
-            string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
-                .Value.ToString();
+    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
 
-            string response = Server.ExecuteCommand($"/unban id {user}");
-            if (!response.Contains("Done"))
-            {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
-            }
-            else
-            {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.UnbanCommandSuccess.LowercaseParams().Replace("{player}", user));
-                if (ModerationLogsHandler.Instance.IsEnabled)
-                {
-                    ModerationLogsHandler.Instance.SendUnbanLogMethod.Invoke(
-                        ModerationLogsHandler.Instance.HandlerInstance, 
-                        new object[] { user }
-                    );
-                }
-            }
-        }
+    public override async Task Run(SocketSlashCommand command)
+    {
+        await command.DeferAsync();
+
+        string id = (string)command.Data.Options.First().Value;
+
+        BanHandler.RemoveBan(id, id.Contains("@") ? BanHandler.BanType.UserId : BanHandler.BanType.IP);
+
+        TranslationBuilder builder = new TranslationBuilder(Translation.UnbanSuccess)
+            .AddCustomReplacer("userid", id);
+
+        await command.ModifyOriginalResponseAsync(m =>
+            m.Content =
+                builder);
+    }
+
+    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+    {
+        IEnumerable<BanDetails> response =
+        [
+            ..BanHandler.GetBans(BanHandler.BanType.UserId),
+            ..BanHandler.GetBans(BanHandler.BanType.IP)
+        ];
+        await autocomplete.RespondAsync(response
+            .Where(x => x.Id.Contains((string)autocomplete.Data.Current.Value) ||
+                        x.OriginalName.Contains((string)autocomplete.Data.Current.Value)).Take(25)
+            .Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
     }
 }

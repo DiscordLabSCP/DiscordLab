@@ -1,39 +1,84 @@
-﻿using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
+using Discord;
+using DiscordLab.Bot;
+using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Dependency;
+using LabApi.Events.Arguments.PlayerEvents;
+using LabApi.Events.Handlers;
+using LabApi.Features;
+using LabApi.Features.Wrappers;
 
-namespace DiscordLab.BotStatus
+namespace DiscordLab.BotStatus;
+
+public class Plugin : Plugin<Config, Translation>
 {
-    public class Plugin : Plugin<Config, Translation>
+    public static Plugin Instance;
+
+    public override string Name { get; } = "DiscordLab.BotStatus";
+    public override string Description { get; } = "Allows your bot's status to update with player counts.";
+    public override string Author { get; } = "LumiFae";
+    public override Version Version => GetType().Assembly.GetName().Version;
+    public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+
+    public override void Enable()
     {
-        public override string Name => "DiscordLab.BotStatus";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DL.BotStatus";
-        public override Version Version => new (1, 5, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        Instance = this;
 
-        public static Plugin Instance { get; private set; }
-        
-        private HandlerLoader _handlerLoader;
+        PlayerEvents.Joined += OnPlayerJoin;
+        ReferenceHub.OnPlayerRemoved += OnPlayerLeave;
 
-        public override void OnEnabled()
+        ServerEvents.WaitingForPlayers += OnWaitingForPlayers;
+    }
+
+    public override void Disable()
+    {
+        ServerEvents.WaitingForPlayers -= OnWaitingForPlayers;
+
+        PlayerEvents.Joined -= OnPlayerJoin;
+        ReferenceHub.OnPlayerRemoved -= OnPlayerLeave;
+
+        Instance = null;
+    }
+
+    public static void OnWaitingForPlayers()
+    {
+        UpdateStatus();
+    }
+
+    public static void OnPlayerJoin(PlayerJoinedEventArgs _)
+    {
+        if (Round.IsRoundInProgress)
+            UpdateStatus();
+        else
+            Queue.Process();
+    }
+
+    public static void OnPlayerLeave(ReferenceHub _)
+    {
+        if (Round.IsRoundInProgress)
+            UpdateStatus();
+        else
+            Queue.Process();
+    }
+
+    private static Queue Queue { get; } = new(5, UpdateStatus);
+
+    private static void UpdateStatus()
+    {
+        TranslationBuilder builder = new(Server.PlayerCount == 0
+            ? Instance.Translation.EmptyContent
+            : Instance.Translation.NormalContent);
+        Task.Run(async () => await Client.SocketClient.SetGameAsync(builder, type: Instance.Config.ActivityType)
+            .ConfigureAwait(false));
+        switch (Server.PlayerCount)
         {
-            Instance = this;
-            
-            _handlerLoader = new ();
-            if (!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
-        }
-        
-        public override void OnDisabled()
-        {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
-            
-            base.OnDisabled();
+            case 0 when Instance.Config.IdleOnEmpty:
+                Task.Run(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false));
+                break;
+            case > 0 when Instance.Config.IdleOnEmpty &&
+                          Client.SocketClient.Status == UserStatus.Idle:
+                Task.Run(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Online).ConfigureAwait(false));
+                break;
         }
     }
 }

@@ -1,0 +1,13 @@
+<?xml version="1.0"?>
+<RuleSet Name="Rule Set" Description="" ToolsVersion="17.0">
+    <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.SpecialRules">
+        <Rule Id="SA0001" Action="None" /> <!-- XML comment analysis disabled -->
+        <Rule Id="SA0002" Action="Error" /> <!-- Invalid settings file -->
+    </Rules>
+
+    <Rules AnalyzerId="StyleCop.Analyzers" RuleNamespace="StyleCop.Analyzers.DocumentationRules">
+        <Rule Id="SA1633" Action="None" /> <!-- FileHeader -->
+        <Rule Id="SA1101" Action="None" /> <!-- Require this. before local call -->
+        <Rule Id="SA1503" Action="None" /> <!-- Braces should not be omitted -->
+    </Rules>
+</RuleSet>

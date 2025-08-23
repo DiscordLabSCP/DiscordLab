@@ -1,17 +1,10 @@
-﻿using System.ComponentModel;
-using DiscordLab.Bot.API.Features;
-using Exiled.API.Interfaces;
+using Discord;
 
-namespace DiscordLab.BotStatus
+namespace DiscordLab.BotStatus;
+
+public class Config
 {
-    public class Config : IConfig
-    {
-        [Description(DescriptionConstants.IsEnabled)]
-        public bool IsEnabled { get; set; } = true;
-        [Description(DescriptionConstants.Debug)]
-        public bool Debug { get; set; } = false;
+    public ActivityType ActivityType { get; set; } = ActivityType.CustomStatus;
 
-        [Description("Set the Discord bot's status to orange when the server is empty.")]
-        public bool IdleOnEmpty { get; set; } = false;
-    }
+    public bool IdleOnEmpty { get; set; } = false;
 }

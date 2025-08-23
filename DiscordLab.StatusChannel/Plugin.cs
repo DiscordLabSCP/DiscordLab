@@ -1,39 +1,59 @@
-﻿using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Dependency;
+using LabApi.Events.CustomHandlers;
+using LabApi.Events.Handlers;
+using LabApi.Features;
+using LabApi.Loader;
 
-namespace DiscordLab.StatusChannel
+namespace DiscordLab.StatusChannel;
+
+public class Plugin : Plugin<Config, Translation>
 {
-    public class Plugin : Plugin<Config, Translation>
+    public static Plugin Instance;
+
+    public override string Name { get; } = "DiscordLab.StatusChannel";
+
+    public override string Description { get; } =
+        "Allows you to update/send a status message in a specific channel and have it update automatically.";
+
+    public override string Author { get; } = "LumiFae";
+    public override Version Version => GetType().Assembly.GetName().Version;
+    public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+
+    public MessageConfig MessageConfig { get; set; }
+
+    public Events Events = new();
+
+    public override void Enable()
     {
-        public override string Name => "DiscordLab.StatusChannel";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DL.StatusChannel";
-        public override Version Version => new (1, 5, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        Instance = this;
 
-        public static Plugin Instance { get; private set; }
-        
-        private HandlerLoader _handlerLoader;
+        CallOnLoadAttribute.Load();
 
-        public override void OnEnabled()
-        {
-            Instance = this;
-            
-            _handlerLoader = new ();
-            if(!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
-        }
-        
-        public override void OnDisabled()
-        {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
-            
-            base.OnDisabled();
-        }
+        CallOnReadyAttribute.Load();
+
+        CustomHandlersManager.RegisterEventsHandler(Events);
+
+        if (Config.AddCommand)
+            SlashCommand.FindAll();
+    }
+
+    public override void Disable()
+    {
+        CallOnUnloadAttribute.Unload();
+
+        CustomHandlersManager.UnregisterEventsHandler(Events);
+
+        Events = null;
+
+        Instance = null;
+    }
+
+    public override void LoadConfigs()
+    {
+        this.TryLoadConfig("message_config.yml", out MessageConfig messageConfig);
+        MessageConfig = messageConfig ?? new();
+        base.LoadConfigs();
     }
 }

@@ -1,80 +1,79 @@
-﻿using Discord;
-using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using GameCore;
-using Log = Exiled.API.Features.Log;
-using Version = System.Version;
+﻿namespace DiscordLab.Bot;
 
-namespace DiscordLab.Bot
+using Discord;
+using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using HarmonyLib;
+using LabApi.Features;
+using LabApi.Features.Console;
+using LabApi.Loader.Features.Plugins;
+using LabApi.Loader.Features.Plugins.Enums;
+
+/// <inheritdoc />
+public sealed class Plugin : Plugin<Config>
 {
-    public class Plugin : Plugin<Config>
+    /// <summary>
+    /// Gets the current instance of this plugin.
+    /// </summary>
+    public static Plugin Instance { get; private set; } = null!;
+
+    /// <inheritdoc />
+    public override string Name { get; } = "DiscordLab";
+
+    /// <inheritdoc />
+    public override string Description { get; } = "A modular Discord bot for SCP:SL servers running LabAPI";
+
+    /// <inheritdoc />
+    public override string Author { get; } = "LumiFae";
+
+    /// <inheritdoc />
+    public override Version Version => GetType().Assembly.GetName().Version;
+
+    /// <inheritdoc />
+    public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+
+    /// <inheritdoc />
+    public override LoadPriority Priority { get; } = LoadPriority.Highest;
+
+    /// <summary>
+    /// Gets the current config for the plugin.
+    /// </summary>
+    public new Config Config { get; private set; } = null!;
+
+    private Harmony Harmony { get; } = new($"DiscordLab.Bot-{DateTime.Now.Ticks}");
+
+    /// <inheritdoc />
+    public override void Enable()
     {
-        public override string Name => "DiscordLab";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DiscordLab";
-        public override Version Version => new (1, 6, 1);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Higher;
+        Instance = this;
+        Config = base.Config!;
 
-        public static Plugin Instance { get; private set; }
-        
-        private HandlerLoader _handlerLoader;
-
-        public override void OnEnabled()
+        try
         {
-            Instance = this;
-            
-            if(Config.Token is "token" or "")
-            {
-                Log.Error("Please set the bot token in the config file.");
-                return;
-            }
-
-            try
-            {
-                TokenUtils.ValidateToken(TokenType.Bot, Config.Token);
-            }
-            catch (Exception)
-            {
-                Log.Error("Token is invalid, please put the correct token in the config file.");
-                return;
-            }
-
-            if (Config.GuildId is 0)
-            {
-                Log.Warn("You have no guild ID set in the config file, you might get errors until you set it. " +
-                         "If you plan on having guild IDs separate for every module then you can ignore this. " +
-                         "For more info go to here: https://discordlab.jxtq.moe/getting-started/installation/#22-guild-id");
-            }
-            
-            string restartAfterRoundsConfig = ConfigFile.ServerConfig.GetString("restart_after_rounds", "0");
-
-            if (int.TryParse(restartAfterRoundsConfig, out int restartAfterRounds) &&
-                restartAfterRounds is >= 1 and < 10)
-            {
-                Log.Warn("You have a restart_after_rounds value set between 1 and 9, which isn't recommended. DiscordLab restarts every time your server restarts, so it's recommended" +
-                         "to set a high number, or 0, for this value to avoid potential Discord rate limits. This is just a warning.");
-            }
-            
-            SlashCommandLoader.Create();
-            
-            _handlerLoader = new ();
-            _handlerLoader.Load(Assembly);
-
-            Task.Run(UpdateStatus.GetStatus);
-            
-            base.OnEnabled();
+            TokenUtils.ValidateToken(TokenType.Bot, Config.Token);
         }
-        
-        public override void OnDisabled()
+        catch (Exception)
         {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
-            
-            SlashCommandLoader.Destroy();
-            
-            base.OnDisabled();
+            Logger.Error("DiscordLab bot token is invalid");
+            return;
         }
+
+        Harmony.PatchAll();
+
+        CallOnLoadAttribute.Load();
+        CallOnReadyAttribute.Load();
+
+        SlashCommand.FindAll();
+    }
+
+    /// <inheritdoc />
+    public override void Disable()
+    {
+        Harmony.UnpatchAll();
+
+        CallOnUnloadAttribute.Unload();
+
+        Config = null!;
+        Instance = null!;
     }
 }

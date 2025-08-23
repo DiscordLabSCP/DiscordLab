@@ -1,76 +1,83 @@
-﻿using Discord;
+using Discord;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Interfaces;
-using DiscordLab.Moderation.Handlers;
-using Exiled.API.Features;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Bot.API.Utilities;
+using LabApi.Features.Wrappers;
 
-namespace DiscordLab.Moderation.Commands
+namespace DiscordLab.Moderation.Commands;
+
+public class Ban : AutocompleteCommand
 {
-    public class Ban : ISlashCommand
+    public static Translation Translation => Plugin.Instance.Translation;
+
+    public override SlashCommandBuilder Data { get; } = new()
     {
-        private static Translation Translation => Plugin.Instance.Translation;
+        Name = Translation.BanCommandName,
+        Description = Translation.BanCommandDescription,
+        DefaultMemberPermissions = GuildPermission.ModerateMembers,
+        Options =
+        [
+            new()
+            {
+                Name = Translation.BanUserOptionName,
+                Description = Translation.BanUserOptionDescription,
+                Type = ApplicationCommandOptionType.String,
+                IsRequired = true,
+                IsAutocomplete = true
+            },
+            new()
+            {
+                Name = Translation.BanDurationOptionName,
+                Description = Translation.BanDurationOptionDescription,
+                Type = ApplicationCommandOptionType.String,
+                IsRequired = true
+            },
+            new()
+            {
+                Name = Translation.BanReasonOptionName,
+                Description = Translation.BanReasonOptionDescription,
+                Type = ApplicationCommandOptionType.String,
+                IsRequired = true
+            }
+        ]
+    };
 
-        public SlashCommandBuilder Data { get; } = new()
+    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
+
+    public override async Task Run(SocketSlashCommand command)
+    {
+        await command.DeferAsync();
+
+        string userId = (string)command.Data.Options.ElementAt(0).Value;
+        long duration = Misc.RelativeTimeToSeconds((string)command.Data.Options.ElementAt(1).Value, 60);
+        string reason = (string)command.Data.Options.ElementAt(2).Value;
+
+        TranslationBuilder successBuilder = new TranslationBuilder(Translation.BanSuccess)
+            {
+                Time = TempMuteManager.GetExpireDate(duration)
+            }
+            .AddCustomReplacer("userid", userId);
+        TranslationBuilder failBuilder = new TranslationBuilder(Translation.BanFailure)
+            .AddCustomReplacer("userid", userId);
+
+        if (!CommandUtils.TryGetPlayerFromUnparsed(userId, out Player player))
         {
-            Name = Translation.BanCommandName,
-            Description = Translation.BanCommandDescription,
-            DefaultMemberPermissions = GuildPermission.BanMembers,
-            Options = new()
-            {
-                new()
-                {
-                    Name = Translation.BanCommandUserOptionName,
-                    Description = Translation.BanCommandUserOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                },
-                new()
-                {
-                    Name = Translation.BanCommandReasonOptionName,
-                    Description = Translation.BanCommandReasonOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                },
-                new()
-                {
-                    Name = Translation.BanCommandDurationOptionName,
-                    Description = Translation.BanCommandDurationOptionDescription,
-                    IsRequired = true,
-                    Type = ApplicationCommandOptionType.String
-                }
-            }
-        };
-        
-        public ulong GuildId { get; set; } = Plugin.Instance.Config.GuildId;
+            bool result = userId.Contains("@")
+                ? Server.BanUserId(userId, reason, duration)
+                : Server.BanIpAddress(userId, reason, duration);
 
-        public async Task Run(SocketSlashCommand command)
-        {
-            await command.DeferAsync(true);
-            
-            string user = command.Data.Options.First(option => option.Name == Translation.BanCommandUserOptionName)
-                .Value.ToString();
-            string reason = command.Data.Options.First(option => option.Name == Translation.BanCommandReasonOptionName)
-                .Value.ToString();
-            string duration = command.Data.Options
-                .First(option => option.Name == Translation.BanCommandDurationOptionName).Value.ToString();
+            await command.ModifyOriginalResponseAsync(m =>
+                m.Content = !result ? failBuilder : successBuilder);
 
-            string response = Server.ExecuteCommand($"/oban {user} {duration} {reason}");
-            if (!response.Contains("has been banned"))
-            {
-                await command.ModifyOriginalResponseAsync(m=> m.Content = Translation.FailedExecuteCommand.LowercaseParams().Replace("{reason}", response));
-            }
-            else
-            {
-                await command.ModifyOriginalResponseAsync(m => m.Content = Translation.BanCommandSuccess.LowercaseParams().Replace("{player}", user));
-                if (ModerationLogsHandler.Instance.IsEnabled)
-                {
-                    ModerationLogsHandler.Instance.SendBanLogMethod.Invoke(
-                        ModerationLogsHandler.Instance.HandlerInstance, 
-                        new object[] { null, user, reason, $"<@{command.User.Id}>", null, duration }
-                    );
-                }
-            }
+            return;
         }
+
+        await command.ModifyOriginalResponseAsync(m =>
+            m.Content = Server.BanPlayer(player, reason, duration) ? successBuilder : failBuilder);
+    }
+
+    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+    {
+        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
     }
 }

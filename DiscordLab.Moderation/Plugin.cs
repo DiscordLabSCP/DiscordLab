@@ -1,39 +1,66 @@
-﻿using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
-using Exiled.Loader;
+﻿using Discord;
+using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Dependency;
+using DiscordLab.Moderation.Commands;
+using LabApi.Events.CustomHandlers;
+using LabApi.Features;
+using LabApi.Features.Wrappers;
+using LabApi.Loader;
+using RemoteAdmin;
 
-namespace DiscordLab.Moderation
+namespace DiscordLab.Moderation;
+
+public class Plugin : Plugin<Config, Translation>
 {
-    public class Plugin : Plugin<Config, Translation>
+    public static Plugin Instance;
+
+    public override string Name { get; } = "DiscordLab.Moderation";
+    public override string Description { get; } = "Adds logging and commands for moderation based operations";
+    public override string Author { get; } = "LumiFae";
+    public override Version Version => GetType().Assembly.GetName().Version;
+    public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+
+    public TempMuteConfig MuteConfig;
+
+    public Events Events = new();
+
+    public override void Enable()
     {
-        public override string Name => "DiscordLab.Moderation";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DL.Moderation";
-        public override Version Version => new (1, 5, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Low;
+        Instance = this;
 
-        public static Plugin Instance { get; private set; }
-        
-        private HandlerLoader _handlerLoader;
+        CallOnLoadAttribute.Load();
 
-        public override void OnEnabled()
-        {
-            Instance = this;
-            
-            _handlerLoader = new ();
-            if(!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
-        }
-        
-        public override void OnDisabled()
-        {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
-            
-            base.OnDisabled();
-        }
+        if (Config.AddCommands)
+            SlashCommand.FindAll();
+
+        if (Config.AddTempMuteCommand)
+            CommandProcessor.RemoteAdminCommandHandler.RegisterCommand(new TempMuteRemoteAdmin());
+
+        CustomHandlersManager.RegisterEventsHandler(Events);
     }
+
+    public override void Disable()
+    {
+        CustomHandlersManager.UnregisterEventsHandler(Events);
+
+        CallOnUnloadAttribute.Unload();
+
+        Events = null;
+
+        Instance = null;
+    }
+
+    public override void LoadConfigs()
+    {
+        this.TryLoadConfig("mute-config.yml", out MuteConfig);
+
+        base.LoadConfigs();
+    }
+
+    public static IEnumerable<AutocompleteResult> PlayersAutocompleteResults(object current) =>
+        Player.ReadyList
+            .Where(p => p.Nickname.Contains((string)current) || p.UserId.Contains((string)current) ||
+                        (int.TryParse((string)current, out int id) && p.PlayerId == id)).Take(25)
+            .Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
 }

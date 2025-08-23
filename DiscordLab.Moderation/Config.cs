@@ -1,25 +1,22 @@
-﻿using System.ComponentModel;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Interfaces;
-using Exiled.API.Interfaces;
+using System.ComponentModel;
 
-namespace DiscordLab.Moderation
+namespace DiscordLab.Moderation;
+
+public class Config
 {
-    public class Config : IConfig, IDLConfig
-    {
-        [Description(DescriptionConstants.IsEnabled)]
-        public bool IsEnabled { get; set; } = true;
-        [Description(DescriptionConstants.Debug)]
-        public bool Debug { get; set; } = false;
-        
-        [Description("The role ID for the role that is able to run this command")]
-        public ulong BanCommandRole { get; set; } = 0;
-        [Description("The role ID for the role that is able to run this command")]
-        public ulong UnbanCommandRole { get; set; } = 0;
-        [Description("The role ID for the role that is able to run this command")]
-        public ulong SendCommandRole { get; set; } = 0;
-        
-        [Description(DescriptionConstants.GuildId)]
-        public ulong GuildId { get; set; }
-    }
+    public ulong GuildId { get; set; } = 0;
+
+    public ulong MuteLogChannelId { get; set; } = 0;
+
+    public ulong UnmuteLogChannelId { get; set; } = 0;
+
+    public ulong BanLogChannelId { get; set; } = 0;
+
+    public ulong UnbanLogChannelId { get; set; } = 0;
+
+    [Description("Whether to add the Discord slash commands.")]
+    public bool AddCommands { get; set; } = true;
+
+    [Description("Whether to enable the temp mute remote admin command.")]
+    public bool AddTempMuteCommand { get; set; } = true;
 }

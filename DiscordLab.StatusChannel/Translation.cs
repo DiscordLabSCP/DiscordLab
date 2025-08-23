@@ -1,21 +1,32 @@
-﻿using System.ComponentModel;
-using Exiled.API.Interfaces;
+using System.ComponentModel;
+using Discord;
+using DiscordLab.Bot.API.Features;
+using EmbedBuilder = DiscordLab.Bot.API.Features.Embed.EmbedBuilder;
 
-namespace DiscordLab.StatusChannel
+namespace DiscordLab.StatusChannel;
+
+public class Translation
 {
-    public class Translation : ITranslation
+    [Description("What will show when the server has players.")]
+    public MessageContent Content { get; set; } = new EmbedBuilder
     {
-        [Description("The text that shows in the embed title.")]
-        public string EmbedTitle { get; set; } = "Server Status";
+        Title = "Server Status",
+        Color = Color.Blue.ToString(),
+        Description = "{playercount}/{maxplayers} currently online\n```{players}```"
+    };
 
-        [Description(
-            "The text that shows in the embed description when the server has players online. players placeholder is the list of players using the player list translation.")]
-        public string EmbedDescription { get; set; } = "{current}/{max} currently online\n```{players}```";
+    [Description("What will show when the server is empty.")]
+    public MessageContent EmptyContent { get; set; } = new EmbedBuilder
+    {
+        Title = "Server Status",
+        Color = Color.Blue.ToString(),
+        Description = "0/{maxplayers} currently online"
+    };
 
-        [Description("The text that shows in the embed description when the server has no players online.")]
-        public string EmbedNoPlayers { get; set; } = "0/{max} currently online";
+    [Description("What will appear for each player when replacing the players variable above.")]
+    public string PlayerItem { get; set; } = "- {player}";
 
-        [Description("The text that shows for each player in the players list in embed description. Make sure you don't put placeholders here which could break VSR if public.")]
-        public string PlayersList { get; set; } = "- {player}";
-    }
+    public string PlayerListCommandName { get; set; } = "players";
+
+    public string PlayerListCommandDescription { get; set; } = "Get the current list of players on the server";
 }

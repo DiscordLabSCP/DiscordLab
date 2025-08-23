@@ -1,38 +1,36 @@
-﻿using DiscordLab.Bot.API.Modules;
-using Exiled.API.Enums;
-using Exiled.API.Features;
+﻿using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Features;
+using DiscordLab.Dependency;
+using LabApi.Events.CustomHandlers;
+using LabApi.Features;
 
-namespace DiscordLab.RoundLogs
+namespace DiscordLab.RoundLogs;
+
+public class Plugin : Plugin<Config, Translation>
 {
-    public class Plugin : Plugin<Config, Translation>
+    public static Plugin Instance;
+
+    public override string Name { get; } = "DiscordLab.RoundLogs";
+    public override string Description { get; } = "Allows you to log specific details about the round.";
+    public override string Author { get; } = "LumiFae";
+    public override Version Version => GetType().Assembly.GetName().Version;
+    public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
+
+    public Events Events = new();
+
+    public override void Enable()
     {
-        public override string Name => "DiscordLab.RoundLogs";
-        public override string Author => "LumiFae";
-        public override string Prefix => "DL.RoundLogs";
-        public override Version Version => new (1, 0, 0);
-        public override Version RequiredExiledVersion => new (8, 11, 0);
-        public override PluginPriority Priority => PluginPriority.Default;
+        Instance = this;
 
-        public static Plugin Instance { get; private set; }
-        
-        private HandlerLoader _handlerLoader;
+        CustomHandlersManager.RegisterEventsHandler(Events);
+    }
 
-        public override void OnEnabled()
-        {
-            Instance = this;
-            
-            _handlerLoader = new ();
-            if(!_handlerLoader.Load(Assembly)) return;
-            
-            base.OnEnabled();
-        }
-        
-        public override void OnDisabled()
-        {
-            _handlerLoader.Unload();
-            _handlerLoader = null;
-            
-            base.OnDisabled();
-        }
+    public override void Disable()
+    {
+        CustomHandlersManager.UnregisterEventsHandler(Events);
+
+        Events = null;
+
+        Instance = null;
     }
 }
