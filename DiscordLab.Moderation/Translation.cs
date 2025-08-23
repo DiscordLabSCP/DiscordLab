@@ -36,7 +36,7 @@ public class Translation
     public string InvalidUser { get; set; } = "Please provide a valid user to use this command on.";
 
     public string TempMuteSuccess { get; set; } =
-        "Player {player} has been temporarily muted for {duration}. They will get unmuted at {timef}";
+        "Player {player} has been temporarily muted for {duration}. They will get unmuted at {timef} ({timer})";
 
     public string UnmuteSuccess { get; set; } = "Player {player} has been successfully unmuted.";
 
@@ -46,14 +46,14 @@ public class Translation
         "Failed to ban {userid}. Please make sure the data is valid and try again...";
 
     public string BanSuccess { get; set; } =
-        "Successfully banned {userid} for {reason}. They will get unbanned in {timer}";
+        "Successfully banned {userid} for {reason}. They will get unbanned at {timef} ({timer})";
 
     public string UnbanSuccess { get; set; } = "Player {userid} has been unbanned.";
 
     public MessageContent PermMuteLog { get; set; } = "Player {target} has been muted by {player}.";
 
     public MessageContent TempMuteLog { get; set; } =
-        "Player {target} has been muted by {player} for {timef}, they will be unmuted in {timer}";
+        "Player {target} has been muted by {player} for {timef}, they will be unmuted {timer}";
 
     public MessageContent UnmuteLog { get; set; } = "Player {target} has been unmuted by {player}.";
 
