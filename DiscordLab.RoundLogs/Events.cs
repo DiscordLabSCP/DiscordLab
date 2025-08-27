@@ -27,6 +27,9 @@ public class Events : CustomEventsHandler
             or RoleChangeReason.Destroyed)
             return;
 
+        if (ev.OldRole == ev.NewRole.RoleTypeId)
+            return;
+
         SocketTextChannel channel;
 
         TranslationBuilder builder = new TranslationBuilder("player", ev.Player)
