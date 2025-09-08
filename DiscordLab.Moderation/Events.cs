@@ -63,6 +63,10 @@ public class Events : CustomEventsHandler
         {
             translation = Translation.TempMuteLog;
         }
+        else
+        {
+            time = DateTime.Now;
+        }
 
         TranslationBuilder builder = new TranslationBuilder
             {
