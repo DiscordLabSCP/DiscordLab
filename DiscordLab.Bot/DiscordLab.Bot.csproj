@@ -37,12 +37,12 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Discord.Net.WebSocket" Version="3.17.4" PrivateAssets="none" IncludeAssets="all"/>
-        <PackageReference Include="Discord.Net.Rest" Version="3.17.4" PrivateAssets="none" IncludeAssets="all"/>
-        <PackageReference Include="Lib.Harmony" Version="2.2.2"/>
-        <PackageReference Include="StyleCop.Analyzers" Version="1.2.0-beta.556" IncludeAssets="all" PrivateAssets="all"/>
-        <PackageReference Include="System.Net.Http" Version="4.3.4"/>
-        <PackageReference Include="System.Text.Json" Version="9.0.6"/>
+        <PackageReference Include="Discord.Net.WebSocket" PrivateAssets="none" IncludeAssets="all"/>
+        <PackageReference Include="Discord.Net.Rest" PrivateAssets="none" IncludeAssets="all"/>
+        <PackageReference Include="Lib.Harmony"/>
+        <PackageReference Include="StyleCop.Analyzers" IncludeAssets="all" PrivateAssets="all"/>
+        <PackageReference Include="System.Net.Http"/>
+        <PackageReference Include="System.Text.Json"/>
     </ItemGroup>
 
     <PropertyGroup>
