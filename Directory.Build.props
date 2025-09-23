@@ -4,15 +4,9 @@
         <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
     </PropertyGroup>
 
-    <Target Name="CopyToSharedBin" AfterTargets="Build" Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
+    <Target Name="CopyToSharedBin" AfterTargets="Build">
         <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
               DestinationFolder="$(SharedBinPath)"
-              SkipUnchangedFiles="true"/>
-    </Target>
-
-    <Target Name="CopyToDependencies" AfterTargets="Build" Condition="$(AssemblyName) == 'DiscordLab.Dependency'">
-        <Copy SourceFiles="$(OutputPath)$(AssemblyName).dll"
-              DestinationFolder="$(SharedBinPath)\dependencies"
               SkipUnchangedFiles="true"/>
     </Target>
 
@@ -25,10 +19,6 @@
         <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false"/>
         <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll" Private="false"/>
         <Reference Include="mscorlib" HintPath="$(SL_REFERENCES)\mscorlib.dll"/>
-    </ItemGroup>
-
-    <ItemGroup Condition="$(AssemblyName) != 'DiscordLab.Dependency'">
-        <ProjectReference Include="$(MSBuildThisFileDirectory)DiscordLab.Dependency\DiscordLab.Dependency.csproj" Private="false" PrivateAssets="none" IncludeAssets="all"/>
     </ItemGroup>
 
     <ItemGroup>

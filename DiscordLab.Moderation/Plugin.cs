@@ -1,7 +1,6 @@
 ﻿using Discord;
 using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
-using DiscordLab.Dependency;
 using DiscordLab.Moderation.Commands;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;

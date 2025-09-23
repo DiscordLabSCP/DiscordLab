@@ -4,7 +4,6 @@
   <Project Path="DiscordLab.Bot\DiscordLab.Bot.csproj" />
   <Project Path="DiscordLab.ConnectionLogs\DiscordLab.ConnectionLogs.csproj" />
   <Project Path="DiscordLab.DeathLogs\DiscordLab.DeathLogs.csproj" />
-  <Project Path="DiscordLab.Dependency\DiscordLab.Dependency.csproj" />
   <Project Path="DiscordLab.Moderation\DiscordLab.Moderation.csproj" />
   <Project Path="DiscordLab.RoundLogs\DiscordLab.RoundLogs.csproj" />
   <Project Path="DiscordLab.StatusChannel\DiscordLab.StatusChannel.csproj" />

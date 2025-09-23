@@ -1,6 +1,6 @@
-using LabApi.Loader;
+namespace DiscordLab.Bot.API.Features;
 
-namespace DiscordLab.Dependency;
+using LabApi.Loader;
 
 /// <summary>
 /// Allows users to easily make plugins with translations also, not just configs.
@@ -15,19 +15,21 @@ public abstract class Plugin<TConfig, TTranslation> : LabApi.Loader.Features.Plu
     /// <summary>
     /// Gets the plugin's config.
     /// </summary>
-    public TConfig Config;
+    public required TConfig Config;
 
     /// <summary>
     /// Gets the plugin's translation.
     /// </summary>
-    public TTranslation Translation;
+    public required TTranslation Translation;
 #pragma warning restore SA1401 // FieldsMustBePrivate
 
     /// <inheritdoc/>
     public override void LoadConfigs()
     {
-        this.TryLoadConfig("config.yml", out Config);
-        this.TryLoadConfig("translation.yml", out Translation);
+        this.TryLoadConfig("config.yml", out TConfig? config);
+        Config = config ?? new TConfig();
+        this.TryLoadConfig("translation.yml", out TTranslation? translation);
+        Translation = translation ?? new TTranslation();
 
         base.LoadConfigs();
     }
