@@ -91,4 +91,7 @@ public class Translation
     [Description(
         "Normal player things may not work here, but playerid always will, unless somehow banned by something without an ID.")]
     public MessageContent UnbanLog { get; set; } = "Player {username} ({userid}) has been unbanned by {playerid}";
+
+    [Description("Sender here is just the nickname, it is not a player replacer because admin chat messages can be sent from non-players. If you want specific things to show up here you can use player as the player placeholder.")]
+    public MessageContent AdminChatLog { get; set; } = "{sender} has sent an Admin Chat message of:\n`{message}`";
 }

@@ -9,6 +9,7 @@ using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
+using RemoteAdmin;
 
 namespace DiscordLab.Moderation;
 
@@ -121,5 +122,27 @@ public class Events : CustomEventsHandler
             .AddCustomReplacer("playerid", ev.BanDetails.Issuer);
 
         Translation.UnbanLog.SendToChannel(channel, builder);
+    }
+
+    public override void OnServerSentAdminChat(SentAdminChatEventArgs ev)
+    {
+        if (Config.AdminChatLogChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.AdminChatLogChannelId, out SocketTextChannel channel))
+        {
+            Logger.Error(
+                LoggingUtils.GenerateMissingChannelMessage("admin chat logs", Config.AdminChatLogChannelId, Config.GuildId));
+            return;
+        }
+
+        TranslationBuilder builder = new TranslationBuilder()
+            .AddCustomReplacer("message", ev.Message)
+            .AddCustomReplacer("sender", ev.Sender.Nickname);
+
+        if (Player.TryGet(ev.Sender, out Player player))
+            builder.AddPlayer("player", player);
+        
+        Translation.AdminChatLog.SendToChannel(channel, builder);
     }
 }

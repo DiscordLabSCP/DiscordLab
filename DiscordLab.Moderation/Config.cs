@@ -14,6 +14,8 @@ public class Config
 
     public ulong UnbanLogChannelId { get; set; } = 0;
 
+    public ulong AdminChatLogChannelId { get; set; } = 0;
+
     [Description("Whether to add the Discord slash commands.")]
     public bool AddCommands { get; set; } = true;
 
