@@ -12,7 +12,7 @@ public class LocalAdminCommand : ICommand
     public string Command { get; } = "discordlab";
 
     /// <inheritdoc />
-    public string[] Aliases { get; } = ["dl"];
+    public string[] Aliases { get; } = ["dl", "dlab"];
 
     /// <inheritdoc />
     public string Description { get; } = "Do things directly with DiscordLab.";
