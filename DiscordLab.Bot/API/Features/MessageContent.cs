@@ -139,10 +139,13 @@ public class MessageContent
         if (!string.IsNullOrEmpty(embed.Description))
             embed.Description = builder.Build(embed.Description);
 
-        foreach (Discord.EmbedFieldBuilder field in embed.Fields.Where(field =>
-                     field.Value is string value && !string.IsNullOrEmpty(value)))
+        if (embed.Footer != null && !string.IsNullOrEmpty(embed.Footer.Text))
+            embed.Footer.Text = builder.Build(embed.Footer.Text);
+
+        foreach (Discord.EmbedFieldBuilder field in embed.Fields)
         {
-            field.Value = builder.Build((string)field.Value);
+            if (field.Value is string value && !string.IsNullOrEmpty(value))
+                field.Value = builder.Build(value);
         }
 
         return (embed.Build(), Message != null ? builder.Build(Message) : null);
