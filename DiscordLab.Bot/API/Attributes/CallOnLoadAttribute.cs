@@ -52,7 +52,7 @@ public class CallOnLoadAttribute : Attribute
         Logger.Error($"Got an exception whilst trying to run {GetFullName(method, type)}:\n{ex}");
 
     /// <summary>
-    /// Gets the full name of a method from it's <see cref="MethodInfo"/> and/or <see cref="Type"/>
+    /// Gets the full name of a method from it's <see cref="MethodInfo"/> and/or <see cref="Type"/>.
     /// </summary>
     /// <param name="method">The method that you want the name of.</param>
     /// <param name="type">The type that the method is from, isn't required unless dynamic method is called, otherwise just the name of the method will print.</param>
