@@ -29,7 +29,7 @@ public class CallOnLoadAttribute : Attribute
                 if (attribute == null)
                     continue;
 
-                Logger.Debug($"Loading {nameof(CallOnLoadAttribute)} {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
+                Logger.Debug($"Invoking {type.FullName}:{method.Name} ({nameof(CallOnLoadAttribute)})", Plugin.Instance.Config.Debug);
 
                 try
                 {
@@ -52,7 +52,13 @@ public class CallOnLoadAttribute : Attribute
     public static void LogLoadException(Exception ex, MethodInfo method, Type? type = null) =>
         Logger.Error($"Got an exception whilst trying to run {GetFullName(method, type)}:\n{ex}");
 
-    private static string GetFullName(MethodInfo method, Type? type = null)
+    /// <summary>
+    /// Gets the full name of a method from it's <see cref="MethodInfo"/> and/or <see cref="Type"/>
+    /// </summary>
+    /// <param name="method">The method that you want the name of.</param>
+    /// <param name="type">The type that the method is from, isn't required unless dynamic method is called, otherwise just the name of the method will print.</param>
+    /// <returns>The full method name.</returns>
+    public static string GetFullName(MethodInfo method, Type? type = null)
     {
         StringBuilder builder = StringBuilderPool.Shared.Rent();
 

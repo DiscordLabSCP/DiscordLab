@@ -26,9 +26,10 @@ public class CallOnUnloadAttribute : Attribute
                 if (attribute == null)
                     continue;
 
+                Logger.Debug($"Invoking {type.FullName}:{method.Name} ({nameof(CallOnUnloadAttribute)})", Plugin.Instance.Config.Debug);
+
                 try
                 {
-                    Logger.Debug($"Calling {nameof(CallOnUnloadAttribute)} {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
                     method.Invoke(null, null);
                 }
                 catch (Exception ex)
