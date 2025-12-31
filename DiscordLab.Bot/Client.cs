@@ -4,6 +4,8 @@ namespace DiscordLab.Bot;
 
 using System.Net;
 using System.Net.WebSockets;
+using System.Reflection;
+using System.Text;
 using Discord;
 using Discord.Net.Rest;
 using Discord.Net.WebSockets;
@@ -11,6 +13,7 @@ using Discord.WebSocket;
 using DiscordLab.Bot.API.Attributes;
 using DiscordLab.Bot.API.Features;
 using LabApi.Features.Console;
+using NorthwoodLib.Pools;
 
 /// <summary>
 /// The Discord bot client.
@@ -107,14 +110,37 @@ public static class Client
 
         DebugLog("Done the initial setup...");
 
-        SocketClient = new(config);
+        try
+        {
+            SocketClient = new(config);
 
-        DebugLog("Client has been created...");
+            DebugLog("Client has been created...");
 
-        SocketClient.Log += OnLog;
-        SocketClient.Ready += OnReady;
-        SocketClient.SlashCommandExecuted += SlashCommandHandler;
-        SocketClient.AutocompleteExecuted += AutocompleteHandler;
+            SocketClient.Log += OnLog;
+            SocketClient.Ready += OnReady;
+            SocketClient.SlashCommandExecuted += SlashCommandHandler;
+            SocketClient.AutocompleteExecuted += AutocompleteHandler;
+        }
+        catch (TargetInvocationException ex) when (ex.InnerException is TypeLoadException)
+        {
+            StringBuilder builder = StringBuilderPool.Shared.Rent();
+            builder.AppendLine("You may have setup DiscordLab incorrectly, or used another Discord bot in the past.");
+            builder.AppendLine("Please ensure you have no conflicting dependencies.");
+
+            int count = 0;
+
+            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+            {
+                if (assembly.GetTypes().FirstOrDefault(t => t.Name == "DiscordSocketClient") != null)
+                    count++;
+            }
+
+            builder.AppendLine("There is a total of " + count + " conflicting dependencies. I can not see the locations. Please make sure you check every plugin/dependency loader to make sure you have no conflicts.");
+
+            Logger.Error(StringBuilderPool.Shared.ToStringReturn(builder));
+
+            throw;
+        }
 
         DebugLog("Client events subscribed...");
 
