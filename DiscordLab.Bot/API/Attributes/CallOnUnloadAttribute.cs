@@ -28,12 +28,12 @@ public class CallOnUnloadAttribute : Attribute
 
                 try
                 {
-                    Logger.Debug($"Calling unload attribute {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
+                    Logger.Debug($"Calling {nameof(CallOnUnloadAttribute)} {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
                     method.Invoke(null, null);
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    CallOnLoadAttribute.LogLoadException(ex, method);
                 }
             }
         }

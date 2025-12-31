@@ -1,3 +1,6 @@
+using System.Text;
+using NorthwoodLib.Pools;
+
 namespace DiscordLab.Bot.API.Attributes;
 
 using System.Reflection;
@@ -26,7 +29,7 @@ public class CallOnLoadAttribute : Attribute
                 if (attribute == null)
                     continue;
 
-                Logger.Debug($"Loading load attribute {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
+                Logger.Debug($"Loading {nameof(CallOnLoadAttribute)} {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
 
                 try
                 {
@@ -34,9 +37,33 @@ public class CallOnLoadAttribute : Attribute
                 }
                 catch (Exception ex)
                 {
-                    Logger.Error(ex);
+                    LogLoadException(ex, method);
                 }
             }
         }
+    }
+
+    /// <summary>
+    /// Logs an exception that is thrown from a method.
+    /// </summary>
+    /// <param name="ex">The exception that got caught.</param>
+    /// <param name="method">The method that the exception was thrown from.</param>
+    /// <param name="type">The type the method comes from, isn't required but is useful.</param>
+    public static void LogLoadException(Exception ex, MethodInfo method, Type? type = null) =>
+        Logger.Error($"Got an exception whilst trying to run {GetFullName(method, type)}:\n{ex}");
+
+    private static string GetFullName(MethodInfo method, Type? type = null)
+    {
+        StringBuilder builder = StringBuilderPool.Shared.Rent();
+
+        if (method.DeclaringType != null && type != null)
+        {
+            builder.Append((method.DeclaringType ?? type).FullName);
+            builder.Append(".");
+        }
+
+        builder.Append(method.Name);
+
+        return StringBuilderPool.Shared.ToStringReturn(builder);
     }
 }

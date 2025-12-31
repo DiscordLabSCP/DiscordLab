@@ -28,7 +28,7 @@ public class CallOnReadyAttribute : Attribute
                 if (attribute == null)
                     continue;
 
-                Logger.Debug($"Loading ready attribute {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
+                Logger.Debug($"Loading {nameof(CallOnReadyAttribute)} {method.Name} from {type.FullName}", Plugin.Instance.Config.Debug);
 
                 instances.Add(method);
             }
@@ -48,7 +48,7 @@ public class CallOnReadyAttribute : Attribute
             }
             catch (Exception ex)
             {
-                Logger.Error(ex);
+                CallOnLoadAttribute.LogLoadException(ex, method);
             }
         }
 
