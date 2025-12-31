@@ -59,7 +59,7 @@ public class CallOnLoadAttribute : Attribute
         if (method.DeclaringType != null && type != null)
         {
             builder.Append((method.DeclaringType ?? type).FullName);
-            builder.Append(".");
+            builder.Append(':');
         }
 
         builder.Append(method.Name);
