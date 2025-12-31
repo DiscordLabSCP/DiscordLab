@@ -79,7 +79,7 @@ public class Events : CustomEventsHandler
         translation.SendToChannel(channel, builder);
     }
 
-    public override void OnPlayerBanned(PlayerBannedEventArgs ev)
+    public override void OnServerBanIssued(BanIssuedEventArgs ev)
     {
         if (Config.BanLogChannelId == 0)
             return;
@@ -91,15 +91,26 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TimeSpan timeSpan = TimeSpan.FromSeconds(ev.Duration);
-        DateTime expiration = DateTime.Now.Add(timeSpan);
-
-        TranslationBuilder builder = new TranslationBuilder("player", ev.Issuer)
+        TranslationBuilder builder = new TranslationBuilder()
             {
-                Time = expiration
+                Time = new(ev.BanDetails.Expires)
             }
-            .AddCustomReplacer("userid", ev.PlayerId)
-            .AddCustomReplacer("reason", ev.Reason);
+            .AddCustomReplacer("userid", ev.BanDetails.Id)
+            .AddCustomReplacer("reason", ev.BanDetails.Reason);
+
+        if (Player.TryGet(ev.BanDetails.Id, out Player player))
+        {
+            builder.AddPlayer("player", player);
+        }
+
+        if (Player.TryGet(ev.BanDetails.Issuer, out Player issuer))
+        {
+            builder.AddPlayer("issuer", issuer);
+        }
+        else
+        {
+            builder.AddCustomReplacer("issuerid", ev.BanDetails.Issuer);
+        }
 
         Translation.BanLogEmbed.SendToChannel(channel, builder);
     }
