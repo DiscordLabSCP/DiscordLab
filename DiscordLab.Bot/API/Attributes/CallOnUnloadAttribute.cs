@@ -34,7 +34,7 @@ public class CallOnUnloadAttribute : Attribute
                 }
                 catch (Exception ex)
                 {
-                    CallOnLoadAttribute.LogLoadException(ex, method);
+                    CallOnLoadAttribute.LogLoadException(ex, method, type);
                 }
             }
         }

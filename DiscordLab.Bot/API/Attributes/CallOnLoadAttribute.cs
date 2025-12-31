@@ -36,7 +36,7 @@ public class CallOnLoadAttribute : Attribute
                 }
                 catch (Exception ex)
                 {
-                    LogLoadException(ex, method);
+                    LogLoadException(ex, method, type);
                 }
             }
         }
