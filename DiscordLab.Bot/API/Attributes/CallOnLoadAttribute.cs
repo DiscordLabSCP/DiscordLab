@@ -1,10 +1,9 @@
-using System.Text;
-using NorthwoodLib.Pools;
-
 namespace DiscordLab.Bot.API.Attributes;
 
 using System.Reflection;
+using System.Text;
 using LabApi.Features.Console;
+using NorthwoodLib.Pools;
 
 /// <summary>
 /// An attribute that when used on a method, will trigger whenever your plugin is loaded. Requires you to run <see cref="Load"/>.
