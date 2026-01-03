@@ -91,7 +91,7 @@ public static class Updater
         if (modulesToUpdate.Count == 0)
             return [];
 
-        Logger.Warn($"DiscordLab modules need updating:\n${Module.GenerateUpdateString(modulesToUpdate)}");
+        Logger.Warn($"DiscordLab modules need updating:\n{Module.GenerateUpdateString(modulesToUpdate)}");
 
         if (!Plugin.Instance.Config.AutoUpdate)
             return modulesToUpdate;
