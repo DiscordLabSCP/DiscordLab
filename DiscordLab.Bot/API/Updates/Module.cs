@@ -1,5 +1,6 @@
 namespace DiscordLab.Bot.API.Updates;
 
+using LabApi.Features.Console;
 using LabApi.Loader;
 using LabApi.Loader.Features.Paths;
 
@@ -60,7 +61,8 @@ public class Module
     /// <param name="modules">The modules to generate for.</param>
     /// <returns>The generated string.</returns>
     public static string GenerateUpdateString(IEnumerable<Module> modules) => string.Join(
-        "\n- ", modules.Select(module =>
+        "\n- ",
+        modules.Select(module =>
             $"{module.Name} | Current Version: {module.ExistingPlugin!.Version} | Latest Version: {module.Version}"));
 
     /// <summary>
@@ -77,8 +79,15 @@ public class Module
             File.Delete(ExistingPlugin.FilePath);
         }
 
-        byte[] data = await Updater.DownloadClient.GetByteArrayAsync($"/{Release.TagName}/{Asset.Name}");
+        try
+        {
+            byte[] data = await Updater.DownloadClient.GetByteArrayAsync($"{Release.TagName}/{Asset.Name}");
 
-        File.WriteAllBytes(filePath, data);
+            await File.WriteAllBytesAsync(filePath, data);
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Had an error whilst updating {Name} at version {Version}:\n{ex}");
+        }
     }
 }

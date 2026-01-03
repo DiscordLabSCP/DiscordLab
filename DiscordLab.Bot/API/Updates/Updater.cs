@@ -56,7 +56,7 @@ public static class Updater
 
             foreach (GitHubReleaseAsset asset in release.Assets)
             {
-                if (asset.Name is "dependencies.zip" or "DiscordLab.Bot.dll")
+                if (asset.Name is "dependencies.zip")
                     continue;
                 string projectName = asset.Name.Replace(".dll", string.Empty);
                 if (modules.Any(module => module.Name == projectName && module.Version >= version))
@@ -116,7 +116,7 @@ public static class Updater
 
         if (Plugin.Instance.Config.AutoUpdate)
         {
-            DownloadClient.BaseAddress = new("https://github.com/DiscordLabSCP/DiscordLab/releases/download");
+            DownloadClient.BaseAddress = new("https://github.com/DiscordLabSCP/DiscordLab/releases/download/");
             DownloadClient.DefaultRequestHeaders.Add("User-Agent", $"DiscordLab/{Plugin.Instance.Version}");
         }
 
