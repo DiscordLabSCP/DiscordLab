@@ -73,21 +73,24 @@ public class Module
     {
         string filePath = Path.Combine(PathManager.Plugins.FullName, "global", Asset.Name);
 
+        byte[] data;
+
+        try
+        {
+            data = await Updater.DownloadClient.GetByteArrayAsync($"{Release.TagName}/{Asset.Name}");
+        }
+        catch (Exception ex)
+        {
+            Logger.Error($"Had an error whilst updating {Name} at version {Version}:\n{ex}");
+            throw;
+        }
+
         if (ExistingPlugin != null)
         {
             filePath = Path.Combine(Path.GetDirectoryName(ExistingPlugin.FilePath)!, Asset.Name);
             File.Delete(ExistingPlugin.FilePath);
         }
 
-        try
-        {
-            byte[] data = await Updater.DownloadClient.GetByteArrayAsync($"{Release.TagName}/{Asset.Name}");
-
-            await File.WriteAllBytesAsync(filePath, data);
-        }
-        catch (Exception ex)
-        {
-            Logger.Error($"Had an error whilst updating {Name} at version {Version}:\n{ex}");
-        }
+        await File.WriteAllBytesAsync(filePath, data);
     }
 }
