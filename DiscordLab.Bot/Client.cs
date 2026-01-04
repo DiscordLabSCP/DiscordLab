@@ -125,20 +125,14 @@ public static class Client
         {
             StringBuilder builder = StringBuilderPool.Shared.Rent();
             builder.AppendLine("You may have setup DiscordLab incorrectly, or used another Discord bot in the past.");
-            builder.AppendLine("Please ensure you have no conflicting dependencies.");
-
-            int count = 0;
-
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
-            {
-                if (assembly.GetTypes().FirstOrDefault(t => t.Name == "DiscordSocketClient") != null)
-                    count++;
-            }
-
-            builder.AppendLine("There is a total of " + count + " conflicting dependencies. I can not see the locations. Please make sure you check every plugin/dependency loader to make sure you have no conflicts.");
-
+            builder.AppendLine(
+                "Please ensure you have no conflicting dependencies. This can either be triggered by duplication of the Discord dependencies, or Newtonsoft.Json.");
+            builder.AppendLine(
+                "Some plugins might implement either of the 2 listed dependencies above, so if you have no duplications at all, you will manually need to remove plugins to see the culprit.");
+            builder.AppendLine(
+                "If you find a plugin that doesn't work with DiscordLab, please join our Discord and report it there with a link to the repository. We can not fix private plugins.");
+            builder.AppendLine("Discord link: https://discord.gg/XBzuGbsNZK");
             Logger.Error(StringBuilderPool.Shared.ToStringReturn(builder));
-
             throw;
         }
 
