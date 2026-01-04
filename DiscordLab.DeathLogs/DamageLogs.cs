@@ -51,7 +51,6 @@ public static class DamageLogs
 
         string type = Events.ConvertToString(ev.DamageHandler);
 
-
         // passive damage checkers, don't want these spamming console.
         switch (type)
         {

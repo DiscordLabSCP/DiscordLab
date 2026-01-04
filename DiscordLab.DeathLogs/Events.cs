@@ -1,9 +1,9 @@
 using Discord.WebSocket;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
+using InventorySystem.Items.Scp1509;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features.Console;
@@ -142,7 +142,7 @@ public static class Events
         Translation.PlayerDeathSelf.SendToChannel(channel, builder);
     }
 
-    private static Dictionary<byte, string> _translations = new()
+    private static readonly Dictionary<byte, string> Translations = new()
     {
         { DeathTranslations.Asphyxiated.Id, "Asphyxiation" },
         { DeathTranslations.Bleeding.Id, "Bleeding" },
@@ -179,7 +179,16 @@ public static class Events
         switch (handler)
         {
             case CustomReasonDamageHandler:
+            case CustomReasonFirearmDamageHandler:
                 return "Unknown, plugin specific death.";
+            case GrayCandyDamageHandler:
+                return "Metal Man";
+            case Scp096DamageHandler:
+                return "SCP-096";
+            case Scp1509DamageHandler:
+                return "SCP-1509";
+            case SilentDamageHandler:
+                return "Silent";
             case WarheadDamageHandler:
                 return "Warhead";
             case ExplosionDamageHandler:
@@ -222,7 +231,7 @@ public static class Events
             {
                 DeathTranslation translation = DeathTranslations.TranslationsById[universal.TranslationId];
 
-                if (_translations.TryGetValue(translation.Id, out string s))
+                if (Translations.TryGetValue(translation.Id, out string s))
                     return s;
 
                 break;
