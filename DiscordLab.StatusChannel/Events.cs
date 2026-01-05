@@ -2,6 +2,7 @@ using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Events.Arguments.PlayerEvents;
@@ -67,7 +68,7 @@ public class Events : CustomEventsHandler
     {
         if (Message == null)
         {
-            Task.Run(async () =>
+            Task.RunAndLog(async () =>
             {
                 await GetOrCreateMessage();
                 EditMessage();

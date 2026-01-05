@@ -2,6 +2,7 @@ namespace DiscordLab.Bot.Commands;
 
 using System.Diagnostics.CodeAnalysis;
 using CommandSystem;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Updates;
 
 /// <inheritdoc />
@@ -52,7 +53,7 @@ public class LocalAdminCommand : ICommand
                     return false;
                 }
 
-                Task.Run(module.Download);
+                Task.RunAndLog(module.Download);
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
                 response = "Downloaded module. Server will restart next round.";
                 return true;
@@ -60,7 +61,7 @@ public class LocalAdminCommand : ICommand
 
             case "check":
             {
-                Task.Run(Updater.ManageUpdates);
+                Task.RunAndLog(Updater.ManageUpdates);
                 response = "Checking for updates...";
                 return true;
             }

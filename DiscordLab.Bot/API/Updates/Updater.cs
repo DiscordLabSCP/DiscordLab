@@ -2,6 +2,7 @@ namespace DiscordLab.Bot.API.Updates;
 
 using System.Net.Http;
 using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Extensions;
 using LabApi.Features.Console;
 using Newtonsoft.Json;
 
@@ -120,7 +121,7 @@ public static class Updater
             DownloadClient.DefaultRequestHeaders.Add("User-Agent", $"DiscordLab/{Plugin.Instance.Version}");
         }
 
-        Task.Run(ManageUpdates);
+        Task.RunAndLog(ManageUpdates);
     }
 
     [CallOnUnload]

@@ -9,5 +9,6 @@
         <Rule Id="SA1633" Action="None" /> <!-- FileHeader -->
         <Rule Id="SA1101" Action="None" /> <!-- Require this. before local call -->
         <Rule Id="SA1503" Action="None" /> <!-- Braces should not be omitted -->
+        <Rule Id="SA1137" Action="None" />
     </Rules>
 </RuleSet>

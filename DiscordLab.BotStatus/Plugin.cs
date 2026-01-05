@@ -1,5 +1,6 @@
 using Discord;
 using DiscordLab.Bot;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
@@ -66,16 +67,16 @@ public class Plugin : Plugin<Config, Translation>
         TranslationBuilder builder = new(Server.PlayerCount == 0
             ? Instance.Translation.EmptyContent
             : Instance.Translation.NormalContent);
-        Task.Run(async () => await Client.SocketClient.SetGameAsync(builder, type: Instance.Config.ActivityType)
+        Task.RunAndLog(async () => await Client.SocketClient.SetGameAsync(builder, type: Instance.Config.ActivityType)
             .ConfigureAwait(false));
         switch (Server.PlayerCount)
         {
             case 0 when Instance.Config.IdleOnEmpty:
-                Task.Run(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false));
+                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false));
                 break;
             case > 0 when Instance.Config.IdleOnEmpty &&
                           Client.SocketClient.Status == UserStatus.Idle:
-                Task.Run(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Online).ConfigureAwait(false));
+                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Online).ConfigureAwait(false));
                 break;
         }
     }

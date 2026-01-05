@@ -11,6 +11,7 @@ using Discord.Net.Rest;
 using Discord.Net.WebSockets;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using LabApi.Features.Console;
 using NorthwoodLib.Pools;
@@ -138,7 +139,7 @@ public static class Client
 
         DebugLog("Client events subscribed...");
 
-        Task.Run(StartClient);
+        Task.RunAndLog(StartClient);
     }
 
     /// <summary>
@@ -153,7 +154,7 @@ public static class Client
         SocketClient.Ready -= OnReady;
         SocketClient.SlashCommandExecuted -= SlashCommandHandler;
         SocketClient.AutocompleteExecuted -= AutocompleteHandler;
-        Task.Run(async () =>
+        Task.RunAndLog(async () =>
         {
             await SocketClient.LogoutAsync();
             await SocketClient.StopAsync();

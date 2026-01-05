@@ -81,7 +81,7 @@ public class MessageContent
 
         (Discord.Embed? embed, string? content) = Build(builder);
 
-        Task.Run(async () => await message.ModifyAsync(msg =>
+        Task.RunAndLog(async () => await message.ModifyAsync(msg =>
         {
             if (!string.IsNullOrEmpty(content))
                 msg.Content = content;

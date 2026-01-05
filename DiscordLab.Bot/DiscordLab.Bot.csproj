@@ -2,7 +2,7 @@
     <PropertyGroup>
         <TargetFramework>net48</TargetFramework>
         <ImplicitUsings>enable</ImplicitUsings>
-        <LangVersion>13</LangVersion>
+        <LangVersion>14</LangVersion>
         <Nullable>enable</Nullable>
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

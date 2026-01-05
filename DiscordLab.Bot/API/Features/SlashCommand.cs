@@ -6,6 +6,7 @@ using System.Reflection;
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Attributes;
+using DiscordLab.Bot.API.Extensions;
 using LabApi.Features.Console;
 
 /// <summary>
@@ -72,7 +73,7 @@ public abstract class SlashCommand
     [CallOnReady]
     private static void Ready()
     {
-        Task.Run(() => RegisterGuildCommands(Commands));
+        Task.RunAndLog(() => RegisterGuildCommands(Commands));
     }
 
 #pragma warning disable SA1313
@@ -80,11 +81,16 @@ public abstract class SlashCommand
 #pragma warning restore SA1313
     {
         if (!Client.IsClientReady)
+        {
             return;
-        if (ev.Action is not (NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Replace))
-            return;
+        }
 
-        Task.Run(() => RegisterGuildCommands((IEnumerable<SlashCommand>)ev.NewItems));
+        if (ev.Action is not (NotifyCollectionChangedAction.Add or NotifyCollectionChangedAction.Replace))
+        {
+            return;
+        }
+
+        Task.RunAndLog(() => RegisterGuildCommands((IEnumerable<SlashCommand>)ev.NewItems));
     }
 
     private static async Task RegisterGuildCommands(IEnumerable<SlashCommand> commands)
