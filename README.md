@@ -15,7 +15,7 @@ To get started, check out our installation guide: https://discordlab.jxtq.moe/ge
 DiscordLab easily allows users to only have a subset of features and doesn't require the server to be tracking loads of
 events that will never even be logged.
 Your server (or other plugin) developers can easily integrate with the bot as well because of
-the [NuGet package](https://www.nuget.org/packages/DiscordLab).
+the [NuGet package](https://www.nuget.org/packages/DiscordLab.Bot).
 Go to the [API section](#api) for more information.
 
 ### Logging for events
