@@ -79,7 +79,7 @@ public class Events : CustomEventsHandler
         translation.SendToChannel(channel, builder);
     }
 
-    public override void OnServerBanIssued(BanIssuedEventArgs ev)
+    public override void OnServerBanIssuing(BanIssuingEventArgs ev)
     {
         if (Config.BanLogChannelId == 0)
             return;
@@ -91,7 +91,7 @@ public class Events : CustomEventsHandler
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new TranslationBuilder
             {
                 Time = new(ev.BanDetails.Expires)
             }
