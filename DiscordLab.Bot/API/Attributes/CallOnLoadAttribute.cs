@@ -1,9 +1,8 @@
 namespace DiscordLab.Bot.API.Attributes;
 
 using System.Reflection;
-using System.Text;
+using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Console;
-using NorthwoodLib.Pools;
 
 /// <summary>
 /// An attribute that when used on a method, will trigger whenever your plugin is loaded. Requires you to run <see cref="Load"/>.
@@ -36,7 +35,7 @@ public class CallOnLoadAttribute : Attribute
                 }
                 catch (Exception ex)
                 {
-                    LogLoadException(ex, method, type);
+                    LoggingUtils.LogMethodError(ex, method, type);
                 }
             }
         }
@@ -48,8 +47,9 @@ public class CallOnLoadAttribute : Attribute
     /// <param name="ex">The exception that got caught.</param>
     /// <param name="method">The method that the exception was thrown from.</param>
     /// <param name="type">The type the method comes from, isn't required but is useful.</param>
+    [Obsolete($"Use {nameof(LoggingUtils)}.{nameof(LoggingUtils.LogMethodError)} instead")]
     public static void LogLoadException(Exception ex, MethodInfo method, Type? type = null) =>
-        Logger.Error($"Got an exception whilst trying to run {GetFullName(method, type)}:\n{ex}");
+        LoggingUtils.LogMethodError(ex, method, type);
 
     /// <summary>
     /// Gets the full name of a method from it's <see cref="MethodInfo"/> and/or <see cref="Type"/>.
@@ -57,18 +57,6 @@ public class CallOnLoadAttribute : Attribute
     /// <param name="method">The method that you want the name of.</param>
     /// <param name="type">The type that the method is from, isn't required unless dynamic method is called, otherwise just the name of the method will print.</param>
     /// <returns>The full method name.</returns>
-    public static string GetFullName(MethodInfo method, Type? type = null)
-    {
-        StringBuilder builder = StringBuilderPool.Shared.Rent();
-
-        if (method.DeclaringType != null && type != null)
-        {
-            builder.Append((method.DeclaringType ?? type).FullName);
-            builder.Append(':');
-        }
-
-        builder.Append(method.Name);
-
-        return StringBuilderPool.Shared.ToStringReturn(builder);
-    }
+    [Obsolete($"Use {nameof(LoggingUtils)}.{nameof(LoggingUtils.GetFullName)} instead")]
+    public static string GetFullName(MethodInfo method, Type? type = null) => LoggingUtils.GetFullName(method, type);
 }
