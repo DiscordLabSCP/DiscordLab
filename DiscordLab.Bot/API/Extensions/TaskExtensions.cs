@@ -20,8 +20,9 @@ public static class TaskExtensions
         /// Runs and adds a logger to a Task.
         /// </summary>
         /// <param name="task">The Task to run.</param>
+        /// <param name="onException">The action to run when an exception is triggered.</param>
         /// <returns>The task that is running.</returns>
-        public static Task RunAndLog(Func<Task> task) => Task.Run(async () =>
+        public static Task RunAndLog(Func<Task> task, Action<Exception>? onException = null) => Task.Run(async () =>
         {
             try
             {
@@ -30,6 +31,7 @@ public static class TaskExtensions
             catch (Exception ex)
             {
                 Logger.Error(ex);
+                onException?.Invoke(ex);
             }
         });
     }
