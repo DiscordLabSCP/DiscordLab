@@ -1,7 +1,10 @@
 namespace DiscordLab.Bot.API.Extensions;
 
+using System.Diagnostics;
+using System.Reflection;
 using Discord;
 using Discord.WebSocket;
+using DiscordLab.Bot.API.Utilities;
 
 /// <summary>
 /// Extension methods to help with Discord based tasks.
@@ -17,8 +20,13 @@ public static class DiscordExtensions
     /// <param name="embed">The embed.</param>
     /// <param name="embeds">The embeds.</param>
     /// <remarks>Text, embed or embeds is required here.</remarks>
-    public static void SendMessage(this SocketTextChannel channel, string? text = null, bool isTts = false, Embed? embed = null, Embed[]? embeds = null) =>
-        Task.RunAndLog(async () => await channel.SendMessageAsync(text, isTts, embed, embeds: embeds).ConfigureAwait(false));
+    public static void SendMessage(this SocketTextChannel channel, string? text = null, bool isTts = false, Embed? embed = null, Embed[]? embeds = null)
+    {
+        MethodBase method = new StackFrame(1).GetMethod();
+        Task.RunAndLog(
+            async () => await channel.SendMessageAsync(text, isTts, embed, embeds: embeds).ConfigureAwait(false),
+            ex => LoggingUtils.LogMethodError(ex, method));
+    }
 
     /// <summary>
     /// Gets an option from a list of slash command options.
