@@ -1,6 +1,7 @@
 namespace DiscordLab.Bot.API.Attributes;
 
 using System.Reflection;
+using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Console;
 
 /// <summary>
@@ -34,7 +35,7 @@ public class CallOnUnloadAttribute : Attribute
                 }
                 catch (Exception ex)
                 {
-                    CallOnLoadAttribute.LogLoadException(ex, method, type);
+                    LoggingUtils.LogMethodError(ex, method, type);
                 }
             }
         }

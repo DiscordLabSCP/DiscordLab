@@ -1,6 +1,7 @@
 namespace DiscordLab.Bot.API.Attributes;
 
 using System.Reflection;
+using DiscordLab.Bot.API.Utilities;
 using LabApi.Features.Console;
 
 /// <summary>
@@ -44,12 +45,12 @@ public class CallOnReadyAttribute : Attribute
         {
             try
             {
-                Logger.Debug($"Invoking {CallOnLoadAttribute.GetFullName(method)} ({nameof(CallOnReadyAttribute)})", Plugin.Instance.Config.Debug);
+                Logger.Debug($"Invoking {LoggingUtils.GetFullName(method)} ({nameof(CallOnReadyAttribute)})", Plugin.Instance.Config.Debug);
                 method.Invoke(null, null);
             }
             catch (Exception ex)
             {
-                CallOnLoadAttribute.LogLoadException(ex, method);
+                LoggingUtils.LogMethodError(ex, method);
             }
         }
 
