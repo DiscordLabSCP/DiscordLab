@@ -25,7 +25,11 @@ public static class DiscordExtensions
         MethodBase method = new StackFrame(1).GetMethod();
         Task.RunAndLog(
             async () => await channel.SendMessageAsync(text, isTts, embed, embeds: embeds).ConfigureAwait(false),
-            ex => LoggingUtils.LogMethodError(ex, method));
+            ex =>
+            {
+                if (ex is not TimeoutException)
+                    LoggingUtils.LogMethodError(ex, method);
+            });
     }
 
     /// <summary>
