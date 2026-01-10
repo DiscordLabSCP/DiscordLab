@@ -28,6 +28,16 @@ public static class TaskExtensions
             {
                 await task();
             }
+            catch (TimeoutException ex)
+            {
+                if (ex.TargetSite?.DeclaringType?.Namespace?.StartsWith("Discord") == true)
+                    return;
+
+                if (onException == null)
+                    Logger.Error(ex);
+                else
+                    onException(ex);
+            }
             catch (Exception ex)
             {
                 if (onException == null)
