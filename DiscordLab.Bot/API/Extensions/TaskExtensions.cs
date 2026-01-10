@@ -28,15 +28,9 @@ public static class TaskExtensions
             {
                 await task();
             }
-            catch (TimeoutException ex)
+            catch (TimeoutException ex) when (IsDiscordException(ex))
             {
-                if (ex.TargetSite?.DeclaringType?.Namespace?.StartsWith("Discord") == true)
-                    return;
-
-                if (onException == null)
-                    Logger.Error(ex);
-                else
-                    onException(ex);
+                // Ignore Discord timeout exceptions because Discord.Net queues them for us.
             }
             catch (Exception ex)
             {
@@ -46,5 +40,11 @@ public static class TaskExtensions
                     onException(ex);
             }
         });
+
+        private static bool IsDiscordException(Exception ex) => ex.Source?.StartsWith("Discord.Net") == true ||
+                                                                ex.TargetSite?.DeclaringType?.Namespace?.StartsWith(
+                                                                    "Discord") == true ||
+                                                                ex.StackTrace?.Contains("Discord.Net") == true ||
+                                                                ex.StackTrace?.Contains("Discord.API") == true;
     }
 }
