@@ -50,9 +50,11 @@ public static class LoggingUtils
     {
         StringBuilder builder = StringBuilderPool.Shared.Rent();
 
-        if (method.DeclaringType != null && type != null)
+        Type? declaringType = type ?? method.DeclaringType ?? method.ReflectedType;
+
+        if (declaringType != null)
         {
-            builder.Append((method.DeclaringType ?? type).FullName);
+            builder.Append(declaringType.FullName);
             builder.Append(':');
         }
 
