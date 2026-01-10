@@ -93,7 +93,7 @@ public class Events : CustomEventsHandler
 
         TranslationBuilder builder = new TranslationBuilder
             {
-                Time = new(ev.BanDetails.Expires)
+                Time = new(ev.BanDetails.Expires, DateTimeKind.Utc)
             }
             .AddCustomReplacer("userid", ev.BanDetails.Id)
             .AddCustomReplacer("reason", ev.BanDetails.Reason);
