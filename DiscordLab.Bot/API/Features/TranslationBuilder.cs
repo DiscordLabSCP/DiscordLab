@@ -67,46 +67,46 @@ public class TranslationBuilder
     public static Dictionary<Regex, Func<string>> StaticReplacers { get; } = new()
     {
         // Map Replacers
-        [CreateRegex("seed")] = () => Map.Seed.ToString(),
-        [CreateRegex("isdecont")] = () => Decontamination.IsDecontaminating.ToString(),
+        [CreateRegex("seed")] = static () => Map.Seed.ToString(),
+        [CreateRegex("isdecont")] = static () => Decontamination.IsDecontaminating.ToString(),
         [CreateRegex("remainingdeconttime")] = GetRemainingDecontaminationTime,
-        [CreateRegex("isdecontenabled")] = () =>
+        [CreateRegex("isdecontenabled")] = static () =>
             (Decontamination.Status == DecontaminationController.DecontaminationStatus.None).ToString(),
-        [CreateRegex("decontstate")] = () => Decontamination.Status.ToString(),
+        [CreateRegex("decontstate")] = static () => Decontamination.Status.ToString(),
 
         // Round Replacers
-        [CreateRegex("killcount")] = () => Round.TotalDeaths.ToString(),
-        [CreateRegex("elapsedtime")] = () => Round.Duration.ToString(),
-        [CreateRegex("escapedscientistscount")] = () => Round.EscapedScientists.ToString(),
-        [CreateRegex("inprogress")] = () => Round.IsRoundInProgress.ToString(),
-        [CreateRegex("isended")] = () => Round.IsRoundEnded.ToString(),
-        [CreateRegex("isstarted")] = () => Round.IsRoundStarted.ToString(),
-        [CreateRegex("islocked")] = () => Round.IsLocked.ToString(),
-        [CreateRegex("changedintozombiescount")] = () => Round.ChangedIntoZombies.ToString(),
-        [CreateRegex("escapeddclassescount")] = () => Round.EscapedClassD.ToString(),
-        [CreateRegex("islobbylocked")] = () => Round.IsLobbyLocked.ToString(),
-        [CreateRegex("scpkillcount")] = () => Round.KilledBySCPs.ToString(),
-        [CreateRegex("alivescpcount")] = () => Round.SurvivingSCPs.ToString(),
-        [CreateRegex("roundcount")] = () => RoundRestart.UptimeRounds.ToString(),
+        [CreateRegex("killcount")] = static () => Round.TotalDeaths.ToString(),
+        [CreateRegex("elapsedtime")] = static () => Round.Duration.ToString(),
+        [CreateRegex("escapedscientistscount")] = static () => Round.EscapedScientists.ToString(),
+        [CreateRegex("inprogress")] = static () => Round.IsRoundInProgress.ToString(),
+        [CreateRegex("isended")] = static () => Round.IsRoundEnded.ToString(),
+        [CreateRegex("isstarted")] = static () => Round.IsRoundStarted.ToString(),
+        [CreateRegex("islocked")] = static () => Round.IsLocked.ToString(),
+        [CreateRegex("changedintozombiescount")] = static () => Round.ChangedIntoZombies.ToString(),
+        [CreateRegex("escapeddclassescount")] = static () => Round.EscapedClassD.ToString(),
+        [CreateRegex("islobbylocked")] = static () => Round.IsLobbyLocked.ToString(),
+        [CreateRegex("scpkillcount")] = static () => Round.KilledBySCPs.ToString(),
+        [CreateRegex("alivescpcount")] = static () => Round.SurvivingSCPs.ToString(),
+        [CreateRegex("roundcount")] = static () => RoundRestart.UptimeRounds.ToString(),
 
         // Server Replacers
-        [CreateRegex("maxplayers")] = () => Server.MaxPlayers.ToString(),
-        [CreateRegex("name")] = () => Server.ServerListName,
-        [CreateRegex("nameparsed")] = () =>
+        [CreateRegex("maxplayers")] = static () => Server.MaxPlayers.ToString(),
+        [CreateRegex("name")] = static () => Server.ServerListName,
+        [CreateRegex("nameparsed")] = static () =>
         {
             string result = UselessTextRemoveRegex.Replace(Server.ServerListName, string.Empty);
             result = TagRemoveRegex.Replace(result, string.Empty);
 
             return result;
         },
-        [CreateRegex("port")] = () => Server.Port.ToString(),
-        [CreateRegex("ip")] = () => Server.IpAddress,
-        [CreateRegex("playercount")] = () => Server.PlayerCount.ToString(),
-        [CreateRegex("playercountnonpcs")] = () => Player.ReadyList.Count(p => !p.IsNpc).ToString(),
-        [CreateRegex("tps")] = () => Server.Tps.ToString(CultureInfo.CurrentCulture),
-        [CreateRegex("version")] = () => GameCore.Version.VersionString,
-        [CreateRegex("isbeta")] = () => (GameCore.Version.PublicBeta || GameCore.Version.PublicBeta).ToString(),
-        [CreateRegex("isfriendlyfire")] = () => Server.FriendlyFire.ToString(),
+        [CreateRegex("port")] = static () => Server.Port.ToString(),
+        [CreateRegex("ip")] = static () => Server.IpAddress,
+        [CreateRegex("playercount")] = static () => Server.PlayerCount.ToString(),
+        [CreateRegex("playercountnonpcs")] = static () => Player.ReadyList.Count(p => !p.IsNpc).ToString(),
+        [CreateRegex("tps")] = static () => Server.Tps.ToString(CultureInfo.CurrentCulture),
+        [CreateRegex("version")] = static () => GameCore.Version.VersionString,
+        [CreateRegex("isbeta")] = static () => GameCore.Version.PublicBeta.ToString(),
+        [CreateRegex("isfriendlyfire")] = static () => Server.FriendlyFire.ToString(),
     };
 
     /// <summary>
@@ -114,18 +114,18 @@ public class TranslationBuilder
     /// </summary>
     public static Dictionary<Regex, Func<long, string>> TimeReplacers { get; } = new()
     {
-        [CreateRegex("time")] = time => $"<t:{time}>",
-        [CreateRegex("timet")] = time => $"<t:{time}:t>",
-        [CreateRegex("timetlong")] = time => $"<t:{time}:T>",
-        [CreateRegex("timed")] = time => $"<t:{time}:d>",
-        [CreateRegex("timedlong")] = time => $"<t:{time}:D>",
-        [CreateRegex("timef")] = time => $"<t:{time}:f>",
-        [CreateRegex("timeflong")] = time => $"<t:{time}:F>",
-        [CreateRegex("timer")] = time => $"<t:{time}:R>",
-        [CreateRegex("elapsedtimerelative")] = time => $"<t:{time - Round.Duration.TotalSeconds}:R>",
-        [CreateRegex("roundstart")] = time => $"<t:{time - Round.Duration.TotalSeconds}:T>",
-        [CreateRegex("secondssince")] = time => TimeSince(time).Seconds.ToString(CultureInfo.InvariantCulture),
-        [CreateRegex("minutessince")] = time => TimeSince(time).Minutes.ToString(CultureInfo.InvariantCulture),
+        [CreateRegex("time")] = static time => $"<t:{time}>",
+        [CreateRegex("timet")] = static time => $"<t:{time}:t>",
+        [CreateRegex("timetlong")] = static time => $"<t:{time}:T>",
+        [CreateRegex("timed")] = static time => $"<t:{time}:d>",
+        [CreateRegex("timedlong")] = static time => $"<t:{time}:D>",
+        [CreateRegex("timef")] = static time => $"<t:{time}:f>",
+        [CreateRegex("timeflong")] = static time => $"<t:{time}:F>",
+        [CreateRegex("timer")] = static time => $"<t:{time}:R>",
+        [CreateRegex("elapsedtimerelative")] = static time => $"<t:{time - Round.Duration.TotalSeconds}:R>",
+        [CreateRegex("roundstart")] = static time => $"<t:{time - Round.Duration.TotalSeconds}:T>",
+        [CreateRegex("secondssince")] = static time => TimeSince(time).Seconds.ToString(CultureInfo.InvariantCulture),
+        [CreateRegex("minutessince")] = static time => TimeSince(time).Minutes.ToString(CultureInfo.InvariantCulture),
     };
 
     /// <summary>
@@ -133,31 +133,31 @@ public class TranslationBuilder
     /// </summary>
     public static Dictionary<string, Func<Player, string>> PlayerReplacers { get; } = new()
     {
-        ["name"] = player =>
+        ["name"] = static player =>
             player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere").Trim(),
-        ["nickname"] = player =>
+        ["nickname"] = static player =>
             player.Nickname.Replace("@everyone", "@\u200beveryone").Replace("@here", "@\u200bhere").Trim(),
-        ["displayname"] = player => player.DisplayName,
-        ["id"] = player => player.UserId,
-        ["ip"] = player => player.IpAddress,
-        ["userid"] = player => player.PlayerId.ToString(),
-        ["role"] = player => player.RoleBase.RoleName,
-        ["roletype"] = player => player.Role.ToString(),
-        ["team"] = player => player.Team.ToString(),
-        ["faction"] = player => player.Team.GetFaction().ToString(),
-        ["health"] = player => player.Health.ToString(CultureInfo.CurrentCulture),
-        ["maxhealth"] = player => player.MaxHealth.ToString(CultureInfo.CurrentCulture),
-        ["group"] = player => player.GroupName,
-        ["badgecolor"] = player => player.GroupColor.ToString(),
-        ["hasdnt"] = player => player.DoNotTrack.ToString(),
-        ["hasra"] = player => player.RemoteAdminAccess.ToString(),
-        ["isnorthwood"] = player => player.IsNorthwoodStaff.ToString(),
-        ["room"] = player => player.Room?.ToString() ?? "None",
-        ["zone"] = player => player.Zone.ToString(),
-        ["position"] = player => player.Position.ToString(),
-        ["ping"] = player => LiteNetLib4MirrorServer.GetPing(player.Connection.connectionId).ToString(),
-        ["isglobalmod"] = player => player.IsGlobalModerator.ToString(),
-        ["permissiongroup"] = player => player.PermissionsGroupName ?? "None",
+        ["displayname"] = static player => player.DisplayName,
+        ["id"] = static player => player.UserId,
+        ["ip"] = static player => player.IpAddress,
+        ["userid"] = static player => player.PlayerId.ToString(),
+        ["role"] = static player => player.RoleBase.RoleName,
+        ["roletype"] = static player => player.Role.ToString(),
+        ["team"] = static player => player.Team.ToString(),
+        ["faction"] = static player => player.Team.GetFaction().ToString(),
+        ["health"] = static player => player.Health.ToString(CultureInfo.CurrentCulture),
+        ["maxhealth"] = static player => player.MaxHealth.ToString(CultureInfo.CurrentCulture),
+        ["group"] = static player => player.GroupName,
+        ["badgecolor"] = static player => player.GroupColor.ToString(),
+        ["hasdnt"] = static player => player.DoNotTrack.ToString(),
+        ["hasra"] = static player => player.RemoteAdminAccess.ToString(),
+        ["isnorthwood"] = static player => player.IsNorthwoodStaff.ToString(),
+        ["room"] = static player => player.Room?.ToString() ?? "None",
+        ["zone"] = static player => player.Zone.ToString(),
+        ["position"] = static player => player.Position.ToString(),
+        ["ping"] = static player => LiteNetLib4MirrorServer.GetPing(player.Connection.connectionId).ToString(),
+        ["isglobalmod"] = static player => player.IsGlobalModerator.ToString(),
+        ["permissiongroup"] = static player => player.PermissionsGroupName ?? "None",
     };
 
     /// <summary>
