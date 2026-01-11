@@ -1,6 +1,7 @@
 using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Features;
+using LabApi.Features.Wrappers;
 
 namespace DiscordLab.StatusChannel;
 
@@ -18,7 +19,8 @@ public class Command : SlashCommand
     {
         await Events.UsableContent.InteractionRespond(command, new()
         {
-            PlayerListItem = Plugin.Instance.Translation.PlayerItem
+            PlayerListItem = Plugin.Instance.Translation.PlayerItem,
+            PlayerList = Player.ReadyList.Where(player => !player.IsDummy || !player.ReferenceHub.serverRoles.HideFromPlayerList)
         });
     }
 }

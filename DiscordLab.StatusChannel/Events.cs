@@ -80,7 +80,8 @@ public class Events : CustomEventsHandler
         {
             UsableContent.ModifyMessage(Message, new()
             {
-                PlayerListItem = Translation.PlayerItem
+                PlayerListItem = Translation.PlayerItem,
+                PlayerList = Player.ReadyList.Where(player => !player.IsDummy || !player.ReferenceHub.serverRoles.HideFromPlayerList)
             });
         }
         catch (Exception e)
