@@ -95,7 +95,7 @@ public static class Client
         DebugLog("Starting the Client");
         DiscordSocketConfig config = new()
         {
-            GatewayIntents = GatewayIntents.Guilds | GatewayIntents.GuildMessages,
+            GatewayIntents = GatewayIntents.All,
             LogLevel = Config.Debug ? LogSeverity.Debug : LogSeverity.Warning,
             RestClientProvider = DefaultRestClientProvider.Create(),
             WebSocketProvider = DefaultWebSocketProvider.Create(),
