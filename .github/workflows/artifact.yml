@@ -25,7 +25,11 @@ jobs:
           Expand-Archive -Path References.zip -DestinationPath ${{ env.SL_REFERENCES }} -Force
       - name: Rename Assembly-CSharp (because Exiled removes the normal version)
         shell: pwsh
-        run: Move-Item -Path ${{ env.SL_REFERENCES }}/Assembly-CSharp-Publicized.dll -Destination ${{ env.SL_REFERENCES }}/Assembly-CSharp.dll
+        run: |
+          $destination = "${{ env.SL_REFERENCES }}/Assembly-CSharp.dll"
+          if (-Not (Test-Path $destination)) {
+            Move-Item -Path "${{ env.SL_REFERENCES }}/Assembly-CSharp-Publicized.dll" -Destination $destination
+          }
       - name: Build
         run: dotnet build -c:Release
       - name: Publish Artifact
