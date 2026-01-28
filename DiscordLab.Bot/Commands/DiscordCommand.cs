@@ -85,7 +85,7 @@ public class DiscordCommand : AutocompleteCommand
                         string.Equals(s.Name, moduleName, StringComparison.CurrentCultureIgnoreCase)) ??
                     Module.CurrentModules.FirstOrDefault(s =>
                         s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
-                if (module == null)
+                if (module == null || module.Name == "DiscordLab.Bot")
                 {
                     await command.ModifyOriginalResponseAsync(m => m.Content = "Module not found.");
                     return;
