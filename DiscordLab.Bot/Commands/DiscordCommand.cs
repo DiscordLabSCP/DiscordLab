@@ -111,6 +111,36 @@ public class DiscordCommand : AutocompleteCommand
                     m.Content = $"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
                 break;
             }
+
+            case "update":
+            {
+                IEnumerable<Module> modules = await Updater.ManageUpdates();
+
+                if (!modules.Any())
+                {
+                    await command.ModifyOriginalResponseAsync(m => m.Content = "No updates found.");
+                    return;
+                }
+
+                if (Plugin.Instance.Config.AutoUpdate)
+                {
+                    await command.ModifyOriginalResponseAsync(m =>
+                        m.Content =
+                            $"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
+                    return;
+                }
+
+                // Force updates, because ManageUpdates checks for AutoUpdate, and will trigger the update.
+                foreach (Module module in modules)
+                {
+                    await module.Download();
+                }
+
+                await command.ModifyOriginalResponseAsync(m =>
+                    m.Content =
+                        $"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
+                break;
+            }
         }
     }
 

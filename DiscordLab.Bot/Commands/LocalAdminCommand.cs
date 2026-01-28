@@ -1,3 +1,5 @@
+using LabApi.Features.Console;
+
 namespace DiscordLab.Bot.Commands;
 
 using System.Diagnostics.CodeAnalysis;
@@ -62,6 +64,34 @@ public class LocalAdminCommand : ICommand
             case "check":
             {
                 Task.RunAndLog(Updater.ManageUpdates);
+                response = "Checking for updates...";
+                return true;
+            }
+
+            case "update":
+            {
+                Task.RunAndLog(async () =>
+                {
+                    IEnumerable<Module> modules = await Updater.ManageUpdates();
+
+                    if (!modules.Any())
+                    {
+                        return;
+                    }
+
+                    if (Plugin.Instance.Config.AutoUpdate)
+                    {
+                        return;
+                    }
+
+                    // Force updates, because ManageUpdates checks for AutoUpdate, and will trigger the update.
+                    foreach (Module module in modules)
+                    {
+                        await module.Download();
+                    }
+
+                    Logger.Info($"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
+                });
                 response = "Checking for updates...";
                 return true;
             }
