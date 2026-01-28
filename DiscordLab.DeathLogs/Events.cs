@@ -172,6 +172,7 @@ public static class Events
         { DeathTranslations.Hypothermia.Id, "Hypothermia" },
         { DeathTranslations.MarshmallowMan.Id, "Marshmellow" },
         { DeathTranslations.Scp1344.Id, "Severed Eyes" },
+        { DeathTranslations.Scp127Bullets.Id, "SCP-127" }
     };
 
     internal static string ConvertToString(DamageHandlerBase handler)
