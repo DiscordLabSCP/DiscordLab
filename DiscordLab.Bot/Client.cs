@@ -7,6 +7,7 @@ using System.Net.WebSockets;
 using System.Reflection;
 using System.Text;
 using Discord;
+using Discord.Net;
 using Discord.Net.Rest;
 using Discord.Net.WebSockets;
 using Discord.WebSocket;
@@ -171,26 +172,32 @@ public static class Client
 
     private static Task OnLog(LogMessage msg)
     {
-        if (msg.Exception is WebSocketException or GatewayReconnectException)
-            return Task.CompletedTask;
-
-        switch (msg.Severity)
+        switch (msg.Exception)
         {
-            case LogSeverity.Error or LogSeverity.Critical:
-                Logger.Error(msg);
-                break;
-            case LogSeverity.Warning:
-                Logger.Warn(msg);
-                break;
-            case LogSeverity.Debug:
-                DebugLog(msg);
-                break;
+            case WebSocketException { InnerException: WebSocketClosedException { CloseCode: 4014 } }:
+                Logger.Error("DiscordLab requires that you have all Privileged Gateway Intents enabled, you can do this in the \"Bot\" panel of your application. Restart your server when this is complete.");
+                return Task.CompletedTask;
+            case WebSocketException or GatewayReconnectException when !Config.Debug:
+                return Task.CompletedTask;
             default:
-                Logger.Info(msg);
-                break;
-        }
+                switch (msg.Severity)
+                {
+                    case LogSeverity.Error or LogSeverity.Critical:
+                        Logger.Error(msg);
+                        break;
+                    case LogSeverity.Warning:
+                        Logger.Warn(msg);
+                        break;
+                    case LogSeverity.Debug:
+                        DebugLog(msg);
+                        break;
+                    default:
+                        Logger.Info(msg);
+                        break;
+                }
 
-        return Task.CompletedTask;
+                return Task.CompletedTask;
+        }
     }
 
     private static Task OnReady()
