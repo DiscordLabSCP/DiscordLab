@@ -92,7 +92,11 @@ public static class DamageLogs
             return;
         }
 
-        Channel.SendMessage(embeds: CreateEmbeds());
+        Embed[] embeds = CreateEmbeds();
+        foreach (Embed embed in embeds)
+        {
+            Channel.SendMessage(embed: embed);
+        }
 
         DamageLogEntries.Clear();
     }
