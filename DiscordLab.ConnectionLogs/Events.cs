@@ -31,6 +31,9 @@ public class Events : CustomEventsHandler
             return;
         }
 
+        if (ev.Player.ReferenceHub.serverRoles.HideFromPlayerList)
+            return;
+
         Translation.PlayerJoin.SendToChannel(channel, new("player", ev.Player));
     }
 
@@ -48,6 +51,9 @@ public class Events : CustomEventsHandler
                 LoggingUtils.GenerateMissingChannelMessage("leave log", Config.LeaveChannelId, Config.GuildId));
             return;
         }
+
+        if (ev.Player.ReferenceHub.serverRoles.HideFromPlayerList)
+            return;
 
         Translation.PlayerLeave.SendToChannel(channel, new("player", ev.Player));
     }
