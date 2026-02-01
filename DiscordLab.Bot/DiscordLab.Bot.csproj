@@ -39,6 +39,7 @@
     <ItemGroup>
         <PackageReference Include="Discord.Net.WebSocket" PrivateAssets="none" IncludeAssets="all"/>
         <PackageReference Include="Discord.Net.Rest" PrivateAssets="none" IncludeAssets="all"/>
+        <PackageReference Include="Discord.Net.Webhook" PrivateAssets="none" IncludeAssets="all"/>
         <PackageReference Include="Lib.Harmony"/>
         <PackageReference Include="StyleCop.Analyzers" IncludeAssets="all" PrivateAssets="all"/>
         <PackageReference Include="System.Net.Http"/>

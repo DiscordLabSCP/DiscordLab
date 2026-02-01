@@ -1,6 +1,9 @@
 using System.Globalization;
+using System.Net.Http;
 using CustomPlayerEffects;
 using Discord;
+using Discord.Rest;
+using Discord.Webhook;
 using Discord.WebSocket;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Attributes;
@@ -9,6 +12,8 @@ using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
+using LabApi.Features.Wrappers;
+using NorthwoodLib.Pools;
 using PlayerStatsSystem;
 using UnityEngine;
 using Logger = LabApi.Features.Console.Logger;
@@ -19,7 +24,11 @@ public static class DamageLogs
 {
     public static List<string> DamageLogEntries { get; set; } = new();
 
-    public static SocketTextChannel Channel;
+    public static List<string> TeamDamageLogEntries { get; set; } = new();
+
+    public static RestWebhook Webhook;
+
+    public static RestWebhook TeamWebhook;
 
     private static Queue queue = new(5, SendLog);
 
@@ -37,11 +46,15 @@ public static class DamageLogs
         PlayerEvents.Hurt -= OnHurt;
 
         DamageLogEntries = null;
-        Channel = null;
+        TeamDamageLogEntries = null;
+        Webhook = null;
+        TeamWebhook = null;
     }
 
     public static void OnHurt(PlayerHurtEventArgs ev)
     {
+        if (Round.IsRoundEnded && Plugin.Instance.Config.IgnoreRoundEndDamage) return;
+
         if (ev.Attacker == null || ev.Player == ev.Attacker) return;
 
         if (ev.DamageHandler is not StandardDamageHandler handler)
@@ -75,51 +88,84 @@ public static class DamageLogs
             .AddCustomReplacer("damage", handler.Damage.ToString(CultureInfo.InvariantCulture))
             .AddCustomReplacer("cause", type);
 
-        DamageLogEntries.Add(log);
+        if (ev.Player.Faction == ev.Attacker.Faction)
+            TeamDamageLogEntries.Add(log);
+        else
+            DamageLogEntries.Add(log);
 
         queue.Process();
     }
 
-    public static void SendLog()
+    public static void SendLog() => Task.RunAndLog(async () =>
     {
-        if (Channel == null && !Client.TryGetOrAddChannel(Plugin.Instance.Config.DamageLogChannelId, out Channel))
+        ulong guildId = Plugin.Instance.Config.GuildId;
+        ulong channelId = Plugin.Instance.Config.DamageLogChannelId;
+
+        if (Webhook != null && Client.TryGetOrAddChannel(channelId, out SocketTextChannel channel))
+            Webhook = await GetOrCreateWebhook(channel);
+
+        if (Webhook != null)
         {
+            DiscordWebhookClient client = new(Webhook);
+            
+            foreach (Embed embed in CreateEmbeds(DamageLogEntries, Plugin.Instance.Translation.DamageLogEmbed))
+            {
+                await client.SendMessageAsync(embeds: [embed]);
+            }
+
+            client.Dispose();
+        }
+        else if (channelId != 0 && Webhook == null)
             Logger.Error(
                 LoggingUtils.GenerateMissingChannelMessage(
                     "damage logs",
-                    Plugin.Instance.Config.DamageLogChannelId,
-                    Plugin.Instance.Config.GuildId));
-            return;
-        }
+                    channelId,
+                    guildId));
 
-        Embed[] embeds = CreateEmbeds();
-        foreach (Embed embed in embeds)
+        ulong teamChannelId = Plugin.Instance.Config.TeamDamageLogChannelId;
+        if (TeamWebhook != null && Client.TryGetOrAddChannel(teamChannelId, out SocketTextChannel teamChannel))
+            TeamWebhook = await GetOrCreateWebhook(teamChannel);
+
+        if (TeamWebhook != null)
         {
-            Channel.SendMessage(embed: embed);
+            DiscordWebhookClient client = new(TeamWebhook);
+            
+            foreach (Embed embed in CreateEmbeds(TeamDamageLogEntries, Plugin.Instance.Translation.TeamDamageLogEmbed))
+            {
+                await client.SendMessageAsync(embeds: [embed]);
+            }
+
+            client.Dispose();
         }
+        else if (teamChannelId != 0 && TeamWebhook == null)
+            Logger.Error(
+                LoggingUtils.GenerateMissingChannelMessage(
+                    "team damage logs",
+                    teamChannelId,
+                    guildId));
+    });
 
-        DamageLogEntries.Clear();
-    }
-
-    public static Embed[] CreateEmbeds()
+    private static IEnumerable<Embed> CreateEmbeds(List<string> entries, Bot.API.Features.Embed.EmbedBuilder builder)
     {
-        List<Embed> embeds = new();
+        int count = entries.Count;
 
-        if (DamageLogEntries.Count == 0)
-            return embeds.ToArray();
+        if (count == 0)
+            yield break;
+
+        List<Embed> embeds = ListPool<Embed>.Shared.Rent();
 
         int currentIndex = 0;
 
-        while (currentIndex < DamageLogEntries.Count)
+        while (currentIndex < count)
         {
-            EmbedBuilder embed = Plugin.Instance.Translation.DamageLogEmbed;
+            EmbedBuilder embed = builder;
 
-            List<string> currentEmbedLogs = new();
+            List<string> currentEmbedLogs = ListPool<string>.Shared.Rent();
             int currentLength = 0;
 
-            while (currentIndex < DamageLogEntries.Count)
+            while (currentIndex < count)
             {
-                string logEntry = DamageLogEntries[currentIndex];
+                string logEntry = entries[currentIndex];
 
                 int newLength = currentLength + logEntry.Length + (currentEmbedLogs.Count > 0 ? 1 : 0);
 
@@ -128,7 +174,7 @@ public static class DamageLogs
 
                 if (logEntry.Length > EmbedBuilder.MaxDescriptionLength)
                 {
-                    logEntry = logEntry.Substring(0, EmbedBuilder.MaxDescriptionLength - 3) + "...";
+                    logEntry = logEntry[..(EmbedBuilder.MaxDescriptionLength - 3)] + "...";
                     currentEmbedLogs.Add(logEntry);
                     currentIndex++;
                     break;
@@ -144,8 +190,26 @@ public static class DamageLogs
                 new TranslationBuilder(embed.Description).AddCustomReplacer("entries",
                     string.Join("\n", currentEmbedLogs));
             embeds.Add(embed.Build());
+            ListPool<string>.Shared.Return(currentEmbedLogs);
         }
 
-        return embeds.ToArray();
+        foreach (Embed embed in embeds)
+        {
+            yield return embed;
+        }
+
+        ListPool<Embed>.Shared.Return(embeds);
+    }
+
+    private static async Task<RestWebhook> GetOrCreateWebhook(SocketTextChannel channel)
+    {
+        IReadOnlyCollection<RestWebhook> webhooks = await channel.GetWebhooksAsync();
+        RestWebhook webhook = webhooks.FirstOrDefault(x => x.Creator.Id == Client.SocketClient.CurrentUser.Id);
+        if (webhook != null) return webhook;
+
+        using HttpClient client = new();
+        Stream stream = await client.GetStreamAsync(Client.SocketClient.CurrentUser.GetAvatarUrl());
+        webhook = await channel.CreateWebhookAsync(Client.SocketClient.CurrentUser.GlobalName, stream);
+        return webhook;
     }
 }

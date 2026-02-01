@@ -22,11 +22,17 @@ public class Config
         "If this is true, then the plugin will ignore the cuff state of the player and send the death logs to the normal death logs channel.")]
     public bool ScpIgnoreCuffed { get; set; } = true;
 
-    [Description("The channel to send death logs to, if any.")]
+    [Description("The channel to send damage logs to, if any.")]
     public ulong DamageLogChannelId { get; set; } = 0;
+    
+    [Description("The channel to send team damage logs to, if any.")]
+    public ulong TeamDamageLogChannelId { get; set; } = 0;
 
     [Description("Whether damage logs shouldn't be tracked if the attacker is an SCP.")]
     public bool IgnoreScpDamage { get; set; } = false;
+    
+    [Description("If your server turns on friendly fire at round end, or people are allowed to RDM at round end, enable this to avoid rate limits and spam.")]
+    public bool IgnoreRoundEndDamage { get; set; } = false;
 
     public ulong GuildId { get; set; } = 0;
 }

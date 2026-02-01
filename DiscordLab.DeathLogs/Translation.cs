@@ -31,6 +31,14 @@ public class Translation
         Color = Discord.Color.Blue.ToString()
     };
 
+    [Description("The embed for when sending team damage logs. Entries will be replaced with the entries below.")]
+    public EmbedBuilder TeamDamageLogEmbed { get; set; } = new()
+    {
+        Title = "Team Damage Logs",
+        Description = "{entries}",
+        Color = Discord.Color.Blue.ToString()
+    };
+
     [Description("What each instance of damage will look like in the logs.")]
     public string DamageLogEntry { get; set; } =
         "{timetlong} | `{player}` did `{damage}` damage to `{target}` | Cause: `{cause}`";
