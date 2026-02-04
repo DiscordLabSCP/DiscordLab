@@ -5,6 +5,7 @@ using DiscordLab.Bot.API.Features;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features;
+using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
 
 namespace DiscordLab.BotStatus;
@@ -72,12 +73,21 @@ public class Plugin : Plugin<Config, Translation>
         switch (Server.PlayerCount)
         {
             case 0 when Instance.Config.IdleOnEmpty:
-                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false));
+                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false), OnException);
                 break;
             case > 0 when Instance.Config.IdleOnEmpty &&
                           Client.SocketClient.Status == UserStatus.Idle:
-                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Online).ConfigureAwait(false));
+                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Online).ConfigureAwait(false), OnException);
                 break;
         }
+    }
+
+    private static void OnException(Exception ex)
+    {
+        // Discord.WebSocket.DiscordSocketClient.BuildCurrentStatus() throws an InvalidOperationException sometimes, so this is a blocker.
+        if (ex is InvalidOperationException)
+            return;
+        
+        Logger.Error(ex);
     }
 }
