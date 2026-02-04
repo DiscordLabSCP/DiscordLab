@@ -209,8 +209,19 @@ public static class Client
         IsClientReady = true;
         DefaultGuild = SocketClient.GetGuild(Config.GuildId);
         CallOnReadyAttribute.Ready();
+
+        if (Config.Debug)
+        {
+            DebugLog(string.Join("\n", SocketClient.Guilds.Select(GenerateGuildChannelsMessage)));
+        }
+
         return Task.CompletedTask;
     }
+
+    private static string GenerateGuildChannelsMessage(SocketGuild guild) =>
+        $"Guild {guild.Name} ({guild.Id}) channels: {string.Join("\n", guild.Channels.Where(channel => channel is SocketTextChannel).Select(GenerateChannelMessage))}";
+
+    private static string GenerateChannelMessage(SocketGuildChannel channel) => $"{channel.Name} ({channel.Id})";
 
     private static Task SlashCommandHandler(SocketSlashCommand command)
     {
