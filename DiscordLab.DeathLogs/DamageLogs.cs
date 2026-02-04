@@ -3,7 +3,6 @@ using System.Net.Http;
 using CustomPlayerEffects;
 using Discord;
 using Discord.Rest;
-using Discord.Webhook;
 using Discord.WebSocket;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Attributes;
@@ -32,17 +31,32 @@ public static class DamageLogs
 
     private static Queue queue = new(5, SendLog);
 
+    private static bool hasDependency;
+
     [CallOnLoad]
     public static void Register()
     {
-        if (Plugin.Instance.Config.DamageLogChannelId == 0) return;
+        if (Plugin.Instance.Config.DamageLogChannelId == 0 && Plugin.Instance.Config.TeamDamageLogChannelId == 0) return;
+
+        try
+        {
+            string _ = nameof(Discord.Webhook.DiscordWebhookClient);
+            hasDependency = true;
+        }
+        catch (Exception)
+        {
+            Logger.Error("You do not have your dependencies updated, so damage logs will not work, please update the dependencies manually from the DiscordLab GitHub repository.");
+        }
+        
         PlayerEvents.Hurt += OnHurt;
     }
 
     [CallOnUnload]
     public static void Unregister()
     {
-        if (Plugin.Instance.Config.DamageLogChannelId == 0) return;
+        if (Plugin.Instance.Config.DamageLogChannelId == 0 && Plugin.Instance.Config.TeamDamageLogChannelId == 0) return;
+        if (!hasDependency) return;
+        
         PlayerEvents.Hurt -= OnHurt;
 
         DamageLogEntries = null;
@@ -54,7 +68,6 @@ public static class DamageLogs
     public static void OnHurt(PlayerHurtEventArgs ev)
     {
         if (Round.IsRoundEnded && Plugin.Instance.Config.IgnoreRoundEndDamage) return;
-
         if (ev.Attacker == null || ev.Player == ev.Attacker) return;
 
         if (ev.DamageHandler is not StandardDamageHandler handler)
@@ -100,15 +113,21 @@ public static class DamageLogs
     {
         ulong guildId = Plugin.Instance.Config.GuildId;
         ulong channelId = Plugin.Instance.Config.DamageLogChannelId;
-
-        if (Webhook != null && Client.TryGetOrAddChannel(channelId, out SocketTextChannel channel))
+        
+        List<string> damageLogEntries = DamageLogEntries.ToList();
+        List<string> teamDamageLogEntries = TeamDamageLogEntries.ToList();
+        
+        TeamDamageLogEntries.Clear();
+        DamageLogEntries.Clear();
+        
+        if (Webhook == null && Client.TryGetOrAddChannel(channelId, out SocketTextChannel channel))
             Webhook = await GetOrCreateWebhook(channel);
 
         if (Webhook != null)
         {
-            DiscordWebhookClient client = new(Webhook);
+            Discord.Webhook.DiscordWebhookClient client = new(Webhook);
             
-            foreach (Embed embed in CreateEmbeds(DamageLogEntries, Plugin.Instance.Translation.DamageLogEmbed))
+            foreach (Embed embed in CreateEmbeds(damageLogEntries, Plugin.Instance.Translation.DamageLogEmbed))
             {
                 await client.SendMessageAsync(embeds: [embed]);
             }
@@ -123,14 +142,14 @@ public static class DamageLogs
                     guildId));
 
         ulong teamChannelId = Plugin.Instance.Config.TeamDamageLogChannelId;
-        if (TeamWebhook != null && Client.TryGetOrAddChannel(teamChannelId, out SocketTextChannel teamChannel))
+        if (TeamWebhook == null && Client.TryGetOrAddChannel(teamChannelId, out SocketTextChannel teamChannel))
             TeamWebhook = await GetOrCreateWebhook(teamChannel);
 
         if (TeamWebhook != null)
         {
-            DiscordWebhookClient client = new(TeamWebhook);
+            Discord.Webhook.DiscordWebhookClient client = new(TeamWebhook);
             
-            foreach (Embed embed in CreateEmbeds(TeamDamageLogEntries, Plugin.Instance.Translation.TeamDamageLogEmbed))
+            foreach (Embed embed in CreateEmbeds(teamDamageLogEntries, Plugin.Instance.Translation.TeamDamageLogEmbed))
             {
                 await client.SendMessageAsync(embeds: [embed]);
             }
@@ -209,7 +228,7 @@ public static class DamageLogs
 
         using HttpClient client = new();
         Stream stream = await client.GetStreamAsync(Client.SocketClient.CurrentUser.GetAvatarUrl());
-        webhook = await channel.CreateWebhookAsync(Client.SocketClient.CurrentUser.GlobalName, stream);
+        webhook = await channel.CreateWebhookAsync(Client.SocketClient.CurrentUser.Username, stream);
         return webhook;
     }
 }
