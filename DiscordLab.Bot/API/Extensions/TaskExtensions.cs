@@ -40,11 +40,11 @@ public static class TaskExtensions
                     onException(ex);
             }
         });
-
-        private static bool IsDiscordException(Exception ex) => ex.Source?.StartsWith("Discord.Net") == true ||
-                                                                ex.TargetSite?.DeclaringType?.Namespace?.StartsWith(
-                                                                    "Discord") == true ||
-                                                                ex.StackTrace?.Contains("Discord.Net") == true ||
-                                                                ex.StackTrace?.Contains("Discord.API") == true;
     }
+
+    private static bool IsDiscordException(Exception ex) => ex.Source?.StartsWith("Discord.Net") == true ||
+                                                            ex.TargetSite?.DeclaringType?.Namespace?.StartsWith(
+                                                                "Discord") == true ||
+                                                            ex.StackTrace?.Contains("Discord.Net") == true ||
+                                                            ex.StackTrace?.Contains("Discord.API") == true;
 }
