@@ -13,20 +13,29 @@ public static class ErrorLog
 {
     public static void Postfix(object message)
     {
-        if (Plugin.Instance.Config.ErrorLogChannelId == 0)
+        var plugin = Plugin.Instance;
+
+        if (plugin.Config.ErrorLogChannelId == 0)
             return;
 
-        if (!Client.TryGetOrAddChannel(Plugin.Instance.Config.ErrorLogChannelId, out SocketTextChannel channel))
+        if (!Client.TryGetOrAddChannel(plugin.Config.ErrorLogChannelId, out SocketTextChannel channel))
         {
             Logger.Raw(
-                $"[ERROR] [{Plugin.Instance.Name}] {LoggingUtils.GenerateMissingChannelMessage("error logs", Plugin.Instance.Config.ErrorLogChannelId, Plugin.Instance.Config.GuildId)}",
+                $"[ERROR] [{plugin.Name}] " +
+                LoggingUtils.GenerateMissingChannelMessage(
+                    "error logs",
+                    plugin.Config.ErrorLogChannelId,
+                    plugin.Config.GuildId),
                 ConsoleColor.Red);
+
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder()
-            .AddCustomReplacer("error", message.ToString());
+        string errorText = message?.ToString() ?? "Unknown error";
 
-        Plugin.Instance.Translation.ErrorLog.SendToChannel(channel, builder);
+        var builder = new TranslationBuilder()
+            .AddCustomReplacer("error", errorText);
+
+        plugin.Translation.ErrorLog.SendToChannel(channel, builder);
     }
 }
