@@ -2,6 +2,7 @@
     <PropertyGroup>
         <GenerateAssemblyInformationVersionAttribute>false</GenerateAssemblyInformationVersionAttribute>
         <SharedBinPath>$(MSBuildThisFileDirectory)bin\</SharedBinPath>
+        <NoWarn>MSB3277</NoWarn>
     </PropertyGroup>
 
     <Target Name="CopyToSharedBin" AfterTargets="Build">
@@ -11,14 +12,14 @@
     </Target>
 
     <ItemGroup>
-        <Reference Include="Assembly-CSharp" HintPath="$(SL_REFERENCES)\Assembly-CSharp.dll" Private="false" Publicize="true"/>
-        <Reference Include="CommandSystem.Core" HintPath="$(SL_REFERENCES)\CommandSystem.Core.dll" Private="false"/>
-        <Reference Include="Mirror" HintPath="$(SL_REFERENCES)\Mirror.dll" Private="false" Publicize="true"/>
-        <Reference Include="UnityEngine" HintPath="$(SL_REFERENCES)\UnityEngine.dll" Private="false"/>
-        <Reference Include="UnityEngine.CoreModule" HintPath="$(SL_REFERENCES)\UnityEngine.CoreModule.dll" Private="false"/>
-        <Reference Include="UnityEngine.PhysicsModule" HintPath="$(SL_REFERENCES)\UnityEngine.PhysicsModule.dll" Private="false"/>
-        <Reference Include="NorthwoodLib" HintPath="$(SL_REFERENCES)\NorthwoodLib.dll" Private="false"/>
-        <Reference Include="mscorlib" HintPath="$(SL_REFERENCES)\mscorlib.dll"/>
+        <Reference Include="Assembly-CSharp" Publicize="true"/>
+        <Reference Include="CommandSystem.Core"/>
+        <Reference Include="Mirror" Publicize="true"/>
+        <Reference Include="UnityEngine"/>
+        <Reference Include="UnityEngine.CoreModule"/>
+        <Reference Include="UnityEngine.PhysicsModule"/>
+        <Reference Include="NorthwoodLib"/>
+        <Reference Include="mscorlib"/>
     </ItemGroup>
 
     <ItemGroup>
