@@ -228,19 +228,25 @@ public static class Events
                     Scp049DamageHandler.AttackType.Scp0492 => "SCP-049-2",
                     _ => "Unknown",
                 };
+            case ScpDamageHandler scpDamageHandler:
+            {
+                return FromTranslationId(scpDamageHandler._translationId);
+            }
             case UniversalDamageHandler universal:
             {
-                DeathTranslation translation = DeathTranslations.TranslationsById[universal.TranslationId];
-
-                if (Translations.TryGetValue(translation.Id, out string s))
-                    return s;
-
-                break;
+                return FromTranslationId(universal.TranslationId);
             }
             case FirearmDamageHandler firearm:
                 return firearm.Firearm.Name;
         }
 
         return "Unknown";
+    }
+
+    private static string FromTranslationId(byte id)
+    {
+        DeathTranslation translation = DeathTranslations.TranslationsById[id];
+
+        return Translations.GetValueOrDefault(translation.Id, "Unknown");
     }
 }
