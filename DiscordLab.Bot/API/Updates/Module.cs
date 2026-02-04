@@ -61,9 +61,9 @@ public class Module
     /// <param name="modules">The modules to generate for.</param>
     /// <returns>The generated string.</returns>
     public static string GenerateUpdateString(IEnumerable<Module> modules) => string.Join(
-        "\n- ",
+        "\n",
         modules.Select(module =>
-            $"{module.Name} | Current Version: {module.ExistingPlugin!.Version} | Latest Version: {module.Version}"));
+            $"- {module.Name} | Current Version: {module.ExistingPlugin!.Version} | Latest Version: {module.Version}"));
 
     /// <summary>
     /// Downloads this module.
