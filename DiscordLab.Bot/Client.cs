@@ -61,6 +61,9 @@ public static class Client
     /// <returns>The channel, if found.</returns>
     public static SocketTextChannel? GetOrAddChannel(ulong id)
     {
+        if (id == 0)
+            return null;
+
         if (SavedTextChannels.TryGetValue(id, out SocketTextChannel ret))
             return ret;
 
