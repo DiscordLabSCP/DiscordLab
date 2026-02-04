@@ -1,0 +1,22 @@
+<Project>
+    <Import Project="ReferencePath.props.user" Condition="Exists('ReferencePath.props.user')" />
+    <PropertyGroup>
+        <ReferencePath Condition="$(ReferencePath) == ''">$(SL_REFERENCES)</ReferencePath>
+        <AssemblySearchPaths>$(ReferencePath);$(AssemblySearchPaths)</AssemblySearchPaths>
+    </PropertyGroup>
+
+    <Target Name="NotifyIncompleteSetup" BeforeTargets="PrepareForBuild" Condition="$(ReferencePath) == ''">
+        <PropertyGroup>
+            <Props>$(MSBuildThisFileDirectory)ReferencePath.props.user</Props>
+            <Template><![CDATA[
+<Project>
+    <PropertyGroup>
+        <ReferencePath></ReferencePath>
+    </PropertyGroup>
+</Project>
+            ]]></Template>
+        </PropertyGroup>
+        <WriteLinesToFile File="$(Props)" Lines="$(Template)" Condition="!Exists($(Props))" />
+        <Error Text="The ReferencePath property is not specified! Make sure to set the property in the ReferencePath.props.user file." />
+    </Target>
+</Project>
