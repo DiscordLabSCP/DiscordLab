@@ -40,7 +40,9 @@ public static class DamageLogs
 
         try
         {
+#pragma warning disable CS0219 // Variable is assigned but its value is never used
             string _ = nameof(Discord.Webhook.DiscordWebhookClient);
+#pragma warning restore CS0219 // Variable is assigned but its value is never used
             hasDependency = true;
         }
         catch (Exception)
