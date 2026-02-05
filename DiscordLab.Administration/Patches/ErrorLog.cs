@@ -1,3 +1,4 @@
+using Discord;
 using Discord.WebSocket;
 using DiscordLab.Bot;
 using DiscordLab.Bot.API.Extensions;
@@ -24,9 +25,34 @@ public static class ErrorLog
             return;
         }
 
-        TranslationBuilder builder = new TranslationBuilder()
-            .AddCustomReplacer("error", message.ToString());
+        TranslationBuilder builder = new TranslationBuilder();
 
-        Plugin.Instance.Translation.ErrorLog.SendToChannel(channel, builder);
+        (Embed embed, string content) = Plugin.Instance.Translation.ErrorLog.Build(builder);
+
+        MemoryStream stream = new MemoryStream();
+        StreamWriter writer = new StreamWriter(stream);
+        writer.Write(message.ToString());
+        writer.Flush();
+        stream.Position = 0;
+
+        FileAttachment attachment = new(stream,
+            $"Error {DateTime.UtcNow.ToShortDateString()} {DateTime.UtcNow.ToLongTimeString()}.txt");
+
+        Task.Run(async () =>
+        {
+            try
+            {
+                await channel.SendFileAsync(attachment, content, embed: embed);
+            }
+            catch (Exception ex)
+            {
+                Logger.Raw($"[ERROR] [{Plugin.Instance.Name}] {ex}", ConsoleColor.Red);
+            }
+            finally
+            {
+                await writer.DisposeAsync();
+                await stream.DisposeAsync();
+            }
+        });
     }
 }

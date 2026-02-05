@@ -8,7 +8,7 @@ public class Translation
 
     public MessageContent ServerShutdown { get; set; } = "Server has shutdown";
 
-    public MessageContent ErrorLog { get; set; } = "An error has occured:\n{error}";
+    public MessageContent ErrorLog { get; set; } = "An error has occured, below is the log.";
 
     public MessageContent RemoteAdmin { get; set; } =
         "Player {player} has executed the remote admin command: `{command}`";

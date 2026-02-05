@@ -130,7 +130,13 @@ public class MessageContent
         });
     }
 
-    private (Discord.Embed? Embed, string? Content) Build(TranslationBuilder builder)
+    /// <summary>
+    /// Builds the embed and/or content assigned to this <see cref="MessageContent"/> using a <see cref="TranslationBuilder"/>.
+    /// </summary>
+    /// <param name="builder">The <see cref="TranslationBuilder"/> to use.</param>
+    /// <returns>The embed and content with replaced values.</returns>
+    /// <exception cref="ArgumentException">Throws when message content is too long after being built.</exception>
+    public (Discord.Embed? Embed, string? Content) Build(TranslationBuilder builder)
     {
         string? content = Message != null ? builder.Build(Message) : null;
 
