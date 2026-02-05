@@ -148,6 +148,12 @@ public class MessageContent
                 field.Value = builder.Build(value);
         }
 
+        string? content = Message != null ? builder.Build(Message) : null;
+
+        // ReSharper disable once ConvertIfStatementToReturnStatement
+        if (content is { Length: > Discord.DiscordConfig.MaxMessageSize })
+            throw new ArgumentException($"Message content is too long, length must be less or equal to {Discord.DiscordConfig.MaxMessageSize}. This is after compiling the message.", nameof(Message));
+
         return (embed.Build(), Message != null ? builder.Build(Message) : null);
     }
 }
