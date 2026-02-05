@@ -2,9 +2,12 @@
 
 namespace DiscordLab.Bot.API.Features;
 
+using System.Diagnostics;
+using System.Reflection;
 using Discord.Rest;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Extensions;
+using DiscordLab.Bot.API.Utilities;
 using YamlDotNet.Serialization;
 
 /// <summary>
@@ -48,9 +51,8 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"A message failed to send to {channel.Name} ({channel.Id}) because both embed and message contents were undefined.");
 
-        (Discord.Embed? embed, string? content) = Build(builder);
-
-        channel.SendMessage(content, embed: embed);
+        MethodBase method = new StackFrame(1).GetMethod();
+        Task.RunAndLog(async () => await SendToChannelAsync(channel, builder), ex => LoggingUtils.LogMethodError(ex, method));
     }
 
     /// <summary>
