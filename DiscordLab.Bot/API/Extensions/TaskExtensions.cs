@@ -32,6 +32,10 @@ public static class TaskExtensions
             {
                 // Ignore Discord timeout exceptions because Discord.Net queues them for us.
             }
+            catch (TaskCanceledException ex) when (ex.InnerException is ObjectDisposedException && IsDiscordException(ex))
+            {
+                // Ignore Discord timeout in this case because this is an issue with Discord.Net. Unsure if re-queued yet.
+            }
             catch (Exception ex)
             {
                 if (onException == null)
