@@ -31,7 +31,16 @@ public class CallOnReadyAttribute : Attribute
 
                 Logger.Debug($"Loading {type.FullName}:{method.Name} ({nameof(CallOnReadyAttribute)})", Plugin.Instance.Config.Debug);
 
-                instances.Add(method);
+                // Sometimes the client is ready, so we check here to make sure that it isn't, and if it is just run the method directly.
+                if (!Client.IsClientReady)
+                {
+                    instances.Add(method);
+                }
+                else
+                {
+                    LogInvoke(method);
+                    method.Invoke(null, null);
+                }
             }
         }
     }
@@ -45,7 +54,7 @@ public class CallOnReadyAttribute : Attribute
         {
             try
             {
-                Logger.Debug($"Invoking {LoggingUtils.GetFullName(method)} ({nameof(CallOnReadyAttribute)})", Plugin.Instance.Config.Debug);
+                LogInvoke(method);
                 method.Invoke(null, null);
             }
             catch (Exception ex)
@@ -56,4 +65,6 @@ public class CallOnReadyAttribute : Attribute
 
         instances.Clear();
     }
+
+    private static void LogInvoke(MethodInfo method) => Logger.Debug($"Invoking {LoggingUtils.GetFullName(method)} ({nameof(CallOnReadyAttribute)})", Plugin.Instance.Config.Debug);
 }
