@@ -15,15 +15,30 @@ using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Features;
 using LabApi.Features.Console;
 using NorthwoodLib.Pools;
-
+/// <summary>
+/// The Discord bot client.
+/// </summary>
 public static class Client
 {
+    /// <summary>
+    /// Gets the websocket client for the Discord bot.
+    /// </summary>
     public static DiscordSocketClient SocketClient { get; private set; } = null!;
+     /// <summary>
+    /// Gets a value indicating whether the client is in the ready state.
+    /// </summary>
     public static bool IsClientReady { get; private set; }
+    /// <summary>
+    /// Gets a list of saved text channels listed by their ID.
+    /// </summary>
     public static Dictionary<ulong, SocketTextChannel> SavedTextChannels { get; private set; } = new();
+    /// <summary>
+    /// Gets the default guild for the plugin.
+    /// </summary>
     public static SocketGuild? DefaultGuild { get; private set; }
 
     private static Config Config => Plugin.Instance.Config;
+    
 
     public static SocketGuild? GetGuild(ulong id)
         => id == 0 ? DefaultGuild : SocketClient.GetGuild(id);
