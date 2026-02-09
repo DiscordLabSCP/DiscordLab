@@ -33,10 +33,18 @@ jobs:
           }
       - name: Build
         run: dotnet build -c Release ${{ github.workspace }}/DiscordLab.Bot/DiscordLab.Bot.csproj
+      - name: Clear artifacts
+        run: |
+          if (Test-Path "${{ github.workspace }}/artifacts") { Remove-Item -Path "${{ github.workspace }}/artifacts" -Recurse -Force }
+          New-Item -Path "${{ github.workspace }}/artifacts" -ItemType Directory
+        shell: pwsh
       - name: Pack
         run: dotnet pack -c Release --no-build ${{ github.workspace }}/DiscordLab.Bot/DiscordLab.Bot.csproj --output ${{ github.workspace }}/artifacts
       - name: Publish
-        run: dotnet nuget push ${{ github.workspace }}/artifacts/*.nupkg --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        run: |
+          $nupkg = Get-ChildItem -Path "${{ github.workspace }}/artifacts" -Filter *.nupkg | Select-Object -First 1 -ExpandProperty FullName
+          dotnet nuget push "$nupkg" --api-key ${{ secrets.NUGET_API_KEY }} --source https://api.nuget.org/v3/index.json --skip-duplicate
+        shell: pwsh
         env:
           NUGET_API_KEY: ${{ secrets.NUGET_API_KEY }}
   notify:
