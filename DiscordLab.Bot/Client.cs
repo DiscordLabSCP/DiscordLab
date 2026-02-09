@@ -103,6 +103,7 @@ public static class Client
             LogLevel = Config.Debug ? LogSeverity.Debug : LogSeverity.Warning,
             RestClientProvider = DefaultRestClientProvider.Create(),
             WebSocketProvider = DefaultWebSocketProvider.Create(),
+            MessageCacheSize = Config.MessageCacheSize,
         };
 
         if (!string.IsNullOrEmpty(Config.ProxyUrl))

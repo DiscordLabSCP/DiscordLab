@@ -1,6 +1,7 @@
 namespace DiscordLab.Bot;
 
 using System.ComponentModel;
+using YamlDotNet.Serialization;
 
 /// <summary>
 /// The config of this plugin.
@@ -37,4 +38,10 @@ public sealed class Config
     /// </summary>
     [Description("Enable debugging mode, useful to enable when needing to debug for developers.")]
     public bool Debug { get; set; } = false;
+
+    /// <summary>
+    /// Gets or sets the number of messages that should be cached from each channel.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
+    public int MessageCacheSize { get; set; }
 }
