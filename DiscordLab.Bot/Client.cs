@@ -1,5 +1,4 @@
 // ReSharper disable MemberCanBePrivate.Global
-
 namespace DiscordLab.Bot;
 
 using System.Net;
@@ -17,48 +16,18 @@ using DiscordLab.Bot.API.Features;
 using LabApi.Features.Console;
 using NorthwoodLib.Pools;
 
-/// <summary>
-/// The Discord bot client.
-/// </summary>
 public static class Client
 {
-    /// <summary>
-    /// Gets the websocket client for the Discord bot.
-    /// </summary>
     public static DiscordSocketClient SocketClient { get; private set; } = null!;
-
-    /// <summary>
-    /// Gets a value indicating whether the client is in the ready state.
-    /// </summary>
     public static bool IsClientReady { get; private set; }
-
-    /// <summary>
-    /// Gets a list of saved text channels listed by their ID.
-    /// </summary>
     public static Dictionary<ulong, SocketTextChannel> SavedTextChannels { get; private set; } = new();
-
-    /// <summary>
-    /// Gets the default guild for the plugin.
-    /// </summary>
     public static SocketGuild? DefaultGuild { get; private set; }
 
     private static Config Config => Plugin.Instance.Config;
 
-    /// <summary>
-    /// Gets a cached guild from a <see cref="ulong" /> ID.
-    /// </summary>
-    /// <param name="id">The guild ID.</param>
-    /// <returns>If the ID is 0, then the default guild (if it exists), if else then it will return the found guild, or null.</returns>
     public static SocketGuild? GetGuild(ulong id)
-    {
-        return id == 0 ? DefaultGuild : SocketClient.GetGuild(id);
-    }
+        => id == 0 ? DefaultGuild : SocketClient.GetGuild(id);
 
-    /// <summary>
-    /// Gets or adds a channel via its ID. Uses cache.
-    /// </summary>
-    /// <param name="id">The ID of the channel.</param>
-    /// <returns>The channel, if found.</returns>
     public static SocketTextChannel? GetOrAddChannel(ulong id)
     {
         if (id == 0)
@@ -67,8 +36,7 @@ public static class Client
         if (SavedTextChannels.TryGetValue(id, out SocketTextChannel ret))
             return ret;
 
-        SocketChannel channel = SocketClient.GetChannel(id);
-        if (channel is not SocketTextChannel text)
+        if (SocketClient.GetChannel(id) is not SocketTextChannel text)
             return null;
 
         SavedTextChannels.Add(id, text);
@@ -76,27 +44,18 @@ public static class Client
     }
 
 #nullable disable
-    /// <summary>
-    /// Tries to get or add a channel via its ID. Uses cache.
-    /// </summary>
-    /// <param name="id">The ID of the channel.</param>
-    /// <param name="channel">The channel, if found.</param>
-    /// <returns>Whether the channel was found.</returns>
     public static bool TryGetOrAddChannel(ulong id, out SocketTextChannel channel)
     {
         channel = GetOrAddChannel(id);
-
         return channel != null;
     }
 #nullable restore
 
-    /// <summary>
-    /// Starts the bot.
-    /// </summary>
     [CallOnLoad]
     internal static void Start()
     {
         DebugLog("Starting the Client");
+
         DiscordSocketConfig config = new()
         {
             GatewayIntents = GatewayIntents.All,
@@ -113,42 +72,41 @@ public static class Client
             config.WebSocketProvider = DefaultWebSocketProvider.Create(proxy);
         }
 
-        DebugLog("Done the initial setup...");
-
         try
         {
             SocketClient = new(config);
-
-            DebugLog("Client has been created...");
 
             SocketClient.Log += OnLog;
             SocketClient.Ready += OnReady;
             SocketClient.SlashCommandExecuted += SlashCommandHandler;
             SocketClient.AutocompleteExecuted += AutocompleteHandler;
+
+            // ===============================
+            // Privileged intent listeners
+            // ===============================
+            SocketClient.PresenceUpdated += OnPresenceUpdated;
+
+            SocketClient.GuildScheduledEventCreated += _ => Task.CompletedTask;
+            SocketClient.GuildScheduledEventUpdated += (_, _) => Task.CompletedTask;
+            SocketClient.GuildScheduledEventDeleted += _ => Task.CompletedTask;
+
+            SocketClient.InviteCreated += _ => Task.CompletedTask;
+            SocketClient.InviteDeleted += _ => Task.CompletedTask;
         }
         catch (TargetInvocationException ex) when (ex.InnerException is TypeLoadException)
         {
             StringBuilder builder = StringBuilderPool.Shared.Rent();
             builder.AppendLine("You may have setup DiscordLab incorrectly, or used another Discord bot in the past.");
-            builder.AppendLine(
-                "Please ensure you have no conflicting dependencies. This can either be triggered by duplication of the Discord dependencies, or Newtonsoft.Json.");
-            builder.AppendLine(
-                "Some plugins might implement either of the 2 listed dependencies above, so if you have no duplications at all, you will manually need to remove plugins to see the culprit.");
-            builder.AppendLine(
-                "If you find a plugin that doesn't work with DiscordLab, please join our Discord and report it there with a link to the repository. We can not fix private plugins.");
+            builder.AppendLine("Please ensure you have no conflicting dependencies (Discord or Newtonsoft.Json).");
+            builder.AppendLine("If you find a conflicting plugin, report it with a repository link.");
             builder.AppendLine("Discord link: https://discord.gg/XBzuGbsNZK");
             Logger.Error(StringBuilderPool.Shared.ToStringReturn(builder));
             throw;
         }
 
-        DebugLog("Client events subscribed...");
-
         Task.RunAndLog(StartClient);
     }
 
-    /// <summary>
-    /// Disables the bot.
-    /// </summary>
     [CallOnUnload]
     internal static void Disable()
     {
@@ -158,6 +116,8 @@ public static class Client
         SocketClient.Ready -= OnReady;
         SocketClient.SlashCommandExecuted -= SlashCommandHandler;
         SocketClient.AutocompleteExecuted -= AutocompleteHandler;
+        SocketClient.PresenceUpdated -= OnPresenceUpdated;
+
         Task.RunAndLog(async () =>
         {
             await SocketClient.LogoutAsync();
@@ -178,29 +138,30 @@ public static class Client
         switch (msg.Exception)
         {
             case WebSocketException { InnerException: WebSocketClosedException { CloseCode: 4014 } }:
-                Logger.Error("DiscordLab requires that you have all Privileged Gateway Intents enabled, you can do this in the \"Bot\" panel of your application. Restart your server when this is complete.");
+                Logger.Error("Privileged Gateway Intents are not enabled in the Discord Developer Portal.");
                 return Task.CompletedTask;
+
             case WebSocketException or GatewayReconnectException when !Config.Debug:
                 return Task.CompletedTask;
-            default:
-                switch (msg.Severity)
-                {
-                    case LogSeverity.Error or LogSeverity.Critical:
-                        Logger.Error(msg);
-                        break;
-                    case LogSeverity.Warning:
-                        Logger.Warn(msg);
-                        break;
-                    case LogSeverity.Debug:
-                        DebugLog(msg);
-                        break;
-                    default:
-                        Logger.Info(msg);
-                        break;
-                }
-
-                return Task.CompletedTask;
         }
+
+        switch (msg.Severity)
+        {
+            case LogSeverity.Error or LogSeverity.Critical:
+                Logger.Error(msg);
+                break;
+            case LogSeverity.Warning:
+                Logger.Warn(msg);
+                break;
+            case LogSeverity.Debug:
+                DebugLog(msg);
+                break;
+            default:
+                Logger.Info(msg);
+                break;
+        }
+
+        return Task.CompletedTask;
     }
 
     private static Task OnReady()
@@ -211,30 +172,20 @@ public static class Client
         CallOnReadyAttribute.Ready();
 
         if (Config.Debug)
-        {
             DebugLog(string.Join("\n", SocketClient.Guilds.Select(GenerateGuildChannelsMessage)));
-        }
 
         return Task.CompletedTask;
     }
 
-    private static string GenerateGuildChannelsMessage(SocketGuild guild) =>
-        $"Guild {guild.Name} ({guild.Id}) channels: {string.Join("\n", guild.Channels.Where(channel => channel is SocketTextChannel).Select(GenerateChannelMessage))}";
-
-    private static string GenerateChannelMessage(SocketGuildChannel channel) => $"{channel.Name} ({channel.Id})";
-
     private static Task SlashCommandHandler(SocketSlashCommand command)
     {
-        DebugLog($"{command.Data.Name} requested a response, finding the command...");
         SlashCommand? cmd = SlashCommand.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
-
         cmd?.Run(command);
         return Task.CompletedTask;
     }
 
     private static Task AutocompleteHandler(SocketAutocompleteInteraction autocomplete)
     {
-        DebugLog($"{autocomplete.Data.CommandName} requested a response, finding the command...");
         AutocompleteCommand? command =
             SlashCommand.Commands.FirstOrDefault(c =>
                 c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
@@ -243,8 +194,18 @@ public static class Client
         return Task.CompletedTask;
     }
 
-    private static void DebugLog(object message)
+    private static Task OnPresenceUpdated(
+        SocketUser user,
+        SocketPresence before,
+        SocketPresence after)
     {
-        Logger.Debug(message, Config.Debug);
+        return Task.CompletedTask;
     }
+
+    private static string GenerateGuildChannelsMessage(SocketGuild guild) =>
+        $"Guild {guild.Name} ({guild.Id}) channels:\n" +
+        string.Join("\n", guild.Channels.OfType<SocketTextChannel>().Select(c => $"{c.Name} ({c.Id})"));
+
+    private static void DebugLog(object message)
+        => Logger.Debug(message, Config.Debug);
 }
