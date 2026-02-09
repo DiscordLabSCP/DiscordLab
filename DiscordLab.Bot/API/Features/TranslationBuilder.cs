@@ -303,12 +303,12 @@ public class TranslationBuilder
 
         foreach (KeyValuePair<Regex, Func<string>> replacer in CustomReplacers)
         {
-            returnTranslation = replacer.Key.Replace(returnTranslation, replacer.Value());
+            returnTranslation = replacer.Key.Replace(returnTranslation, GetReplacer(replacer.Value));
         }
 
         foreach (KeyValuePair<Regex, Func<string>> replacer in StaticReplacers)
         {
-            returnTranslation = replacer.Key.Replace(returnTranslation, replacer.Value());
+            returnTranslation = replacer.Key.Replace(returnTranslation, GetReplacer(replacer.Value));
         }
 
         long unix = new DateTimeOffset(Time).ToUnixTimeSeconds();
@@ -317,7 +317,7 @@ public class TranslationBuilder
         {
             returnTranslation = replacer.Key.Replace(
                 returnTranslation,
-                replacer.Value(unix));
+                GetReplacer(() => replacer.Value(unix)));
         }
 
         foreach (KeyValuePair<string, Player> player in Players)
@@ -331,23 +331,7 @@ public class TranslationBuilder
 
             foreach (KeyValuePair<string, Func<Player, string>> replacer in PlayerReplacers)
             {
-                string replacement;
-
-                try
-                {
-                    replacement = replacer.Value(player.Value);
-                }
-                catch (NullReferenceException)
-                {
-                    replacement = "Unknown";
-                }
-                catch (IndexOutOfRangeException)
-                {
-                    replacement = "Unknown";
-                }
-
-                if (string.IsNullOrEmpty(replacement))
-                    replacement = "Unknown";
+                string replacement = GetReplacer(() => replacer.Value(player.Value));
 
                 Regex regex = CachedRegex.GetOrAdd(
                     $"{player.Key}{replacer.Key}",
@@ -373,6 +357,24 @@ public class TranslationBuilder
 
     private static TimeSpan TimeSince(long time) =>
         Round.Duration - (DateTimeOffset.Now - DateTimeOffset.FromUnixTimeSeconds(time));
+
+    private static string GetReplacer(Func<string> func)
+    {
+        try
+        {
+            string res = func();
+
+            return string.IsNullOrEmpty(res) ? "Unknown" : res;
+        }
+        catch (NullReferenceException)
+        {
+            return "Unknown";
+        }
+        catch (IndexOutOfRangeException)
+        {
+            return "Unknown";
+        }
+    }
 
     private void SetupPlayerList()
     {
