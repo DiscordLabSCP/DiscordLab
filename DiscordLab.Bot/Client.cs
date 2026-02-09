@@ -190,6 +190,9 @@ public static class Client
                         Logger.Error(msg);
                         break;
                     case LogSeverity.Warning:
+                        if (msg.Source.ToLower().Trim() == "gateway" && msg.Message.Contains("consider removing"))
+                            break;
+
                         Logger.Warn(msg);
                         break;
                     case LogSeverity.Debug:
