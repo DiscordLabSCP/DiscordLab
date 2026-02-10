@@ -115,11 +115,8 @@ public static class Updater
         Client.BaseAddress = new("https://api.github.com/repos/DiscordLabSCP/DiscordLab/releases");
         Client.DefaultRequestHeaders.Add("User-Agent", $"DiscordLab/{Plugin.Instance.Version}");
 
-        if (Plugin.Instance.Config.AutoUpdate)
-        {
-            DownloadClient.BaseAddress = new("https://github.com/DiscordLabSCP/DiscordLab/releases/download/");
-            DownloadClient.DefaultRequestHeaders.Add("User-Agent", $"DiscordLab/{Plugin.Instance.Version}");
-        }
+        DownloadClient.BaseAddress = new("https://github.com/DiscordLabSCP/DiscordLab/releases/download/");
+        DownloadClient.DefaultRequestHeaders.Add("User-Agent", $"DiscordLab/{Plugin.Instance.Version}");
 
         Task.RunAndLog(ManageUpdates);
     }
