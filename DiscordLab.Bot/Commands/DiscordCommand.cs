@@ -46,6 +46,13 @@ public class DiscordCommand : AutocompleteCommand
                 Type = ApplicationCommandOptionType.SubCommand,
                 Name = "check",
                 Description = "Check for DiscordLab updates",
+            },
+
+            new()
+            {
+                Type = ApplicationCommandOptionType.SubCommand,
+                Name = "update",
+                Description = "Update DiscordLab forcefully, skips auto update checks",
             }
         ],
     };
