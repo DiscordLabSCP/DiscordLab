@@ -96,7 +96,7 @@ public class LocalAdminCommand : ICommand
 
             default:
             {
-                response = "Invalid subcommand. Available subcommands: list, install, check";
+                response = "Invalid subcommand. Available subcommands: list, install, check, update";
                 return false;
             }
         }
