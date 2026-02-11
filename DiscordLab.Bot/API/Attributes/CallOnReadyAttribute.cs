@@ -38,8 +38,15 @@ public class CallOnReadyAttribute : Attribute
                 }
                 else
                 {
-                    LogInvoke(method);
-                    method.Invoke(null, null);
+                    try
+                    {
+                        LogInvoke(method);
+                        method.Invoke(null, null);
+                    }
+                    catch (Exception ex)
+                    {
+                        LoggingUtils.LogMethodError(ex, method);
+                    }
                 }
             }
         }
