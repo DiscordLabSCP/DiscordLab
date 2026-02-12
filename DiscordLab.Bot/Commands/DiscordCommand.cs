@@ -152,16 +152,10 @@ public class DiscordCommand : AutocompleteCommand
     }
 
     /// <inheritdoc />
-    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
+    public override async Autocomplete(SocketAutocompleteInteraction autocomplete)
     {
-        var results = Module.CurrentModules
-    .Where(x => x.Name != "DiscordLab.Bot" &&
-                x.Name.Contains((string?)autocomplete.Data.Current.Value ?? ""))
-    .Take(25)
-    .Select(x => new AutocompleteResult($"{x.Name} (v{x.Version})", x.Name))
-    .ToArray();
-
-    await autocomplete.RespondAsync(results.Length > 0 ? results : Array.Empty<AutocompleteResult>());
-
+        await autocomplete.RespondAsync(Module.CurrentModules
+            .Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25)
+            .Select(x => new AutocompleteResult($"{x.Name} (v{x.Version})", x.Name)));
     }
 }
