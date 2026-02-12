@@ -12,7 +12,7 @@ namespace DiscordLab.Administration.Patches;
 [HarmonyPatch(typeof(Logger), nameof(Logger.Error))]
 public static class ErrorLog
 {
-    public static void Postfix(object message)
+    public static async void Postfix(object message)
     {
         if (Plugin.Instance.Config.ErrorLogChannelId == 0)
             return;
@@ -38,21 +38,13 @@ public static class ErrorLog
         FileAttachment attachment = new(stream,
             $"Error {DateTime.UtcNow.ToShortDateString()} {DateTime.UtcNow.ToLongTimeString()}.txt");
 
-        Task.Run(async () =>
-        {
-            try
-            {
-                await channel.SendFileAsync(attachment, content, embed: embed);
-            }
-            catch (Exception ex)
-            {
-                Logger.Raw($"[ERROR] [{Plugin.Instance.Name}] {ex}", ConsoleColor.Red);
-            }
-            finally
-            {
-                await writer.DisposeAsync();
-                await stream.DisposeAsync();
-            }
-        });
+        try
+{
+    await channel.SendFileAsync(attachment, content, embed: embed);
+}
+catch (Exception ex)
+{
+    Logger.Raw($"[ERROR] [{Plugin.Instance.Name}] {ex}", ConsoleColor.Red);
+}
     }
 }
