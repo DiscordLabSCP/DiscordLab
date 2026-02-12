@@ -31,7 +31,7 @@ public static class ErrorLog
 
         MemoryStream stream = new MemoryStream();
         StreamWriter writer = new StreamWriter(stream);
-        writer.Write(message.ToString());
+        writer.Write(message?.ToString() ?? "Null error message"); 
         writer.Flush();
         stream.Position = 0;
 
