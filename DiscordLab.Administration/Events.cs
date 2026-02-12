@@ -77,12 +77,15 @@ public class Events : CustomEventsHandler
         if (ev.Sender == null || !Player.TryGet(ev.Sender, out Player player))
             return;
 
+        if (string.IsNullOrEmpty(ev.CommandName))
+            return;
+
         SocketTextChannel channel;
         TranslationBuilder builder = new TranslationBuilder("player", player)
             .AddCustomReplacer("type", ev.CommandType.ToString())
             .AddCustomReplacer("arguments", () => string.Join(" ", ev.Arguments))
-            .AddCustomReplacer("command", ev.Command.Command)
-            .AddCustomReplacer("commanddescription", ev.Command.Description);
+            .AddCustomReplacer("command", ev.CommandName)
+            .AddCustomReplacer("commanddescription", () => ev.Command.Description ?? "Unknown");
 
         if (ev.CommandType == CommandType.RemoteAdmin)
         {

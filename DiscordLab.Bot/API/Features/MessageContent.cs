@@ -51,6 +51,12 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"A message failed to send to {channel.Name} ({channel.Id}) because both embed and message contents were undefined.");
 
+        if (channel == null)
+            throw new ArgumentNullException(nameof(channel));
+
+        if (builder == null)
+            throw new ArgumentNullException(nameof(builder));
+
         MethodBase method = new StackFrame(1).GetMethod();
         Task.RunAndLog(async () => await SendToChannelAsync(channel, builder), ex => LoggingUtils.LogMethodError(ex, method));
     }
@@ -65,6 +71,12 @@ public class MessageContent
     {
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"A message failed to send to {channel.Name} ({channel.Id}) because both embed and message contents were undefined.");
+
+        if (channel == null)
+            throw new ArgumentNullException(nameof(channel));
+
+        if (builder == null)
+            throw new ArgumentNullException(nameof(builder));
 
         (Discord.Embed? embed, string? content) = Build(builder);
 
