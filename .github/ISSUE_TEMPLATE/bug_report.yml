@@ -52,9 +52,9 @@ body:
   
   - type: input
     attributes: 
-      label: EXILED Version
-      description: What version of EXILED are you using?
-      placeholder: 8.14.0
+      label: DiscordLab Version
+      description: What version of DiscordLab are you using? Latest is NOT a version, issues using latest here will be closed.
+      placeholder: ex. 2.3.0
     validations:
       required: true
   
