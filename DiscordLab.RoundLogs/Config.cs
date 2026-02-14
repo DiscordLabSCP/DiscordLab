@@ -36,4 +36,10 @@ public class Config
     
     [Description("The channel to log to when someone escapes.")]
     public ulong EscapeChannelId { get; set; } = 0;
+    
+    [Description("The channel to log to when the warhead is activated.")]
+    public ulong WarheadActivatedChannelId { get; set; } = 0;
+    
+    [Description("The channel to log to when the warhead is deactivated.")]
+    public ulong WarheadDeactivatedChannelId { get; set; } = 0;
 }

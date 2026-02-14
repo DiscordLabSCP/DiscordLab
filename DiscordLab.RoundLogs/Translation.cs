@@ -29,4 +29,8 @@ public class Translation
     public MessageContent Decontamination { get; set; } = "Decontamination has begun.";
     
     public MessageContent Escape { get; set; } = "{player} (`{playerid}`) has escaped as `{oldrole}`, they are now a `{newrole}`.";
+    
+    public MessageContent WarheadActivated { get; set; } = "Warhead has been activated by {player} (`{playerid}`).";
+    
+    public MessageContent WarheadDeactivated { get; set; } = "Warhead has deactivated by {player} (`{playerid}`).";
 }

@@ -5,12 +5,12 @@ using DiscordLab.Bot.API.Features;
 using DiscordLab.Bot.API.Utilities;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
+using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
 using PlayerRoles;
 using LabApi.Features.Console;
 using LabApi.Features.Extensions;
 using LabApi.Features.Wrappers;
-using Respawning.Waves;
 
 namespace DiscordLab.RoundLogs;
 
@@ -195,5 +195,33 @@ public class Events : CustomEventsHandler
             .AddCustomReplacer("oldrole", () => ev.OldRole.GetFullName());
         
         Translation.Escape.SendToChannel(channel, builder);
+    }
+
+    public override void OnWarheadStarted(WarheadStartedEventArgs ev)
+    {
+        if (Config.WarheadActivatedChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.WarheadActivatedChannelId, out SocketTextChannel channel))
+        {
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("warhead activated logs", Config.WarheadActivatedChannelId, Config.GuildId));
+            return;
+        }
+        
+        Translation.WarheadActivated.SendToChannel(channel, new("player", ev.Player));
+    }
+
+    public override void OnWarheadStopped(WarheadStoppedEventArgs ev)
+    {
+        if (Config.WarheadDeactivatedChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.WarheadDeactivatedChannelId, out SocketTextChannel channel))
+        {
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("warhead deactivated logs", Config.WarheadDeactivatedChannelId, Config.GuildId));
+            return;
+        }
+        
+        Translation.WarheadDeactivated.SendToChannel(channel, new("player", ev.Player));
     }
 }
