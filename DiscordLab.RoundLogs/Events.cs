@@ -177,4 +177,23 @@ public class Events : CustomEventsHandler
 
         Translation.Decontamination.SendToChannel(channel, new());
     }
+
+    public override void OnPlayerEscaped(PlayerEscapedEventArgs ev)
+    {
+        if (Config.EscapeChannelId == 0)
+            return;
+
+        if (!Client.TryGetOrAddChannel(Config.EscapeChannelId, out SocketTextChannel channel))
+        {
+            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("escape logs", Config.EscapeChannelId, Config.GuildId));
+            return;
+        }
+
+        TranslationBuilder builder = new TranslationBuilder("player", ev.Player)
+            .AddCustomReplacer("type", () => ev.EscapeScenarioType.ToString())
+            .AddCustomReplacer("newrole", () => ev.NewRole.GetFullName())
+            .AddCustomReplacer("oldrole", () => ev.OldRole.GetFullName());
+        
+        Translation.Escape.SendToChannel(channel, builder);
+    }
 }

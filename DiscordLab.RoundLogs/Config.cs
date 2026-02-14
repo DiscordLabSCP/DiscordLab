@@ -33,4 +33,7 @@ public class Config
 
     [Description("The channel to log to when decontamination starts.")]
     public ulong DecontaminationChannelId { get; set; } = 0;
+    
+    [Description("The channel to log to when someone escapes.")]
+    public ulong EscapeChannelId { get; set; } = 0;
 }

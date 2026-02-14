@@ -27,4 +27,6 @@ public class Translation
     public MessageContent RoundEnd { get; set; } = "Round has ended, {winner} has won the round.";
 
     public MessageContent Decontamination { get; set; } = "Decontamination has begun.";
+    
+    public MessageContent Escape { get; set; } = "{player} (`{playerid}`) has escaped as `{oldrole}`, they are now a `{newrole}`.";
 }
