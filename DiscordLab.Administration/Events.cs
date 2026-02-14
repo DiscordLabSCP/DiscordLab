@@ -83,7 +83,7 @@ public class Events : CustomEventsHandler
         SocketTextChannel channel;
         TranslationBuilder builder = new TranslationBuilder("player", player)
             .AddCustomReplacer("type", ev.CommandType.ToString())
-            .AddCustomReplacer("arguments", () => string.Join(" ", ev.Arguments))
+            .AddCustomReplacer("arguments", () => !ev.Arguments.Any() ? " " : string.Join(" ", ev.Arguments))
             .AddCustomReplacer("command", ev.CommandName)
             .AddCustomReplacer("commanddescription", () => ev.Command.Description ?? "Unknown")
             .AddCustomReplacer("commandsuccess", () => ev.ExecutedSuccessfully ? "Yes" : "No");
@@ -134,7 +134,7 @@ public class Events : CustomEventsHandler
         SocketTextChannel channel;
         TranslationBuilder builder = new TranslationBuilder("player", player)
             .AddCustomReplacer("type", ev.CommandType.ToString())
-            .AddCustomReplacer("arguments", () => string.Join(" ", ev.Arguments))
+            .AddCustomReplacer("arguments", () => !ev.Arguments.Any() ? " " : string.Join(" ", ev.Arguments))
             .AddCustomReplacer("command", ev.CommandName)
             .AddCustomReplacer("commanddescription", () => ev.Command.Description ?? "Unknown");
 
