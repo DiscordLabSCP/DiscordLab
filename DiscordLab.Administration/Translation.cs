@@ -25,11 +25,6 @@ public class Translation
 
     public MessageContent SendCommandResponse { get; set; } = "The command has been sent, it returned: {response}";
     
-    public MessageContent RemoteAdminCommandNotFound { get; set; } =
-        "Player {player} has attempted to run an unknown command: `{command}`";
-
-    public MessageContent CommandLogNotFound { get; set; } = "Player {player} has attempted to run an unknown command: `{command}`";
-    
     public MessageContent RemoteAdminCommandFailResponse { get; set; } =
         "Player {player} has attempted to run a command which failed: `{command}`";
 
