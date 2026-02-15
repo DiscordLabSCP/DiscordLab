@@ -27,6 +27,6 @@ public class Config
     [Description("Should a secondary translation be used for remote admin commands whose response is a failure?")]
     public bool UseSecondaryTranslationRemoteAdmin { get; set; } = false;
     
-    [Description("Should a secondary translation be used for normal commands whose response is a failiure?")]
+    [Description("Should a secondary translation be used for normal commands whose response is a failure?")]
     public bool UseSecondaryTranslationCommand { get; set; } = false;
 }
