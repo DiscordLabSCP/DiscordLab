@@ -83,10 +83,12 @@ public class Events : CustomEventsHandler
         SocketTextChannel channel;
         TranslationBuilder builder = new TranslationBuilder("player", player)
             .AddCustomReplacer("type", ev.CommandType.ToString())
-            .AddCustomReplacer("arguments", () => string.Join(" ", ev.Arguments))
+            .AddCustomReplacer("arguments", () => !ev.Arguments.Any() ? " " : string.Join(" ", ev.Arguments))
             .AddCustomReplacer("command", ev.CommandName)
-            .AddCustomReplacer("commanddescription", () => ev.Command.Description ?? "Unknown");
+            .AddCustomReplacer("commanddescription", () => ev.Command.Description ?? "Unknown")
+            .AddCustomReplacer("commandsuccess", () => ev.ExecutedSuccessfully ? "Yes" : "No");
 
+        MessageContent translation;
         if (ev.CommandType == CommandType.RemoteAdmin)
         {
             if (Config.RemoteAdminChannelId == 0)
@@ -98,8 +100,9 @@ public class Events : CustomEventsHandler
                     Config.RemoteAdminChannelId, Config.GuildId));
                 return;
             }
-
-            Translation.RemoteAdmin.SendToChannel(channel, builder);
+            
+            translation = Config.UseSecondaryTranslationRemoteAdmin && !ev.ExecutedSuccessfully ? Translation.RemoteAdminCommandFailResponse : Translation.RemoteAdmin;
+            translation.SendToChannel(channel, builder);
             return;
         }
 
@@ -112,7 +115,8 @@ public class Events : CustomEventsHandler
                 Config.GuildId));
             return;
         }
-
-        Translation.CommandLog.SendToChannel(channel, builder);
+        
+        translation = Config.UseSecondaryTranslationCommand && !ev.ExecutedSuccessfully ? Translation.CommandLogFailResponse : Translation.CommandLog;
+        translation.SendToChannel(channel, builder);
     }
 }

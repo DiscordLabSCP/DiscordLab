@@ -14,6 +14,11 @@ public class Translation
         "Player {player} has executed the remote admin command: `{command}`";
 
     public MessageContent CommandLog { get; set; } = "Player {player} has executed the command: `{command}`";
+    
+    public MessageContent RemoteAdminCommandFailResponse { get; set; } =
+        "Player {player} has attempted to run a remote admin command which failed: `{command}`";
+
+    public MessageContent CommandLogFailResponse { get; set; } = "Player {player} has attempted to run a command which failed: `{command}`";
 
     public string SendCommandName { get; set; } = "send";
 
