@@ -21,12 +21,12 @@ public class Config
     [Description("The channel to send normal command logs")]
     public ulong CommandLogChannelId { get; set; } = 0;
 
-    [Description("Whether to add the commands to the bot. Is false then commands won't be used.")]
-    public bool AddCommands { get; set; } = true;
-
     [Description("Should a secondary translation be used for remote admin commands whose response is a failure?")]
     public bool UseSecondaryTranslationRemoteAdmin { get; set; } = false;
     
     [Description("Should a secondary translation be used for normal commands whose response is a failure?")]
     public bool UseSecondaryTranslationCommand { get; set; } = false;
+
+    [Description("Whether to add the commands to the bot. Is false then commands won't be used.")]
+    public bool AddCommands { get; set; } = true;
 }
