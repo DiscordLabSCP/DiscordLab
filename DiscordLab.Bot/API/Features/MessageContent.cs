@@ -8,6 +8,7 @@ using Discord.Rest;
 using Discord.WebSocket;
 using DiscordLab.Bot.API.Extensions;
 using DiscordLab.Bot.API.Utilities;
+using UnityEngine;
 using YamlDotNet.Serialization;
 
 /// <summary>
@@ -78,7 +79,7 @@ public class MessageContent
         if (builder == null)
             throw new ArgumentNullException(nameof(builder));
 
-        (Discord.Embed? embed, string? content) = Build(builder);
+        (Discord.Embed? embed, string? content) = await MainThreadBuild(builder);
 
         return await channel.SendMessageAsync(content, embed: embed);
     }
@@ -116,7 +117,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"Failed to respond to command {command.CommandName} because both embed and message contents were undefined.");
 
-        (Discord.Embed? embed, string? content) = Build(builder);
+        (Discord.Embed? embed, string? content) = await MainThreadBuild(builder);
 
         await command.RespondAsync(content, embed: embed);
     }
@@ -132,7 +133,7 @@ public class MessageContent
         if (Embed == null && Message == null)
             throw new ArgumentNullException($"Failed to modify command {command.CommandName}'s response because both embed and message contents were undefined.");
 
-        (Discord.Embed? embed, string? content) = Build(builder);
+        (Discord.Embed? embed, string? content) = await MainThreadBuild(builder);
 
         await command.ModifyOriginalResponseAsync(msg =>
         {
@@ -174,5 +175,13 @@ public class MessageContent
         }
 
         return (embed.Build(), content);
+    }
+
+    /// <inheritdoc cref="Build"/>
+    /// <remarks>Does the building on the main thread, use this over Build if you use Task.Run.</remarks>
+    public async Awaitable<(Discord.Embed? Embed, string? Content)> MainThreadBuild(TranslationBuilder builder)
+    {
+        await Awaitable.MainThreadAsync();
+        return Build(builder);
     }
 }
