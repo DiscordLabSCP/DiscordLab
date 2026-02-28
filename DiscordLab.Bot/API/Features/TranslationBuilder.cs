@@ -6,6 +6,7 @@ namespace DiscordLab.Bot.API.Features;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using Discord;
+using DiscordLab.Bot.API.Extensions;
 using LabApi.Features.Wrappers;
 using LightContainmentZoneDecontamination;
 using Mirror.LiteNetLib4Mirror;
@@ -303,21 +304,24 @@ public class TranslationBuilder
 
         foreach (KeyValuePair<Regex, Func<string>> replacer in CustomReplacers)
         {
-            returnTranslation = replacer.Key.Replace(returnTranslation, GetReplacer(replacer.Value));
+            returnTranslation = replacer.Key.CheckReplace(returnTranslation, () => GetReplacer(replacer.Value));
         }
 
         foreach (KeyValuePair<Regex, Func<string>> replacer in StaticReplacers)
         {
-            returnTranslation = replacer.Key.Replace(returnTranslation, GetReplacer(replacer.Value));
+            returnTranslation = replacer.Key.CheckReplace(returnTranslation, () => GetReplacer(replacer.Value));
         }
 
         long unix = new DateTimeOffset(Time).ToUnixTimeSeconds();
 
         foreach (KeyValuePair<Regex, Func<long, string>> replacer in TimeReplacers)
         {
-            returnTranslation = replacer.Key.Replace(
+            returnTranslation = replacer.Key.CheckReplace(
                 returnTranslation,
-                GetReplacer(() => replacer.Value(unix)));
+                Replacement);
+            continue;
+
+            string Replacement() => GetReplacer(() => replacer.Value(unix));
         }
 
         foreach (KeyValuePair<string, Player> player in Players)
@@ -331,13 +335,14 @@ public class TranslationBuilder
 
             foreach (KeyValuePair<string, Func<Player, string>> replacer in PlayerReplacers)
             {
-                string replacement = GetReplacer(() => replacer.Value(player.Value));
-
                 Regex regex = CachedRegex.GetOrAdd(
                     $"{player.Key}{replacer.Key}",
                     () => CreateRegex($"{player.Key}{replacer.Key}"));
 
-                returnTranslation = regex.Replace(returnTranslation, replacement);
+                returnTranslation = regex.CheckReplace(returnTranslation, Replacement);
+                continue;
+
+                string Replacement() => GetReplacer(() => replacer.Value(player.Value));
             }
         }
 
