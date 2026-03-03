@@ -103,6 +103,12 @@ public class EmbedBuilder
         set => Base.Author = value?.Base;
     }
 
+    /// <summary>
+    /// Gets or sets a value indicating whether a timestamp will be added to the footer of this embed.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
+    public bool Timestamp { get; set; }
+
     [YamlIgnore]
     private Discord.EmbedBuilder Base { get; } = new();
 
@@ -133,8 +139,8 @@ public class EmbedBuilder
         if (builder.Base.ThumbnailUrl != null)
             copy.WithThumbnailUrl(builder.Base.ThumbnailUrl);
 
-        if (builder.Base.Timestamp.HasValue)
-            copy.WithTimestamp(builder.Base.Timestamp.Value);
+        if (builder.Timestamp)
+            copy.WithCurrentTimestamp();
 
         if (builder.Base.Footer != null)
             copy.WithFooter(builder.Base.Footer);
