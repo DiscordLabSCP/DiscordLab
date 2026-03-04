@@ -175,7 +175,7 @@ public class MessageContent
     /// <exception cref="ArgumentException">Throws when message content is too long after being built.</exception>
     public (Discord.Embed? Embed, string? Content) Build(TranslationBuilder builder)
     {
-        string? content = Message != null && FieldMarkedTranslatable(TranslatableMessageField.Message) ? builder.Build(Message) : null;
+        string? content = Message != null && FieldMarkedTranslatable(TranslatableMessageField.Message) ? builder.Build(Message) : Message;
 
         if (content is { Length: > Discord.DiscordConfig.MaxMessageSize })
             throw new ArgumentException($"Message content is too long, length must be less or equal to {Discord.DiscordConfig.MaxMessageSize}. This is after compiling the message.", nameof(Message));
