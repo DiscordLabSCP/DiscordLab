@@ -1,10 +1,8 @@
 // ReSharper disable MemberCanBePrivate.Global
 
-using System.ComponentModel;
-using DiscordLab.Bot.API.Features.Embed;
-
 namespace DiscordLab.Bot.API.Features;
 
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Reflection;
 using Discord.Rest;
