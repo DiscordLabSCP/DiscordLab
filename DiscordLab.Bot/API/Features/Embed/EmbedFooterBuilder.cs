@@ -12,7 +12,6 @@ public class EmbedFooterBuilder
     /// </summary>
     public EmbedFooterBuilder()
     {
-        Base = new();
     }
 
     /// <summary>
@@ -22,32 +21,44 @@ public class EmbedFooterBuilder
     /// <param name="builder">The <see cref="Discord.EmbedFooterBuilder"/> instance.</param>
     public EmbedFooterBuilder(Discord.EmbedFooterBuilder builder)
     {
-        Base = builder;
+        Text = builder.Text;
+        IconUrl = builder.IconUrl;
     }
 
     /// <summary>
     /// Gets or sets the text for this footer.
     /// </summary>
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
-    public string? Text
-    {
-        get => Base.Text;
-        set => Base.Text = value;
-    }
+    public string? Text { get; set; }
 
     /// <summary>
     /// Gets or sets the icon URl for this footer.
     /// </summary>
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
-    public string? IconUrl
-    {
-        get => Base.IconUrl;
-        set => Base.IconUrl = value;
-    }
+    public string? IconUrl { get; set; }
 
     /// <summary>
     /// Gets the base builder object.
     /// </summary>
     [YamlIgnore]
-    public Discord.EmbedFooterBuilder Base { get; init; }
+    [Obsolete("Please use the properties of the DiscordLab.Bot.API.Features.Embed.EmbedFooterBuilder instead.")]
+    public Discord.EmbedFooterBuilder Base => this;
+
+    /// <summary>
+    /// Changes a <see cref="EmbedFooterBuilder"/> into a <see cref="Discord.EmbedFooterBuilder"/> instance.
+    /// </summary>
+    /// <param name="builder">The <see cref="EmbedFooterBuilder"/> instance.</param>
+    /// <returns>A copy of the <see cref="Discord.EmbedFooterBuilder"/> instance.</returns>
+    public static implicit operator Discord.EmbedFooterBuilder(EmbedFooterBuilder builder)
+    {
+        Discord.EmbedFooterBuilder copy = new();
+
+        if (builder.Text != null)
+            copy.WithText(builder.Text);
+
+        if (builder.IconUrl != null)
+            copy.WithIconUrl(builder.IconUrl);
+
+        return copy;
+    }
 }
