@@ -1,5 +1,8 @@
 // ReSharper disable MemberCanBePrivate.Global
 
+using System.ComponentModel;
+using DiscordLab.Bot.API.Features.Embed;
+
 namespace DiscordLab.Bot.API.Features;
 
 using System.Diagnostics;
@@ -16,6 +19,12 @@ using YamlDotNet.Serialization;
 /// </summary>
 public class MessageContent
 {
+    private const TranslatableMessageField DefaultTranslatableFields =
+        TranslatableMessageField.Message |
+        TranslatableMessageField.EmbedDescription |
+        TranslatableMessageField.EmbedFieldValues |
+        TranslatableMessageField.EmbedFooterText;
+
     /// <summary>
     /// Gets or sets the embed to send, if any.
     /// </summary>
@@ -27,6 +36,13 @@ public class MessageContent
     /// </summary>
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
     public string? Message { get; set; }
+
+    /// <summary>
+    /// Gets or sets which parts of the message should have their placeholders replaced.
+    /// </summary>
+    [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitDefaults)]
+    [DefaultValue(DefaultTranslatableFields)]
+    public TranslatableMessageField TranslatedFields { get; set; } = DefaultTranslatableFields;
 
     /// <summary>
     /// Converts an embed into a <see cref="MessageContent"/> instance.
@@ -146,6 +162,16 @@ public class MessageContent
     }
 
     /// <summary>
+    /// Checks whether the specified field has been marked as translatable in <see cref="TranslatedFields"/>.
+    /// </summary>
+    /// <param name="field">The field to check.</param>
+    /// <returns>Whether the field is present in the <see cref="TranslatedFields"/>.</returns>
+    public bool FieldMarkedTranslatable(TranslatableMessageField field)
+    {
+        return (TranslatedFields & field) != 0;
+    }
+
+    /// <summary>
     /// Builds the embed and/or content assigned to this <see cref="MessageContent"/> using a <see cref="TranslationBuilder"/>.
     /// </summary>
     /// <param name="builder">The <see cref="TranslationBuilder"/> to use.</param>
@@ -153,7 +179,7 @@ public class MessageContent
     /// <exception cref="ArgumentException">Throws when message content is too long after being built.</exception>
     public (Discord.Embed? Embed, string? Content) Build(TranslationBuilder builder)
     {
-        string? content = Message != null ? builder.Build(Message) : null;
+        string? content = Message != null && FieldMarkedTranslatable(TranslatableMessageField.Message) ? builder.Build(Message) : null;
 
         if (content is { Length: > Discord.DiscordConfig.MaxMessageSize })
             throw new ArgumentException($"Message content is too long, length must be less or equal to {Discord.DiscordConfig.MaxMessageSize}. This is after compiling the message.", nameof(Message));
@@ -162,16 +188,52 @@ public class MessageContent
             return (null, content);
 
         Discord.EmbedBuilder embed = Embed;
-        if (!string.IsNullOrEmpty(embed.Description))
+
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedTitle) && !string.IsNullOrEmpty(embed.Title))
+            embed.Title = builder.Build(embed.Title);
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedDescription) && !string.IsNullOrEmpty(embed.Description))
             embed.Description = builder.Build(embed.Description);
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedUrl) && !string.IsNullOrEmpty(embed.Url))
+            embed.Url = builder.Build(embed.Url);
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedThumbnailUrl) && !string.IsNullOrEmpty(embed.ThumbnailUrl))
+            embed.ThumbnailUrl = builder.Build(embed.ThumbnailUrl);
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedImageUrl) && !string.IsNullOrEmpty(embed.ImageUrl))
+            embed.ImageUrl = builder.Build(embed.ImageUrl);
 
-        if (embed.Footer != null && !string.IsNullOrEmpty(embed.Footer.Text))
-            embed.Footer.Text = builder.Build(embed.Footer.Text);
-
-        foreach (Discord.EmbedFieldBuilder field in embed.Fields)
+        if (embed.Author != null)
         {
-            if (field.Value is string value && !string.IsNullOrEmpty(value))
-                field.Value = builder.Build(value);
+            if (FieldMarkedTranslatable(TranslatableMessageField.EmbedAuthorName) && !string.IsNullOrEmpty(embed.Author.Name))
+                embed.Author.Name = builder.Build(embed.Author.Name);
+            if (FieldMarkedTranslatable(TranslatableMessageField.EmbedAuthorUrl) && !string.IsNullOrEmpty(embed.Author.Url))
+                embed.Author.Url = builder.Build(embed.Author.Url);
+            if (FieldMarkedTranslatable(TranslatableMessageField.EmbedAuthorIconUrl) && !string.IsNullOrEmpty(embed.Author.IconUrl))
+                embed.Author.IconUrl = builder.Build(embed.Author.IconUrl);
+        }
+
+        if (embed.Footer != null)
+        {
+            if (FieldMarkedTranslatable(TranslatableMessageField.EmbedFooterText) && !string.IsNullOrEmpty(embed.Footer.Text))
+                embed.Footer.Text = builder.Build(embed.Footer.Text);
+            if (FieldMarkedTranslatable(TranslatableMessageField.EmbedFooterIconUrl) && !string.IsNullOrEmpty(embed.Footer.IconUrl))
+                embed.Footer.IconUrl = builder.Build(embed.Footer.IconUrl);
+        }
+
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedFieldNames))
+        {
+            foreach (Discord.EmbedFieldBuilder field in embed.Fields)
+            {
+                if (!string.IsNullOrEmpty(field.Name))
+                    field.Name = builder.Build(field.Name);
+            }
+        }
+
+        if (FieldMarkedTranslatable(TranslatableMessageField.EmbedFieldValues))
+        {
+            foreach (Discord.EmbedFieldBuilder field in embed.Fields)
+            {
+                if (field.Value is string value && !string.IsNullOrEmpty(value))
+                    field.Value = builder.Build(value);
+            }
         }
 
         return (embed.Build(), content);
