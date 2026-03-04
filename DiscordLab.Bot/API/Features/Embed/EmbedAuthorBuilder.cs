@@ -1,5 +1,3 @@
-using System.Drawing;
-
 namespace DiscordLab.Bot.API.Features.Embed;
 
 using YamlDotNet.Serialization;
