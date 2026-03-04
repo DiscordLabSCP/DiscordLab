@@ -164,10 +164,8 @@ public class MessageContent
     /// </summary>
     /// <param name="field">The field to check.</param>
     /// <returns>Whether the field is present in the <see cref="TranslatedFields"/>.</returns>
-    public bool FieldMarkedTranslatable(TranslatableMessageField field)
-    {
-        return (TranslatedFields & field) != 0;
-    }
+    public bool FieldMarkedTranslatable(TranslatableMessageField field) =>
+        (TranslatedFields & field) != 0;
 
     /// <summary>
     /// Builds the embed and/or content assigned to this <see cref="MessageContent"/> using a <see cref="TranslationBuilder"/>.
