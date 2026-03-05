@@ -73,7 +73,8 @@ public class MessageContent
             throw new ArgumentNullException(nameof(builder));
 
         MethodBase method = new StackFrame(1).GetMethod();
-        Task.RunAndLog(async () => await SendToChannelAsync(channel, builder), ex => LoggingUtils.LogMethodError(ex, method));
+        (Discord.Embed? embed, string? content) = Build(builder);
+        Task.RunAndLog(async () => await channel.SendMessageAsync(content, embed: embed), ex => LoggingUtils.LogMethodError(ex, method));
     }
 
     /// <summary>
