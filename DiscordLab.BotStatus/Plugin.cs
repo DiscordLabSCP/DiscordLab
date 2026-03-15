@@ -65,12 +65,13 @@ public class Plugin : Plugin<Config, Translation>
 
     private static void UpdateStatus()
     {
-        TranslationBuilder builder = new(Server.PlayerCount == 0
+        int playerCount = Player.List.Count(p => p.IsPlayer && p.IsReady && !p.IsNpc);
+        TranslationBuilder builder = new(playerCount == 0
             ? Instance.Translation.EmptyContent
             : Instance.Translation.NormalContent);
         Task.RunAndLog(async () => await Client.SocketClient.SetGameAsync(builder, type: Instance.Config.ActivityType)
             .ConfigureAwait(false));
-        switch (Server.PlayerCount)
+        switch (playerCount)
         {
             case 0 when Instance.Config.IdleOnEmpty:
                 Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false), OnException);
