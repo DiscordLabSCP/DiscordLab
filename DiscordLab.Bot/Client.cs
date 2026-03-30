@@ -104,6 +104,7 @@ public static class Client
             RestClientProvider = DefaultRestClientProvider.Create(),
             WebSocketProvider = DefaultWebSocketProvider.Create(),
             MessageCacheSize = Config.MessageCacheSize,
+            LogGatewayIntentWarnings = false,
         };
 
         if (!string.IsNullOrEmpty(Config.ProxyUrl))
@@ -190,9 +191,6 @@ public static class Client
                         Logger.Error(msg);
                         break;
                     case LogSeverity.Warning:
-                        if (msg.Source.ToLower().Trim() == "gateway" && msg.Message.Contains("consider removing"))
-                            break;
-
                         Logger.Warn(msg);
                         break;
                     case LogSeverity.Debug:
