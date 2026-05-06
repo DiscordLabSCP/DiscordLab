@@ -1,4 +1,4 @@
-namespace DiscordLab.Bot.API.Extensions;
+namespace DiscordLab.Core.Extensions;
 
 /// <summary>
 /// Contains extension methods for bitwise operations.

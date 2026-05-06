@@ -1,6 +1,6 @@
-﻿namespace DiscordLab.Bot.API.Extensions;
+﻿using LabApi.Features.Console;
 
-using LabApi.Features.Console;
+namespace DiscordLab.Core.Extensions;
 
 /// <summary>
 /// Extension methods to help with Tasks.

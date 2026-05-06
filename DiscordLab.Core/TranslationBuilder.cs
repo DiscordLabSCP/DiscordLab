@@ -1,12 +1,12 @@
 // ReSharper disable MemberCanBePrivate.Global
 // ReSharper disable PropertyCanBeMadeInitOnly.Global
 
-namespace DiscordLab.Bot.API.Features;
+using DiscordLab.Core.Extensions;
+
+namespace DiscordLab.Core;
 
 using System.Globalization;
 using System.Text.RegularExpressions;
-using Discord;
-using DiscordLab.Bot.API.Extensions;
 using LabApi.Features.Wrappers;
 using LightContainmentZoneDecontamination;
 using Mirror.LiteNetLib4Mirror;
@@ -182,22 +182,6 @@ public class TranslationBuilder
     public string? Translation { get; set; }
 
     /// <summary>
-    /// Gets or sets the item that will show for each player when the {players} placeholder is used. Defaults to null.
-    /// </summary>
-    /// <remarks>If you want the {players} placeholder to not work, set this to null.</remarks>
-    public string? PlayerListItem { get; set; }
-
-    /// <summary>
-    /// Gets or sets the separator between items in <see cref="PlayerListItem"/>.
-    /// </summary>
-    public string PlayerListSeparator { get; set; } = "\n";
-
-    /// <summary>
-    /// Gets or sets the player list that will be used for <see cref="PlayerListItem"/>.
-    /// </summary>
-    public IEnumerable<Player>? PlayerList { get; set; }
-
-    /// <summary>
     /// Gets a Dictionary of cached regexes that are unknown.
     /// </summary>
     private static Dictionary<string, Regex> CachedRegex { get; } = new();
@@ -208,14 +192,6 @@ public class TranslationBuilder
     /// <param name="builder">The <see cref="TranslationBuilder"/> instance.</param>
     /// <returns><inheritdoc cref="Build"/></returns>
     public static implicit operator string(TranslationBuilder builder) =>
-        builder.Build();
-
-    /// <summary>
-    /// <inheritdoc cref="Build"/>.
-    /// </summary>
-    /// <param name="builder">The <see cref="TranslationBuilder"/> instance.</param>
-    /// <returns><inheritdoc cref="Build"/></returns>
-    public static implicit operator Optional<string>(TranslationBuilder builder) =>
         builder.Build();
 
     /// <summary>
@@ -297,9 +273,6 @@ public class TranslationBuilder
         if (string.IsNullOrEmpty(translation))
             throw new ArgumentNullException($"{nameof(TranslationBuilder)} failed to build because of no valid translation.");
 
-        if (PlayerListItem != null && CustomReplacers.All(replacer => replacer.Key.ToString() != "{players}"))
-            SetupPlayerList();
-
         string returnTranslation = translation!;
 
         foreach (KeyValuePair<Regex, Func<string>> replacer in CustomReplacers)
@@ -379,29 +352,5 @@ public class TranslationBuilder
         {
             return "Unknown";
         }
-    }
-
-    private void SetupPlayerList()
-    {
-        if (string.IsNullOrEmpty(PlayerListItem))
-            throw new ArgumentException($"Invalid {nameof(PlayerListItem)} provided, it was either null or empty.");
-
-        Player[] readyPlayers = (PlayerList ?? Player.ReadyList).ToArray();
-
-        int length = readyPlayers.Length;
-
-        List<string> playerItems = new(length);
-        Dictionary<string, Player> playerDictionary = new(length);
-
-        for (int i = 0; i < length; i++)
-        {
-            string playerKey = $"player{i}";
-            playerItems.Add(PlayerListItem!.Replace("{player", "{" + $"{playerKey}"));
-            playerDictionary[playerKey] = readyPlayers[i];
-        }
-
-        AddCustomReplacer("players", string.Join(PlayerListSeparator, playerItems));
-
-        AddPlayers(playerDictionary);
     }
 }

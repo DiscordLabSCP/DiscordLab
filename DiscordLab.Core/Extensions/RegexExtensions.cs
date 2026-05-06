@@ -1,6 +1,6 @@
-namespace DiscordLab.Bot.API.Extensions;
-
 using System.Text.RegularExpressions;
+
+namespace DiscordLab.Core.Extensions;
 
 /// <summary>
 /// Utility extension methods for Regex.
