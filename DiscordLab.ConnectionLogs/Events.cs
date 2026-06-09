@@ -45,6 +45,9 @@ public class Events : CustomEventsHandler
         if (Config.LeaveChannelId == 0)
             return;
 
+        if (ev.Player?.IsReady != true)
+            return;
+
         if (!Client.TryGetOrAddChannel(Config.LeaveChannelId, out SocketTextChannel channel))
         {
             Logger.Error(
