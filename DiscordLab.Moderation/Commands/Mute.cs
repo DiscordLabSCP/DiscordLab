@@ -1,81 +1,48 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Features.Wrappers;
 using VoiceChat;
 
 namespace DiscordLab.Moderation.Commands;
 
-public class Mute : AutocompleteCommand
+public class Mute : ICommand
 {
     public static Translation Translation => Plugin.Instance.Translation;
 
-    public override SlashCommandBuilder Data { get; } = new()
+    public CommandBuilder Data => Translation.MuteCommand;
+
+    public async Task Execute(CommandInformation command)
     {
-        Name = Translation.MuteCommandName,
-        Description = Translation.MuteCommandDescription,
-        DefaultMemberPermissions = GuildPermission.ModerateMembers,
-        Options =
-        [
-            new()
-            {
-                Name = Translation.MuteUserOptionName,
-                Description = Translation.MuteUserOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true,
-                IsAutocomplete = true
-            },
-            new()
-            {
-                Name = Translation.MuteDurationOptionName,
-                Description = Translation.MuteDurationOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = false
-            }
-        ]
-    };
+        await command.DeferResponse();
 
-    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-
-    public override async Task Run(SocketSlashCommand command)
-    {
-        await command.DeferAsync();
-
-        if (!CommandUtils.TryGetPlayerFromUnparsed(command.Data.Options.GetOption<string>(Translation.MuteUserOptionName)!, out Player player))
+        if (!Player.TryGet(command.OptionsDictionary["user"], out Player player))
         {
-            await command.ModifyOriginalResponseAsync(m => m.Content = Translation.InvalidUser);
+            await command.Reply(Translation.InvalidUser);
             return;
         }
 
         TranslationBuilder builder;
 
-        if (command.Data.Options.Count == 2)
+        if (command.Options.Count() == 2)
         {
-            string duration = command.Data.Options.GetOption<string>(Translation.MuteDurationOptionName)!;
+            string duration = command.OptionsDictionary["duration"];
             DateTime time = TempMuteManager.GetExpireDate(duration);
             TempMuteManager.MutePlayer(player, time);
 
-            builder = new TranslationBuilder(Translation.TempMuteSuccess, "player", player)
+            builder = new PlayerTranslationBuilder(Translation.TempMuteSuccess, "player", player)
                 {
                     Time = time
                 }
                 .AddCustomReplacer("duration", duration);
 
-            await command.ModifyOriginalResponseAsync(m => m.Content = builder);
+            await command.Reply(builder);
             return;
         }
 
         VoiceChatMutes.IssueLocalMute(player.UserId);
 
-        builder = new(Translation.PermMuteSuccess, "player", player);
+        builder = new PlayerTranslationBuilder(Translation.PermMuteSuccess, "player", player);
 
-        await command.ModifyOriginalResponseAsync(m => m.Content = builder);
-    }
-
-    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
-    {
-        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
+        await command.Reply(builder);
     }
 }

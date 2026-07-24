@@ -1,57 +1,23 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands;
 
-public class Ban : AutocompleteCommand
+public class Ban : ICommand
 {
     public static Translation Translation => Plugin.Instance.Translation;
 
-    public override SlashCommandBuilder Data { get; } = new()
+    public CommandBuilder Data => Translation.BanCommand;
+
+    public async Task Execute(CommandInformation command)
     {
-        Name = Translation.BanCommandName,
-        Description = Translation.BanCommandDescription,
-        DefaultMemberPermissions = GuildPermission.ModerateMembers,
-        Options =
-        [
-            new()
-            {
-                Name = Translation.BanUserOptionName,
-                Description = Translation.BanUserOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true,
-                IsAutocomplete = true
-            },
-            new()
-            {
-                Name = Translation.BanDurationOptionName,
-                Description = Translation.BanDurationOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true
-            },
-            new()
-            {
-                Name = Translation.BanReasonOptionName,
-                Description = Translation.BanReasonOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true
-            }
-        ]
-    };
+        await command.DeferResponse();
 
-    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-
-    public override async Task Run(SocketSlashCommand command)
-    {
-        await command.DeferAsync();
-
-        string userId = command.Data.Options.GetOption<string>(Translation.BanUserOptionName)!;
-        long duration = Misc.RelativeTimeToSeconds(command.Data.Options.GetOption<string>(Translation.BanDurationOptionName)!, 60);
-        string reason = command.Data.Options.GetOption<string>(Translation.BanReasonOptionName)!;
+        string userId = command.OptionsDictionary["user"];
+        long duration = Misc.RelativeTimeToSeconds(command.OptionsDictionary["duration"], 60);
+        string reason = command.OptionsDictionary["reason"];
 
         TranslationBuilder successBuilder = new TranslationBuilder(Translation.BanSuccess)
             {
@@ -63,24 +29,12 @@ public class Ban : AutocompleteCommand
         TranslationBuilder failBuilder = new TranslationBuilder(Translation.BanFailure)
             .AddCustomReplacer("userid", userId);
 
-        if (!CommandUtils.TryGetPlayerFromUnparsed(userId, out Player player))
-        {
-            bool result = userId.Contains("@")
-                ? Server.BanUserId(userId, reason, duration)
-                : Server.BanIpAddress(userId, reason, duration);
+        bool result = userId.Contains("@")
+            ? Server.BanUserId(userId, reason, duration)
+            : Server.BanIpAddress(userId, reason, duration);
 
-            await command.ModifyOriginalResponseAsync(m =>
-                m.Content = !result ? failBuilder : successBuilder);
+        TranslationBuilder builder = !result ? failBuilder : successBuilder;
 
-            return;
-        }
-
-        await command.ModifyOriginalResponseAsync(m =>
-            m.Content = Server.BanPlayer(player, reason, duration) ? successBuilder : failBuilder);
-    }
-
-    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
-    {
-        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
+        await command.Reply(builder);
     }
 }

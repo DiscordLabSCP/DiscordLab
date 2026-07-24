@@ -1,56 +1,53 @@
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Updater;
+
 namespace DiscordLab.Bot.Commands;
 
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Updates;
-
 /// <inheritdoc />
-public class DiscordCommand : AutocompleteCommand
+public class DiscordCommand : ICommand
 {
     /// <inheritdoc />
-    public override SlashCommandBuilder Data { get; } = new()
+    public CommandBuilder Data { get; } = new()
     {
         Name = "discordlab",
         Description = "DiscordLab related commands",
-        DefaultMemberPermissions = GuildPermission.Administrator,
+        DefaultPermission = DefaultCommandPermissions.Admins,
         Options =
         [
             new()
             {
-                Type = ApplicationCommandOptionType.SubCommand,
+                Type = CommandOptionType.Subcommand,
                 Name = "list",
                 Description = "List all available DiscordLab modules",
             },
 
             new()
             {
-                Type = ApplicationCommandOptionType.SubCommand,
+                Type = CommandOptionType.Subcommand,
                 Name = "install",
                 Description = "The module to install",
                 Options =
                 [
                     new()
                     {
-                        Type = ApplicationCommandOptionType.String,
+                        Type = CommandOptionType.String,
                         Name = "module",
                         Description = "The module to install",
                         IsRequired = true,
-                        IsAutocomplete = true,
                     }
                 ],
             },
 
             new()
             {
-                Type = ApplicationCommandOptionType.SubCommand,
+                Type = CommandOptionType.Subcommand,
                 Name = "check",
                 Description = "Check for DiscordLab updates",
             },
 
             new()
             {
-                Type = ApplicationCommandOptionType.SubCommand,
+                Type = CommandOptionType.Subcommand,
                 Name = "update",
                 Description = "Update DiscordLab forcefully, skips auto update checks",
             }
@@ -58,14 +55,11 @@ public class DiscordCommand : AutocompleteCommand
     };
 
     /// <inheritdoc />
-    protected override ulong GuildId { get; } = 0;
-
-    /// <inheritdoc />
-    public override async Task Run(SocketSlashCommand command)
+    public async Task Execute(CommandInformation command)
     {
-        await command.DeferAsync(true);
-        string subcommand = command.Data.Options.First().Name;
-        switch (subcommand)
+        await command.DeferResponse();
+        CommandOptionInformation subcommand = command.Options.First();
+        switch (subcommand.Name)
         {
             case "list":
             {
@@ -73,17 +67,16 @@ public class DiscordCommand : AutocompleteCommand
                     "\n",
                     Module.CurrentModules.Where(s => s.Name != "DiscordLab.Bot")
                         .Select(s => $"{s.Name} (v{s.Version})"));
-                await command.ModifyOriginalResponseAsync(m =>
-                    m.Content = "List of available DiscordLab modules:\n\n" + modules);
+                await command.Reply("List of available DiscordLab modules:\n\n" + modules);
                 break;
             }
 
             case "install":
             {
-                string moduleName = command.Data.Options.First().Options.First().Value.ToString();
+                string moduleName = subcommand.Options!.First().Value;
                 if (string.IsNullOrWhiteSpace(moduleName))
                 {
-                    await command.ModifyOriginalResponseAsync(m => m.Content = "Please provide a module name.");
+                    await command.Reply("Please provide a module name.");
                     return;
                 }
 
@@ -94,14 +87,13 @@ public class DiscordCommand : AutocompleteCommand
                         s.Name.Split('.').Last().Equals(moduleName, StringComparison.CurrentCultureIgnoreCase));
                 if (module == null || module.Name == "DiscordLab.Bot")
                 {
-                    await command.ModifyOriginalResponseAsync(m => m.Content = "Module not found.");
+                    await command.Reply("Module not found.");
                     return;
                 }
 
                 await module.Download();
                 ServerStatic.StopNextRound = ServerStatic.NextRoundAction.Restart;
-                await command.ModifyOriginalResponseAsync(m =>
-                    m.Content = "Downloaded module. Server will restart next round.");
+                await command.Reply("Downloaded module. Server will restart next round.");
                 break;
             }
 
@@ -110,12 +102,11 @@ public class DiscordCommand : AutocompleteCommand
                 IEnumerable<Module> modules = await Updater.ManageUpdates();
                 if (!modules.Any())
                 {
-                    await command.ModifyOriginalResponseAsync(m => m.Content = "No updates found.");
+                    await command.Reply("No updates found.");
                     return;
                 }
 
-                await command.ModifyOriginalResponseAsync(m =>
-                    m.Content = $"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
+                await command.Reply($"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
                 break;
             }
 
@@ -125,15 +116,13 @@ public class DiscordCommand : AutocompleteCommand
 
                 if (!modules.Any())
                 {
-                    await command.ModifyOriginalResponseAsync(m => m.Content = "No updates found.");
+                    await command.Reply("No updates found.");
                     return;
                 }
 
-                if (Plugin.Instance.Config.AutoUpdate)
+                if (!Core.Plugin.Instance.Config.AutoUpdate)
                 {
-                    await command.ModifyOriginalResponseAsync(m =>
-                        m.Content =
-                            $"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
+                    await command.Reply($"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
                     return;
                 }
 
@@ -143,19 +132,9 @@ public class DiscordCommand : AutocompleteCommand
                     await module.Download();
                 }
 
-                await command.ModifyOriginalResponseAsync(m =>
-                    m.Content =
-                        $"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
+                await command.Reply($"Updates found, modules that need updating:\n{Module.GenerateUpdateString(modules)}");
                 break;
             }
         }
-    }
-
-    /// <inheritdoc />
-    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
-    {
-        await autocomplete.RespondAsync(Module.CurrentModules
-            .Where(x => x.Name != "DiscordLab.Bot" && x.Name.Contains((string)autocomplete.Data.Current.Value)).Take(25)
-            .Select(x => new AutocompleteResult($"{x.Name} (v{x.Version})", x.Name)));
     }
 }

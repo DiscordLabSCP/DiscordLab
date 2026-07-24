@@ -1,55 +1,27 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Features.Wrappers;
 
 namespace DiscordLab.Moderation.Commands;
 
-public class Unmute : AutocompleteCommand
+public class Unmute : ICommand
 {
     public static Translation Translation => Plugin.Instance.Translation;
 
-    public override SlashCommandBuilder Data { get; } = new()
+    public CommandBuilder Data => Translation.UnmuteCommand;
+
+    public async Task Execute(CommandInformation command)
     {
-        Name = Translation.UnmuteCommandName,
-        Description = Translation.UnmuteCommandDescription,
-        DefaultMemberPermissions = GuildPermission.ModerateMembers,
-        Options =
-        [
-            new()
-            {
-                Name = Translation.UnmuteUserOptionName,
-                Description = Translation.UnmuteUserOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true,
-                IsAutocomplete = true
-            },
-        ]
-    };
+        await command.DeferResponse();
 
-    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-
-    public override async Task Run(SocketSlashCommand command)
-    {
-        await command.DeferAsync();
-
-        if (!CommandUtils.TryGetPlayerFromUnparsed(command.Data.Options.GetOption<string>(Translation.UnmuteUserOptionName)!, out Player player))
+        if (!Player.TryGet(command.OptionsDictionary["user"], out Player player))
         {
-            await command.ModifyOriginalResponseAsync(m => m.Content = Translation.InvalidUser);
+            await command.Reply(Translation.InvalidUser);
             return;
         }
 
         TempMuteManager.RemoveMute(player);
 
-        await command.ModifyOriginalResponseAsync(m =>
-            m.Content =
-                new TranslationBuilder(Translation.UnmuteSuccess, "player", player));
-    }
-
-    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
-    {
-        await autocomplete.RespondAsync(Plugin.PlayersAutocompleteResults(autocomplete.Data.Current.Value));
+        await command.Reply(new PlayerTranslationBuilder(Translation.UnmuteSuccess, "player", player));
     }
 }

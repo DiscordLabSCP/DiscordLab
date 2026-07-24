@@ -1,5 +1,6 @@
-﻿using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
+﻿using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Features;
 using HarmonyLib;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
@@ -30,7 +31,7 @@ public class Plugin : Plugin<Config, Translation>
         CallOnLoadAttribute.Load();
 
         if (Config.AddCommands)
-            SlashCommand.FindAll();
+            ICommand.FindAll();
 
         CustomHandlersManager.RegisterEventsHandler(Events);
     }

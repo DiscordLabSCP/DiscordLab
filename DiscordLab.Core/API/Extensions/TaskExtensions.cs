@@ -1,0 +1,69 @@
+﻿using LabApi.Features.Console;
+
+namespace DiscordLab.Core.API.Extensions;
+
+/// <summary>
+/// Extension methods to help with Tasks.
+/// </summary>
+public static class TaskExtensions
+{
+#pragma warning disable SA1642
+    /// <summary>
+    /// Methods to manage tasks better.
+    /// </summary>
+#pragma warning restore SA1642
+#pragma warning disable SA1400
+    extension(Task)
+#pragma warning restore SA1400
+    {
+        /// <summary>
+        /// Runs and adds a logger to a Task.
+        /// </summary>
+        /// <param name="task">The Task to run.</param>
+        /// <param name="onException">The action to run when an exception is triggered. If set, this will cancel the log from being sent naturally, so make sure to add your own log.</param>
+        /// <returns>The task that is running.</returns>
+        public static Task RunAndLog(Func<Task> task, Action<Exception>? onException = null) => Task.Run(async () =>
+        {
+            try
+            {
+                await task();
+            }
+            catch (TimeoutException ex) when (IsDiscordException(ex))
+            {
+                // Ignore Discord timeout exceptions because Discord.Net queues them for us.
+            }
+            catch (TaskCanceledException ex) when (ex.InnerException is ObjectDisposedException && IsDiscordException(ex))
+            {
+                // Ignore Discord timeout in this case because this is an issue with Discord.Net. Unsure if re-queued yet.
+            }
+            catch (Exception ex)
+            {
+                if (onException == null)
+                    Logger.Error(ex);
+                else
+                    onException(ex);
+            }
+        });
+    }
+
+    extension<T>(Task<T> task)
+    {
+        public async Task<TV> Then<TV>(Func<T, TV> then)
+        {
+            T result = await task;
+            return then(result);
+        }
+
+        public async Task Then(Action<T> then)
+        {
+            T result = await task;
+            then(result);
+        }
+    }
+
+    private static bool IsDiscordException(Exception ex) => ex.Source?.StartsWith("Discord.Net") == true ||
+                                                            ex.TargetSite?.DeclaringType?.Namespace?.StartsWith(
+                                                                "Discord") == true ||
+                                                            ex.StackTrace?.Contains("Discord.Net") == true ||
+                                                            ex.StackTrace?.Contains("Discord.API") == true;
+}

@@ -1,6 +1,7 @@
 using System.ComponentModel;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Features.Embed;
+using System.Drawing;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Embed;
 
 namespace DiscordLab.DeathLogs;
 
@@ -28,7 +29,7 @@ public class Translation
     {
         Title = "Damage Logs",
         Description = "{entries}",
-        Color = Discord.Color.Blue.ToString()
+        Color = Color.Blue.ToString()
     };
 
     [Description("The embed for when sending team damage logs. Entries will be replaced with the entries below.")]
@@ -36,7 +37,7 @@ public class Translation
     {
         Title = "Team Damage Logs",
         Description = "{entries}",
-        Color = Discord.Color.Blue.ToString()
+        Color = Color.Blue.ToString()
     };
 
     [Description("What each instance of damage will look like in the logs.")]

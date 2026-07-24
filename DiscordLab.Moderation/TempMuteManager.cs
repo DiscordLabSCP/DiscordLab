@@ -1,5 +1,4 @@
-using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
+using DiscordLab.Core.API.Attributes;
 using LabApi.Events.Handlers;
 using LabApi.Features.Wrappers;
 using LabApi.Loader;

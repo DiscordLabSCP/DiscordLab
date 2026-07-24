@@ -1,16 +1,14 @@
 // ReSharper disable MemberCanBePrivate.Global
 
-using DiscordLab.Bot.API.Features.Embed;
-using DiscordLab.Core;
-using NorthwoodLib.Pools;
-
-namespace DiscordLab.Bot.API.Features;
-
 using System.ComponentModel;
-using System.Diagnostics;
-using System.Reflection;
+using DiscordLab.Core.API.Embed;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.TranslationBuilders;
+using NorthwoodLib.Pools;
 using UnityEngine;
 using YamlDotNet.Serialization;
+
+namespace DiscordLab.Core;
 
 /// <summary>
 /// Message config object for either string messages or embeds.
@@ -27,7 +25,7 @@ public class MessageContent
     /// Gets or sets the embed to send, if any.
     /// </summary>
     [YamlMember(DefaultValuesHandling = DefaultValuesHandling.OmitNull)]
-    public Embed.EmbedBuilder? Embed { get; set; }
+    public EmbedBuilder? Embed { get; set; }
 
     /// <summary>
     /// Gets or sets the string to send, if any.
@@ -47,7 +45,7 @@ public class MessageContent
     /// </summary>
     /// <param name="embed">The embed.</param>
     /// <returns>The <see cref="MessageContent"/> instance.</returns>
-    public static implicit operator MessageContent(Embed.EmbedBuilder embed) => new() { Embed = embed };
+    public static implicit operator MessageContent(EmbedBuilder embed) => new() { Embed = embed };
 
     /// <summary>
     /// Converts a string into a <see cref="MessageContent"/> instance.
@@ -70,35 +68,22 @@ public class MessageContent
     /// <param name="builder">The <see cref="TranslationBuilder"/> to use.</param>
     /// <returns>The embed and content with replaced values.</returns>
     /// <exception cref="ArgumentException">Throws when message content is too long after being built.</exception>
-    public (EmbedBuilder? Embed, string? Content) Build(TranslationBuilder builder)
+    public MessageInformation Build(TranslationBuilder builder)
     {
-        List<string> contents = ListPool<string>.Shared.Rent();
+        string? message = builder.Build(Message.OrIfEmpty());
+        EmbedBuilder? embed = Embed?.CloneWithTranslation(builder);
 
-        string OrEmpty(string? content) => content ?? string.Empty;
+        if (string.IsNullOrEmpty(message))
+            message = null;
+        if (string.IsNullOrEmpty(embed?.Title) && string.IsNullOrEmpty(embed?.Description) && !(embed?.Fields?.Any() ?? false))
+            embed = null;
         
-        contents.Add(OrEmpty(Message));
-        contents.Add(OrEmpty(Embed?.Title));
-        contents.Add(OrEmpty(Embed?.Description));
-        contents.Add(OrEmpty(Embed?.Url));
-        contents.Add(OrEmpty(Embed?.ImageUrl));
-        contents.Add(OrEmpty(Embed?.ThumbnailUrl));
-        contents.Add(OrEmpty(Embed?.Footer?.Text));
-        contents.Add(OrEmpty(Embed?.Footer?.IconUrl));
-        
-        foreach (EmbedFieldBuilder field in Embed?.Fields ?? [])
-        {
-            contents.Add(OrEmpty(field.Name));
-            contents.Add(OrEmpty(field.Value));
-        }
-
-        string delimiter = $"|{Guid.NewGuid()}|";
-        string combined = string.Join(delimiter, contents);
-        string replaced = builder.Build(combined);
+        return new(message, embed);
     }
 
     /// <inheritdoc cref="Build"/>
     /// <remarks>Does the building on the main thread, use this over Build if you use Task.Run.</remarks>
-    public async Awaitable<(Discord.Embed? Embed, string? Content)> MainThreadBuild(TranslationBuilder builder)
+    public async Awaitable<MessageInformation> MainThreadBuild(TranslationBuilder builder)
     {
         await Awaitable.MainThreadAsync();
         return Build(builder);

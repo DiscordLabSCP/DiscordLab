@@ -1,7 +1,8 @@
-using Discord;
-using DiscordLab.Bot;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Enums;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.Features;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
 using LabApi.Features;
@@ -69,23 +70,21 @@ public class Plugin : Plugin<Config, Translation>
         TranslationBuilder builder = new(playerCount == 0
             ? Instance.Translation.EmptyContent
             : Instance.Translation.NormalContent);
-        Task.RunAndLog(async () => await Client.SocketClient.SetGameAsync(builder, type: Instance.Config.ActivityType)
-            .ConfigureAwait(false));
+
+        Task.RunAndLog(() => MessageHandler.EditActivities(builder, Instance.Config.ActivityType));
         switch (playerCount)
         {
             case 0 when Instance.Config.IdleOnEmpty:
-                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Idle).ConfigureAwait(false), OnException);
+                Task.RunAndLog(async () => await MessageHandler.SetStatuses(StatusType.Idle).ConfigureAwait(false), OnException);
                 break;
-            case > 0 when Instance.Config.IdleOnEmpty &&
-                          Client.SocketClient.Status == UserStatus.Idle:
-                Task.RunAndLog(async () => await Client.SocketClient.SetStatusAsync(UserStatus.Online).ConfigureAwait(false), OnException);
+            case > 0 when Instance.Config.IdleOnEmpty:
+                Task.RunAndLog(async () => await MessageHandler.SetStatuses(StatusType.Online).ConfigureAwait(false), OnException);
                 break;
         }
     }
 
     private static void OnException(Exception ex)
     {
-        // Discord.WebSocket.DiscordSocketClient.BuildCurrentStatus() throws an InvalidOperationException sometimes, so this is a blocker.
         if (ex is InvalidOperationException)
             return;
         

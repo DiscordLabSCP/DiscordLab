@@ -4,22 +4,20 @@ namespace DiscordLab.Administration;
 
 public class Config
 {
-    public ulong GuildId { get; set; } = 0;
-
     [Description("The channel to send server start logs")]
-    public ulong ServerStartChannelId { get; set; } = 0;
+    public string ServerStartChannel { get; set; } = "default";
 
     [Description("Where server shutdown logs should be sent")]
-    public ulong ServerShutdownChannelId { get; set; } = 0;
+    public string ServerShutdownChannel { get; set; } = "default";
 
     [Description("The channel to send error logs")]
-    public ulong ErrorLogChannelId { get; set; } = 0;
+    public string ErrorLogChannel { get; set; } = "default";
 
     [Description("The channel to send remote admin logs")]
-    public ulong RemoteAdminChannelId { get; set; } = 0;
+    public string RemoteAdminChannel { get; set; } = "default";
 
     [Description("The channel to send normal command logs")]
-    public ulong CommandLogChannelId { get; set; } = 0;
+    public string CommandLogChannel { get; set; } = "default";
 
     [Description("Should a secondary translation be used for remote admin commands whose response is a failure?")]
     public bool UseSecondaryTranslationRemoteAdmin { get; set; } = false;

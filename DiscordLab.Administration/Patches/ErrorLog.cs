@@ -1,11 +1,8 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core;
+using DiscordLab.Core.API.TranslationBuilders;
 using HarmonyLib;
 using LabApi.Features.Console;
+using Attachment = DiscordLab.Core.API.Features.Attachment;
 
 namespace DiscordLab.Administration.Patches;
 
@@ -14,35 +11,24 @@ public static class ErrorLog
 {
     public static void Postfix(object message)
     {
-        if (Plugin.Instance.Config.ErrorLogChannelId == 0)
-            return;
+        TranslationBuilder builder = new();
 
-        if (!Client.TryGetOrAddChannel(Plugin.Instance.Config.ErrorLogChannelId, out SocketTextChannel channel))
-        {
-            Logger.Raw(
-                $"[ERROR] [{Plugin.Instance.Name}] {LoggingUtils.GenerateMissingChannelMessage("error logs", Plugin.Instance.Config.ErrorLogChannelId, Plugin.Instance.Config.GuildId)}",
-                ConsoleColor.Red);
-            return;
-        }
+        MessageInformation info = Plugin.Instance.Translation.ErrorLog.Build(builder);
 
-        TranslationBuilder builder = new TranslationBuilder();
-
-        (Embed embed, string content) = Plugin.Instance.Translation.ErrorLog.Build(builder);
-
-        MemoryStream stream = new MemoryStream();
-        StreamWriter writer = new StreamWriter(stream);
+        MemoryStream stream = new();
+        StreamWriter writer = new(stream);
         writer.Write(message.ToString());
         writer.Flush();
         stream.Position = 0;
 
-        FileAttachment attachment = new(stream,
+        Attachment attachment = new(stream,
             $"Error {DateTime.UtcNow.ToShortDateString()} {DateTime.UtcNow.ToLongTimeString()}.txt");
 
         Task.Run(async () =>
         {
             try
             {
-                await channel.SendFileAsync(attachment, content, embed: embed);
+                await MessageHandler.SendMessages(Plugin.Instance.Config.ErrorLogChannel, info with { Attachment = attachment });
             }
             catch (Exception ex)
             {

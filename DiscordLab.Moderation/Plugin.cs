@@ -1,10 +1,9 @@
-﻿using Discord;
-using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
+﻿using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Features;
 using DiscordLab.Moderation.Commands;
 using LabApi.Events.CustomHandlers;
 using LabApi.Features;
-using LabApi.Features.Wrappers;
 using LabApi.Loader;
 using RemoteAdmin;
 
@@ -31,7 +30,7 @@ public class Plugin : Plugin<Config, Translation>
         CallOnLoadAttribute.Load();
 
         if (Config.AddCommands)
-            SlashCommand.FindAll();
+            ICommand.FindAll();
 
         if (Config.AddTempMuteCommand)
             CommandProcessor.RemoteAdminCommandHandler.RegisterCommand(new TempMuteRemoteAdmin());
@@ -56,10 +55,4 @@ public class Plugin : Plugin<Config, Translation>
 
         base.LoadConfigs();
     }
-
-    public static IEnumerable<AutocompleteResult> PlayersAutocompleteResults(object current) =>
-        Player.ReadyList
-            .Where(p => p.Nickname.Contains((string)current) || p.UserId.Contains((string)current) ||
-                        (int.TryParse((string)current, out int id) && p.PlayerId == id)).Take(25)
-            .Select(p => new AutocompleteResult(p.Nickname, p.PlayerId));
 }

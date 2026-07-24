@@ -1,26 +1,15 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot.API.Features;
-using LabApi.Features.Wrappers;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.TranslationBuilders;
 
 namespace DiscordLab.StatusChannel;
 
-public class Command : SlashCommand
+public class Command : ICommand
 {
-    public override SlashCommandBuilder Data { get; } = new()
-    {
-        Name = Plugin.Instance.Translation.PlayerListCommandName,
-        Description = Plugin.Instance.Translation.PlayerListCommandDescription,
-    };
+    public CommandBuilder Data => Plugin.Instance.Translation.Command;
 
-    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-
-    public override async Task Run(SocketSlashCommand command)
+    public async Task Execute(CommandInformation information)
     {
-        await Events.UsableContent.InteractionRespond(command, new()
-        {
-            PlayerListItem = Plugin.Instance.Translation.PlayerItem,
-            PlayerList = Player.ReadyList.Where(player => !player.IsDummy || !player.ReferenceHub.serverRoles.HideFromPlayerList)
-        });
+        await Events.UsableContent.InteractionResponseAsync(information, new AllPlayersTranslationBuilder(Plugin.Instance.Translation.PlayerItem));
     }
 }

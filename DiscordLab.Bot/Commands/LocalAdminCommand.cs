@@ -1,8 +1,9 @@
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.Updater;
+
 namespace DiscordLab.Bot.Commands;
 
 using CommandSystem;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Updates;
 using LabApi.Features.Console;
 
 /// <inheritdoc />
@@ -77,7 +78,7 @@ public class LocalAdminCommand : ICommand
                         return;
                     }
 
-                    if (Plugin.Instance.Config.AutoUpdate)
+                    if (Core.Plugin.Instance.Config.AutoUpdate)
                     {
                         return;
                     }

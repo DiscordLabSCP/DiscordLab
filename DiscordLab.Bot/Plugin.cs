@@ -1,8 +1,10 @@
-﻿namespace DiscordLab.Bot;
+﻿using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Commands;
+using LabApi.Loader;
+
+namespace DiscordLab.Bot;
 
 using Discord;
-using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
 using HarmonyLib;
 using LabApi.Features;
 using LabApi.Features.Console;
@@ -35,18 +37,15 @@ public sealed class Plugin : Plugin<Config>
     /// <inheritdoc />
     public override LoadPriority Priority { get; } = LoadPriority.Highest;
 
-    /// <summary>
-    /// Gets the current config for the plugin.
-    /// </summary>
-    public new Config Config { get; private set; } = null!;
-
     private Harmony Harmony { get; } = new($"DiscordLab.Bot-{DateTime.Now.Ticks}");
+
+    public MessageConfig MessageConfig { get; private set; } = null!;
 
     /// <inheritdoc />
     public override void Enable()
     {
         Instance = this;
-        Config = base.Config!;
+        CommandHandler.Instance = new();
 
         try
         {
@@ -61,9 +60,8 @@ public sealed class Plugin : Plugin<Config>
         Harmony.PatchAll();
 
         CallOnLoadAttribute.Load();
-        CallOnReadyAttribute.Load();
 
-        SlashCommand.FindAll();
+        ICommand.FindAll();
     }
 
     /// <inheritdoc />
@@ -73,7 +71,15 @@ public sealed class Plugin : Plugin<Config>
 
         CallOnUnloadAttribute.Unload();
 
-        Config = null!;
         Instance = null!;
+        MessageConfig = null!;
+        CommandHandler.Instance = null!;
+    }
+
+    public override void LoadConfigs()
+    {
+        MessageConfig = this.LoadConfig<MessageConfig>("message-config.yml") ?? new();
+        
+        base.LoadConfigs();
     }
 }
