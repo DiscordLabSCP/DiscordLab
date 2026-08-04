@@ -1,18 +1,17 @@
-﻿using DiscordLab.Core.API.Attributes;
-using DiscordLab.Core.API.Commands;
-using LabApi.Loader;
-
-namespace DiscordLab.Bot;
+﻿namespace DiscordLab.Bot;
 
 using Discord;
 using HarmonyLib;
 using LabApi.Features;
 using LabApi.Features.Console;
-using LabApi.Loader.Features.Plugins;
 using LabApi.Loader.Features.Plugins.Enums;
+using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Features;
+using LabApi.Loader;
 
 /// <inheritdoc />
-public sealed class Plugin : Plugin<Config>
+public sealed class Plugin : Plugin<Config, Translation>
 {
     /// <summary>
     /// Gets the current instance of this plugin.
@@ -40,6 +39,8 @@ public sealed class Plugin : Plugin<Config>
     private Harmony Harmony { get; } = new($"DiscordLab.Bot-{DateTime.Now.Ticks}");
 
     public MessageConfig MessageConfig { get; private set; } = null!;
+
+    public UserIdsConfig UserIdsConfig { get; private set; } = null!;
 
     /// <inheritdoc />
     public override void Enable()
@@ -77,6 +78,7 @@ public sealed class Plugin : Plugin<Config>
     public override void LoadConfigs()
     {
         MessageConfig = this.LoadConfig<MessageConfig>("message-config.yml") ?? new();
+        UserIdsConfig = this.LoadConfig<UserIdsConfig>("userids.yml") ?? new();
         
         base.LoadConfigs();
     }

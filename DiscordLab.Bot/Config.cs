@@ -26,6 +26,9 @@ public sealed class Config
         ["default"] = "0"
     };
 
+    [Description("Whether to allow people to sync their Discord account. Can do stuff like role syncing and otherwise when you add the module(s).")]
+    public bool AddSyncing = false;
+
     /// <summary>
     /// Gets or sets the number of messages that should be cached from each channel.
     /// </summary>
