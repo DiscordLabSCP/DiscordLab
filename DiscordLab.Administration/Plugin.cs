@@ -30,8 +30,7 @@ public class Plugin : Plugin<Config, Translation>
         harmony.PatchAll();
         CallOnLoadAttribute.Load();
 
-        if (Config.AddCommands)
-            ICommand.FindAll();
+        ICommand.FindAll();
 
         CustomHandlersManager.RegisterEventsHandler(Events);
     }

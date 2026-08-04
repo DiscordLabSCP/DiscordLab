@@ -31,8 +31,7 @@ public class Plugin : Plugin<Config, Translation>
 
         CustomHandlersManager.RegisterEventsHandler(Events);
 
-        if (Config.AddCommand)
-            ICommand.FindAll();
+        ICommand.FindAll();
     }
 
     public override void Disable()

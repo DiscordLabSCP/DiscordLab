@@ -29,8 +29,7 @@ public class Plugin : Plugin<Config, Translation>
 
         CallOnLoadAttribute.Load();
 
-        if (Config.AddCommands)
-            ICommand.FindAll();
+        ICommand.FindAll();
 
         if (Config.AddTempMuteCommand)
             CommandProcessor.RemoteAdminCommandHandler.RegisterCommand(new TempMuteRemoteAdmin());
