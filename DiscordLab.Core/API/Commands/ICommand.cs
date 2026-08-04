@@ -7,6 +7,8 @@ public interface ICommand
 {
     public CommandBuilder Data { get; }
 
+    public bool ShouldRegister { get; }
+
     public Task Execute(CommandInformation data);
 
     public static ObservableCollection<ICommand> Commands = new();
@@ -26,7 +28,9 @@ public interface ICommand
 
             if (Activator.CreateInstance(type) is not ICommand init)
                 continue;
-            Commands.Add(init);
+            
+            if(init.ShouldRegister)
+                Commands.Add(init);
         }
     }
 }
