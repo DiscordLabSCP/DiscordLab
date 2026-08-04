@@ -29,7 +29,7 @@ public struct CommandInformation
 
     public async Task DeferResponse() => await DeferResponseFunc();
 
-    public Func<MessageInformation, Task> ReplyFunc { private get; init; }
+    public Func<MessageInformation, Task> ReplyFunc { private get; init; } = _ => Task.CompletedTask;
     
     public Func<Task> DeferResponseFunc { private get; init; } = () => Task.CompletedTask;
     
