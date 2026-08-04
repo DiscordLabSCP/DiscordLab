@@ -60,8 +60,6 @@ public sealed class Plugin : Plugin<Config>
         Harmony.PatchAll();
 
         CallOnLoadAttribute.Load();
-
-        ICommand.FindAll();
     }
 
     /// <inheritdoc />

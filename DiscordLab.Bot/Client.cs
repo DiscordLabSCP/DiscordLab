@@ -1,6 +1,10 @@
 // ReSharper disable MemberCanBePrivate.Global
 
+using System.ComponentModel.Design;
+using Discord.Interactions;
+using DiscordLab.Bot.Commands.Syncing;
 using DiscordLab.Core.API.Commands;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace DiscordLab.Bot;
 
@@ -27,6 +31,8 @@ public static class Client
     /// Gets the websocket client for the Discord bot.
     /// </summary>
     public static DiscordSocketClient SocketClient { get; private set; } = null!;
+
+    public static InteractionService InteractionService { get; private set; } = null!;
 
     /// <summary>
     /// Gets a value indicating whether the client is in the ready state.
@@ -112,6 +118,7 @@ public static class Client
         try
         {
             SocketClient = new(config);
+            InteractionService = new(SocketClient);
 
             DebugLog("Client has been created...");
 
@@ -200,7 +207,7 @@ public static class Client
         }
     }
 
-    private static Task OnReady()
+    private static async Task OnReady()
     {
         DebugLog("Bot is ready");
         IsClientReady = true;
@@ -210,8 +217,13 @@ public static class Client
         {
             DebugLog(string.Join("\n", SocketClient.Guilds.Select(GenerateGuildChannelsMessage)));
         }
-
-        return Task.CompletedTask;
+        
+        IEnumerable<ModuleInfo> modules = await InteractionService.AddModulesAsync(Assembly.GetEntryAssembly(), null);
+        
+        if (!Config.AddSyncing)
+            await InteractionService.RemoveModuleAsync(modules.FirstOrDefault(x => x.Name == nameof(DiscordLink)));
+        
+        await InteractionService.AddCommandsToGuildAsync(DefaultGuild, commands: [..InteractionService.SlashCommands]);
     }
 
     private static IEnumerable<CommandOptionInformation> LoopThroughOptions(IEnumerable<SocketSlashCommandDataOption> options) => 
