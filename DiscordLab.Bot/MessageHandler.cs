@@ -8,17 +8,17 @@ using Discord;
 using Discord.Rest;
 using Discord.Webhook;
 using Discord.WebSocket;
-using DiscordLab.Core;
-using DiscordLab.Core.API.Enums;
-using DiscordLab.Core.API.Extensions;
+using Core;
+using Core.API.Enums;
+using Core.API.Extensions;
 using LabApi.Loader;
 
-public class MessageHandler : Core.MessageHandler
+public class MessageHandler : DiscordLab.Core.MessageHandler
 {
     private bool TryGetFromDestination(string destination, out string channel) =>
         Plugin.Instance.Config.ChannelIds.TryGetValue(destination, out channel);
 
-    private static Embed FromGeneric(Core.API.Embed.EmbedBuilder embed)
+    public static Embed FromGeneric(Core.API.Embed.EmbedBuilder embed)
     {
         EmbedBuilder builder = new()
         {
@@ -65,7 +65,7 @@ public class MessageHandler : Core.MessageHandler
         return msgId;
     }
 
-    internal async Task<ulong> SendToChannel(SocketTextChannel channel, string? content, Embed[]? embeds, FileAttachment? attachment)
+    private static async Task<ulong> SendToChannel(SocketTextChannel channel, string? content, Embed[]? embeds, FileAttachment? attachment)
     {
         if (!attachment.HasValue)
             return await channel.SendMessageAsync(content, embeds: embeds).Then(msg => msg.Id);
