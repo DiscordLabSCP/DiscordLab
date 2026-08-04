@@ -1,10 +1,9 @@
+using CommandSystem;
 using DiscordLab.Core.API.Extensions;
 using DiscordLab.Core.API.Updater;
-
-namespace DiscordLab.Bot.Commands;
-
-using CommandSystem;
 using LabApi.Features.Console;
+
+namespace DiscordLab.Bot.Commands.Management;
 
 /// <inheritdoc />
 [CommandHandler(typeof(GameConsoleCommandHandler))]
