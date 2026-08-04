@@ -1,5 +1,7 @@
 using Discord;
 using DiscordLab.Core.API.Commands;
+using MEC;
+using UnityEngine;
 
 namespace DiscordLab.Bot;
 
@@ -32,9 +34,18 @@ public class CommandHandler : Core.CommandHandler
     
     protected override async Task AddCommands(IEnumerable<ICommand> commands)
     {
-        await Client.DefaultGuild!.BulkOverwriteApplicationCommandAsync(commands.Select(cmd =>
+        for (int i = 0; i < 10; i++)
         {
-            GuildPermission? permission = cmd.Data.DefaultPermission switch
+            if (Client.DefaultGuild == null)
+                await Task.Delay(1000);
+        }
+
+        if (Client.DefaultGuild == null)
+            return;
+        
+        foreach (ICommand command in commands)
+        {
+            GuildPermission? permission = command.Data.DefaultPermission switch
             {
                 DefaultCommandPermissions.Everyone => null,
                 DefaultCommandPermissions.Moderators => GuildPermission.ModerateMembers,
@@ -44,13 +55,13 @@ public class CommandHandler : Core.CommandHandler
 
             SlashCommandBuilder builder = new()
             {
-                Name = cmd.Data.Name,
-                Description = cmd.Data.Description,
+                Name = command.Data.Name,
+                Description = command.Data.Description,
                 DefaultMemberPermissions = permission,
-                Options = LoopThroughOptions(cmd.Data.Options)
+                Options = LoopThroughOptions(command.Data.Options)
             };
 
-            return builder.Build();
-        }).ToArray<ApplicationCommandProperties>());
+            await Client.DefaultGuild.CreateApplicationCommandAsync(builder.Build());
+        }
     }
 }
