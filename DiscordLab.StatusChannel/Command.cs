@@ -7,6 +7,8 @@ namespace DiscordLab.StatusChannel;
 public class Command : ICommand
 {
     public CommandBuilder Data => Plugin.Instance.Translation.Command;
+    
+    public bool ShouldRegister => Plugin.Instance.Config.AddCommand;
 
     public async Task Execute(CommandInformation information)
     {

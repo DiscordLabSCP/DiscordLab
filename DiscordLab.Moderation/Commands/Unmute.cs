@@ -10,6 +10,8 @@ public class Unmute : ICommand
 
     public CommandBuilder Data => Translation.UnmuteCommand;
 
+    public bool ShouldRegister => Plugin.Instance.Config.AddCommands;
+
     public async Task Execute(CommandInformation command)
     {
         await command.DeferResponse();

@@ -12,6 +12,8 @@ public class SendCommand : ICommand
 
     public CommandBuilder Data => Translation.SendCommand;
 
+    public bool ShouldRegister => Plugin.Instance.Config.AddCommands;
+
     public async Task Execute(CommandInformation command)
     {
         await command.DeferResponse();

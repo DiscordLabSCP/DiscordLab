@@ -9,6 +9,8 @@ public class Unban : ICommand
 
     public CommandBuilder Data => Translation.UnbanCommand;
 
+    public bool ShouldRegister => Plugin.Instance.Config.AddCommands;
+
     public async Task Execute(CommandInformation command)
     {
         await command.DeferResponse();
