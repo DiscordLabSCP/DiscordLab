@@ -4,17 +4,15 @@ namespace DiscordLab.Moderation;
 
 public class Config
 {
-    public ulong GuildId { get; set; } = 0;
+    public string MuteLogChannel { get; set; } = "default";
 
-    public ulong MuteLogChannelId { get; set; } = 0;
+    public string UnmuteLogChannel { get; set; } = "default";
 
-    public ulong UnmuteLogChannelId { get; set; } = 0;
+    public string BanLogChannel { get; set; } = "default";
 
-    public ulong BanLogChannelId { get; set; } = 0;
+    public string UnbanLogChannel { get; set; } = "default";
 
-    public ulong UnbanLogChannelId { get; set; } = 0;
-
-    public ulong AdminChatLogChannelId { get; set; } = 0;
+    public string AdminChatLogChannel { get; set; } = "default";
 
     [Description("Whether to add the Discord slash commands.")]
     public bool AddCommands { get; set; } = true;

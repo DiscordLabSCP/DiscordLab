@@ -1,10 +1,12 @@
-using Discord;
+using System.ComponentModel;
+using DiscordLab.Core.API.Enums;
 
 namespace DiscordLab.BotStatus;
 
 public class Config
 {
-    public ActivityType ActivityType { get; set; } = ActivityType.CustomStatus;
-
+    [Description("Whether Custom or Playing activity type")]
+    public ActivityType ActivityType { get; set; } = ActivityType.Custom;
+    
     public bool IdleOnEmpty { get; set; } = false;
 }

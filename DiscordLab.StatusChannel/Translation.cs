@@ -1,7 +1,8 @@
 using System.ComponentModel;
-using Discord;
-using DiscordLab.Bot.API.Features;
-using EmbedBuilder = DiscordLab.Bot.API.Features.Embed.EmbedBuilder;
+using System.Drawing;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Embed;
 
 namespace DiscordLab.StatusChannel;
 
@@ -26,7 +27,9 @@ public class Translation
     [Description("What will appear for each player when replacing the players variable above.")]
     public string PlayerItem { get; set; } = "- {player}";
 
-    public string PlayerListCommandName { get; set; } = "players";
-
-    public string PlayerListCommandDescription { get; set; } = "Get the current list of players on the server";
+    public CommandBuilder Command = new()
+    {
+        Name = "players",
+        Description = "Get current players on the server"
+    };
 }

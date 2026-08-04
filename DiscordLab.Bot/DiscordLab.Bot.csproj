@@ -6,44 +6,25 @@
         <Nullable>enable</Nullable>
         <PlatformTarget>x64</PlatformTarget>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-        <Version>2.6.1</Version>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <GenerateDocumentationFile>true</GenerateDocumentationFile>
-        <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-        <Authors>LumiFae</Authors>
-        <Title>DiscordLab</Title>
-        <Description>A modular Discord bot for SCP:SL servers running LabAPI</Description>
-        <RepositoryType>git</RepositoryType>
-        <RepositoryUrl>https://github.com/DiscordLabSCP/DiscordLab</RepositoryUrl>
-        <PackageReadmeFile>README.md</PackageReadmeFile>
-        <PackageLicenseExpression>AGPL-3.0-only</PackageLicenseExpression>
-    </PropertyGroup>
-
-    <PropertyGroup>
-        <CodeAnalysisRuleSet>../stylecop.ruleset</CodeAnalysisRuleSet>
+        <Version>3.0.0</Version>
     </PropertyGroup>
 
     <ItemGroup>
-        <None Include="..\README.md">
-            <Pack>True</Pack>
-            <PackagePath>\</PackagePath>
-        </None>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Reference Include="Assembly-CSharp-firstpass" HintPath="$(SL_REFERENCES)\Assembly-CSharp-firstpass.dll" Private="false"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <PackageReference Include="Discord.Net.WebSocket" PrivateAssets="none" IncludeAssets="all"/>
-        <PackageReference Include="Discord.Net.Rest" PrivateAssets="none" IncludeAssets="all"/>
-        <PackageReference Include="Discord.Net.Webhook" PrivateAssets="none" IncludeAssets="all"/>
-        <PackageReference Include="Lib.Harmony"/>
-        <PackageReference Include="StyleCop.Analyzers" IncludeAssets="all" PrivateAssets="all"/>
+        <PackageReference Include="Discord.Net" Version="3.17.4" />
+        <PackageReference Include="Discord.Net.Core" Version="3.17.4">
+            <Aliases>global,DiscordNet</Aliases>
+        </PackageReference>
+        <PackageReference Include="Lib.Harmony" Version="2.2.2"/>
         <PackageReference Include="System.Net.Http"/>
         <PackageReference Include="System.Text.Json"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <ProjectReference Include="..\DiscordLab.Core\DiscordLab.Core.csproj"/>
+    </ItemGroup>
+    
+    <ItemGroup>
+        <Reference Include="Assembly-CSharp-firstpass"/>
     </ItemGroup>
 
     <PropertyGroup>

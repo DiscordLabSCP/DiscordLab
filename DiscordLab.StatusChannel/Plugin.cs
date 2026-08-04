@@ -1,5 +1,6 @@
-﻿using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
+﻿using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.Features;
 using LabApi.Events.CustomHandlers;
 using LabApi.Events.Handlers;
 using LabApi.Features;
@@ -20,8 +21,6 @@ public class Plugin : Plugin<Config, Translation>
     public override Version Version => GetType().Assembly.GetName().Version;
     public override Version RequiredApiVersion { get; } = new(LabApiProperties.CompiledVersion);
 
-    public MessageConfig MessageConfig { get; set; }
-
     public Events Events = new();
 
     public override void Enable()
@@ -30,12 +29,9 @@ public class Plugin : Plugin<Config, Translation>
 
         CallOnLoadAttribute.Load();
 
-        CallOnReadyAttribute.Load();
-
         CustomHandlersManager.RegisterEventsHandler(Events);
 
-        if (Config.AddCommand)
-            SlashCommand.FindAll();
+        ICommand.FindAll();
     }
 
     public override void Disable()
@@ -47,12 +43,5 @@ public class Plugin : Plugin<Config, Translation>
         Events = null;
 
         Instance = null;
-    }
-
-    public override void LoadConfigs()
-    {
-        this.TryLoadConfig("message_config.yml", out MessageConfig messageConfig);
-        MessageConfig = messageConfig ?? new();
-        base.LoadConfigs();
     }
 }

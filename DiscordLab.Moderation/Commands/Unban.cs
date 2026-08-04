@@ -1,60 +1,27 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
+using DiscordLab.Core.API.Commands;
+using DiscordLab.Core.API.TranslationBuilders;
 
 namespace DiscordLab.Moderation.Commands;
 
-public class Unban : AutocompleteCommand
+public class Unban : ICommand
 {
     public static Translation Translation => Plugin.Instance.Translation;
 
-    public override SlashCommandBuilder Data { get; } = new()
+    public CommandBuilder Data => Translation.UnbanCommand;
+
+    public bool ShouldRegister => Plugin.Instance.Config.AddCommands;
+
+    public async Task Execute(CommandInformation command)
     {
-        Name = Translation.UnbanCommandName,
-        Description = Translation.UnbanCommandDescription,
-        DefaultMemberPermissions = GuildPermission.ModerateMembers,
-        Options =
-        [
-            new()
-            {
-                Name = Translation.UnbanUserOptionName,
-                Description = Translation.UnbanUserOptionDescription,
-                Type = ApplicationCommandOptionType.String,
-                IsRequired = true,
-                IsAutocomplete = true
-            },
-        ]
-    };
+        await command.DeferResponse();
 
-    protected override ulong GuildId { get; } = Plugin.Instance.Config.GuildId;
-
-    public override async Task Run(SocketSlashCommand command)
-    {
-        await command.DeferAsync();
-
-        string id = command.Data.Options.GetOption<string>(Translation.UnbanUserOptionName)!;
+        string id = command.OptionsDictionary["user"];
 
         BanHandler.RemoveBan(id, id.Contains("@") ? BanHandler.BanType.UserId : BanHandler.BanType.IP);
 
         TranslationBuilder builder = new TranslationBuilder(Translation.UnbanSuccess)
             .AddCustomReplacer("userid", id);
 
-        await command.ModifyOriginalResponseAsync(m =>
-            m.Content =
-                builder);
-    }
-
-    public override async Task Autocomplete(SocketAutocompleteInteraction autocomplete)
-    {
-        IEnumerable<BanDetails> response =
-        [
-            ..BanHandler.GetBans(BanHandler.BanType.UserId),
-            ..BanHandler.GetBans(BanHandler.BanType.IP)
-        ];
-        await autocomplete.RespondAsync(response
-            .Where(x => x.Id.Contains((string)autocomplete.Data.Current.Value) ||
-                        x.OriginalName.Contains((string)autocomplete.Data.Current.Value)).Take(25)
-            .Select(x => new AutocompleteResult($"{x.OriginalName} ({x.Id})", x.Id)));
+        await command.Reply(builder);
     }
 }

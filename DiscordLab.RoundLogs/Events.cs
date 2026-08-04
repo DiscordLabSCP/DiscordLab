@@ -1,14 +1,11 @@
-using Discord.WebSocket;
-using DiscordLab.Bot;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.Arguments.WarheadEvents;
 using LabApi.Events.CustomHandlers;
 using PlayerRoles;
-using LabApi.Features.Console;
 using LabApi.Features.Extensions;
 using LabApi.Features.Wrappers;
 
@@ -30,9 +27,7 @@ public class Events : CustomEventsHandler
         if (ev.OldRole == ev.NewRole.RoleTypeId)
             return;
 
-        SocketTextChannel channel;
-
-        TranslationBuilder builder = new TranslationBuilder("player", ev.Player)
+        TranslationBuilder builder = new PlayerTranslationBuilder("player", ev.Player)
             .AddCustomReplacer("oldrole", () => ev.OldRole.GetFullName())
             .AddCustomReplacer("newrole", ev.NewRole.RoleName)
             .AddCustomReplacer("reason", ev.ChangeReason.ToString())
@@ -40,188 +35,79 @@ public class Events : CustomEventsHandler
 
         if (ev.NewRole.Team == ev.OldRole.GetTeam() && ev.NewRole.Team == Team.SCPs)
         {
-            if (Config.ScpSwapChannelId == 0)
-                return;
-            channel = Client.GetOrAddChannel(Config.ScpSwapChannelId);
-            if (channel == null)
-            {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("SCP Swap logs", Config.ScpSwapChannelId,
-                    Config.GuildId));
-                return;
-            }
-
-            Translation.ScpSwapLog.SendToChannel(channel, builder);
+            Translation.ScpSwapLog.Send(Config.ScpSwapChannel, builder);
             return;
         }
 
-        if (Config.RoleChangeChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.RoleChangeChannelId, out channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("Role change logs", Config.RoleChangeChannelId,
-                Config.GuildId));
-        }
-
-        Translation.RoleChangeLog.SendToChannel(channel, builder);
+        Translation.RoleChangeLog.Send(Config.RoleChangeChannel, builder);
     }
 
     public override void OnServerWaveRespawned(WaveRespawnedEventArgs ev)
     {
         bool isFoundation = ev.Wave is MtfWave or MiniMtfWave;
 
-        if ((isFoundation && Config.NtfSpawnChannelId == 0) || (!isFoundation && Config.ChaosSpawnChannelId == 0))
-            return;
-
-        ulong channelId = isFoundation ? Config.NtfSpawnChannelId : Config.ChaosSpawnChannelId;
-
-        if (!Client.TryGetOrAddChannel(channelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("Wave respawn logs", channelId, Config.GuildId));
-            return;
-        }
+        string channel = isFoundation ? Config.NtfSpawnChannel : Config.ChaosSpawnChannel;
 
         MessageContent content = isFoundation ? Translation.NtfSpawn : Translation.ChaosSpawn;
 
-        TranslationBuilder builder = new()
-        {
-            PlayerListItem = Translation.PlayerListItem,
-            PlayerList = ev.Players
-        };
+        TranslationBuilder builder = new PlayerListTranslationBuilder(ev.Players, Translation.PlayerListItem);
 
-        content.SendToChannel(channel, builder);
+        content.Send(channel, builder);
     }
 
     public override void OnPlayerCuffed(PlayerCuffedEventArgs ev)
     {
-        if (Config.CuffedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.CuffedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("cuffed logs", Config.CuffedChannelId, Config.GuildId));
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("target", ev.Target)
             .AddPlayer("player", ev.Player);
 
-        Translation.Cuffed.SendToChannel(channel, builder);
+        Translation.Cuffed.Send(Config.CuffedChannel, builder);
     }
 
     public override void OnPlayerUncuffed(PlayerUncuffedEventArgs ev)
     {
-        if (Config.UncuffedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.UncuffedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("uncuff logs", Config.CuffedChannelId, Config.GuildId));
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("target", ev.Target)
             .AddPlayer("player", ev.Player);
 
-        Translation.Uncuffed.SendToChannel(channel, builder);
+        Translation.Uncuffed.Send(Config.UncuffedChannel, builder);
     }
 
     public override void OnServerRoundStarted()
     {
-        if (Config.RoundStartedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.RoundStartedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round start logs", Config.CuffedChannelId,
-                Config.GuildId));
-            return;
-        }
-
-        Translation.RoundStart.SendToChannel(channel, new());
+        Translation.RoundStart.Send(Config.RoundStartedChannel, new());
     }
 
     public override void OnServerRoundEnded(RoundEndedEventArgs ev)
     {
-        if (Config.RoundEndedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.RoundEndedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("round ended logs", Config.CuffedChannelId,
-                Config.GuildId));
-            return;
-        }
-
         TranslationBuilder builder = new TranslationBuilder()
             .AddCustomReplacer("winner", ev.LeadingTeam.ToString());
 
-        Translation.RoundEnd.SendToChannel(channel, builder);
+        Translation.RoundEnd.Send(Config.RoundEndedChannel, builder);
     }
 
     public override void OnServerLczDecontaminationStarted()
     {
-        if (Config.DecontaminationChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.DecontaminationChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("decontamination logs",
-                Config.DecontaminationChannelId, Config.GuildId));
-            return;
-        }
-
-        Translation.Decontamination.SendToChannel(channel, new());
+        Translation.Decontamination.Send(Config.DecontaminationChannel, new());
     }
 
     public override void OnPlayerEscaped(PlayerEscapedEventArgs ev)
     {
-        if (Config.EscapeChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.EscapeChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("escape logs", Config.EscapeChannelId, Config.GuildId));
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder("player", ev.Player)
+        TranslationBuilder builder = new PlayerTranslationBuilder("player", ev.Player)
             .AddCustomReplacer("type", () => ev.EscapeScenarioType.ToString())
             .AddCustomReplacer("newrole", () => ev.NewRole.GetFullName())
             .AddCustomReplacer("oldrole", () => ev.OldRole.GetFullName());
         
-        Translation.Escape.SendToChannel(channel, builder);
+        Translation.Escape.Send(Config.EscapeChannel, builder);
     }
 
     public override void OnWarheadStarted(WarheadStartedEventArgs ev)
     {
-        if (Config.WarheadActivatedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.WarheadActivatedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("warhead activated logs", Config.WarheadActivatedChannelId, Config.GuildId));
-            return;
-        }
-        
-        Translation.WarheadActivated.SendToChannel(channel, new("player", ev.Player));
+        Translation.WarheadActivated.Send(Config.WarheadActivatedChannel, new PlayerTranslationBuilder("player", ev.Player));
     }
 
     public override void OnWarheadStopped(WarheadStoppedEventArgs ev)
     {
-        if (Config.WarheadDeactivatedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.WarheadDeactivatedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("warhead deactivated logs", Config.WarheadDeactivatedChannelId, Config.GuildId));
-            return;
-        }
-        
-        Translation.WarheadDeactivated.SendToChannel(channel, new("player", ev.Player));
+        Translation.WarheadDeactivated.Send(Config.WarheadActivatedChannel, new PlayerTranslationBuilder("player", ev.Player));
     }
 }

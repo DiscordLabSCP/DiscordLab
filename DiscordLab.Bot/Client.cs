@@ -1,5 +1,11 @@
 // ReSharper disable MemberCanBePrivate.Global
 
+using System.ComponentModel.Design;
+using Discord.Interactions;
+using DiscordLab.Bot.Commands.Syncing;
+using DiscordLab.Core.API.Commands;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace DiscordLab.Bot;
 
 using System.Net;
@@ -11,9 +17,8 @@ using Discord.Net;
 using Discord.Net.Rest;
 using Discord.Net.WebSockets;
 using Discord.WebSocket;
-using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
+using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Extensions;
 using LabApi.Features.Console;
 using NorthwoodLib.Pools;
 
@@ -26,6 +31,8 @@ public static class Client
     /// Gets the websocket client for the Discord bot.
     /// </summary>
     public static DiscordSocketClient SocketClient { get; private set; } = null!;
+
+    public static InteractionService InteractionService { get; private set; } = null!;
 
     /// <summary>
     /// Gets a value indicating whether the client is in the ready state.
@@ -107,26 +114,19 @@ public static class Client
             LogGatewayIntentWarnings = false,
         };
 
-        if (!string.IsNullOrEmpty(Config.ProxyUrl))
-        {
-            DebugLog("Proxy is configured.");
-            WebProxy proxy = new(Config.ProxyUrl);
-            config.RestClientProvider = DefaultRestClientProvider.Create(true, proxy);
-            config.WebSocketProvider = DefaultWebSocketProvider.Create(proxy);
-        }
-
         DebugLog("Done the initial setup...");
 
         try
         {
             SocketClient = new(config);
+            InteractionService = new(SocketClient);
 
             DebugLog("Client has been created...");
 
             SocketClient.Log += OnLog;
             SocketClient.Ready += OnReady;
-            SocketClient.SlashCommandExecuted += SlashCommandHandler;
-            SocketClient.AutocompleteExecuted += AutocompleteHandler;
+            SocketClient.SlashCommandExecuted += OnCommand;
+            SocketClient.AutocompleteExecuted += OnAutocomplete;
         }
         catch (TargetInvocationException ex) when (ex.InnerException is TypeLoadException)
         {
@@ -158,8 +158,8 @@ public static class Client
 
         SocketClient.Log -= OnLog;
         SocketClient.Ready -= OnReady;
-        SocketClient.SlashCommandExecuted -= SlashCommandHandler;
-        SocketClient.AutocompleteExecuted -= AutocompleteHandler;
+        SocketClient.SlashCommandExecuted -= OnCommand;
+        SocketClient.AutocompleteExecuted -= OnAutocomplete;
         Task.RunAndLog(async () =>
         {
             await SocketClient.LogoutAsync();
@@ -205,45 +205,75 @@ public static class Client
         }
     }
 
-    private static Task OnReady()
+    private static async Task OnReady()
     {
         DebugLog("Bot is ready");
         IsClientReady = true;
         DefaultGuild = SocketClient.GetGuild(Config.GuildId);
-        CallOnReadyAttribute.Ready();
 
         if (Config.Debug)
         {
             DebugLog(string.Join("\n", SocketClient.Guilds.Select(GenerateGuildChannelsMessage)));
         }
+        
+        IEnumerable<ModuleInfo> modules = await InteractionService.AddModulesAsync(Assembly.GetEntryAssembly(), null);
+        
+        if (!Config.AddSyncing)
+            await InteractionService.RemoveModuleAsync(modules.FirstOrDefault(x => x.Name == nameof(DiscordLink)));
+        
+        await InteractionService.AddCommandsToGuildAsync(DefaultGuild, commands: [..InteractionService.SlashCommands]);
+    }
 
-        return Task.CompletedTask;
+    private static IEnumerable<CommandOptionInformation> LoopThroughOptions(IEnumerable<SocketSlashCommandDataOption> options) => 
+        options.Select(option => new CommandOptionInformation(option.Name, option.Value.ToString(), option.Options.Any() ? LoopThroughOptions(option.Options) : null));
+
+    private static async Task OnCommand(SocketSlashCommand cmd)
+    {
+        IEnumerable<CommandOptionInformation> options = LoopThroughOptions(cmd.Data.Options);
+
+        CommandInformation information = new(cmd.CommandName, options)
+        {
+            ReplyFunc = async info =>
+            {
+                if (!cmd.HasResponded)
+                {
+                    FileAttachment? attachment = MessageHandler.ToAttachment(info);
+                    Embed[]? embeds = MessageHandler.ToEmbeds(info);
+                    if (attachment.HasValue)
+                        await cmd.RespondWithFileAsync(attachment.Value, info.Content, embeds);
+                    else
+                        await cmd.RespondAsync(info.Content, embeds);
+                }
+                else
+                {
+                    await cmd.ModifyOriginalResponseAsync(msg => MessageHandler.SetFrom(msg, info));
+                }
+            },
+            DeferResponseFunc = async () => await cmd.DeferAsync()
+        };
+
+        await CommandHandler.Instance.ExecuteCommand(information);
+    }
+
+    private static async Task OnAutocomplete(SocketAutocompleteInteraction autocomplete)
+    {
+        CommandOptionInformation info = new()
+        {
+            Name = autocomplete.Data.Current.Name,
+            Value = autocomplete.Data.Current.Value.ToString()
+        };
+
+        IEnumerable<(string name, string value)> output = CommandHandler.Instance.ExecuteAutocomplete(autocomplete.Data.CommandName, info).Take(25);
+
+        IEnumerable<AutocompleteResult> results = output.Select(tuple => new AutocompleteResult(tuple.name, tuple.value));
+
+        await autocomplete.RespondAsync(results);
     }
 
     private static string GenerateGuildChannelsMessage(SocketGuild guild) =>
         $"Guild {guild.Name} ({guild.Id}) channels: {string.Join("\n", guild.Channels.Where(channel => channel is SocketTextChannel).Select(GenerateChannelMessage))}";
 
     private static string GenerateChannelMessage(SocketGuildChannel channel) => $"{channel.Name} ({channel.Id})";
-
-    private static Task SlashCommandHandler(SocketSlashCommand command)
-    {
-        DebugLog($"{command.Data.Name} requested a response, finding the command...");
-        SlashCommand? cmd = SlashCommand.Commands.FirstOrDefault(c => c.Data.Name == command.Data.Name);
-
-        cmd?.Run(command);
-        return Task.CompletedTask;
-    }
-
-    private static Task AutocompleteHandler(SocketAutocompleteInteraction autocomplete)
-    {
-        DebugLog($"{autocomplete.Data.CommandName} requested a response, finding the command...");
-        AutocompleteCommand? command =
-            SlashCommand.Commands.FirstOrDefault(c =>
-                c is AutocompleteCommand cmd && cmd.Data.Name == autocomplete.Data.CommandName) as AutocompleteCommand;
-
-        command?.Autocomplete(autocomplete);
-        return Task.CompletedTask;
-    }
 
     private static void DebugLog(object message)
     {

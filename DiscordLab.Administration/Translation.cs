@@ -1,4 +1,5 @@
-using DiscordLab.Bot.API.Features;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Commands;
 
 namespace DiscordLab.Administration;
 
@@ -20,13 +21,22 @@ public class Translation
 
     public MessageContent CommandLogFailResponse { get; set; } = "Player {player} has attempted to run a command which failed: `{command}`";
 
-    public string SendCommandName { get; set; } = "send";
-
-    public string SendCommandDescription { get; set; } = "Sends a command to the server";
-
-    public string SendCommandOptionName { get; set; } = "command";
-
-    public string SendCommandOptionDescription { get; set; } = "The command to send";
+    public CommandBuilder SendCommand = new()
+    {
+        Name = "send",
+        Description = "Sends a command to the server",
+        DefaultPermission = DefaultCommandPermissions.Admins,
+        Options =
+        [
+            new()
+            {
+                Name = "command",
+                Description = "The command to send",
+                IsRequired = true,
+                Type = CommandOptionType.String
+            }
+        ]
+    };
 
     public MessageContent SendCommandResponse { get; set; } = "The command has been sent, it returned: {response}";
 }

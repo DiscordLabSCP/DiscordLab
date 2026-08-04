@@ -4,42 +4,39 @@ namespace DiscordLab.RoundLogs;
 
 public class Config
 {
-    [Description("The guild ID, set to 0 for default guild.")]
-    public ulong GuildId { get; set; } = 0;
-
     [Description("The channel to log to when someone's role changes.")]
-    public ulong RoleChangeChannelId { get; set; } = 0;
+    public string RoleChangeChannel { get; set; } = "default";
 
     [Description("The channel to log to when someone swaps from an SCP to another.")]
-    public ulong ScpSwapChannelId { get; set; } = 0;
+    public string ScpSwapChannel { get; set; } = "default";
 
     [Description("The channel to log to when NTF spawns.")]
-    public ulong NtfSpawnChannelId { get; set; } = 0;
+    public string NtfSpawnChannel { get; set; } = "default";
 
     [Description("The channel to log to when Chaos spawns.")]
-    public ulong ChaosSpawnChannelId { get; set; } = 0;
+    public string ChaosSpawnChannel { get; set; } = "default";
 
     [Description("The channel to log to when someone gets cuffed.")]
-    public ulong CuffedChannelId { get; set; } = 0;
+    public string CuffedChannel { get; set; } = "default";
 
     [Description("The channel to log to when someone gets uncuffed.")]
-    public ulong UncuffedChannelId { get; set; } = 0;
+    public string UncuffedChannel { get; set; } = "default";
 
     [Description("The channel to log to when the round starts.")]
-    public ulong RoundStartedChannelId { get; set; } = 0;
+    public string RoundStartedChannel { get; set; } = "default";
 
     [Description("The channel to log to when the round ends.")]
-    public ulong RoundEndedChannelId { get; set; } = 0;
+    public string RoundEndedChannel { get; set; } = "default";
 
     [Description("The channel to log to when decontamination starts.")]
-    public ulong DecontaminationChannelId { get; set; } = 0;
+    public string DecontaminationChannel { get; set; } = "default";
     
     [Description("The channel to log to when someone escapes.")]
-    public ulong EscapeChannelId { get; set; } = 0;
+    public string EscapeChannel { get; set; } = "default";
     
     [Description("The channel to log to when the warhead is activated.")]
-    public ulong WarheadActivatedChannelId { get; set; } = 0;
+    public string WarheadActivatedChannel { get; set; } = "default";
     
     [Description("The channel to log to when the warhead is deactivated.")]
-    public ulong WarheadDeactivatedChannelId { get; set; } = 0;
+    public string WarheadDeactivatedChannel { get; set; } = "default";
 }

@@ -3,6 +3,7 @@
   <Project Path="DiscordLab.BotStatus\DiscordLab.BotStatus.csproj" />
   <Project Path="DiscordLab.Bot\DiscordLab.Bot.csproj" />
   <Project Path="DiscordLab.ConnectionLogs\DiscordLab.ConnectionLogs.csproj" />
+  <Project Path="DiscordLab.Core/DiscordLab.Core.csproj" />
   <Project Path="DiscordLab.DeathLogs\DiscordLab.DeathLogs.csproj" />
   <Project Path="DiscordLab.Moderation\DiscordLab.Moderation.csproj" />
   <Project Path="DiscordLab.RoundLogs\DiscordLab.RoundLogs.csproj" />

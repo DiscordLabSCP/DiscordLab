@@ -1,14 +1,10 @@
-using Discord.WebSocket;
-using DiscordLab.Bot;
-using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
-using LabApi.Events;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
 using LabApi.Events.Handlers;
-using LabApi.Features.Console;
 using LabApi.Features.Enums;
 using LabApi.Features.Wrappers;
 
@@ -42,34 +38,13 @@ public class Events : CustomEventsHandler
 
     public static void OnServerQuit()
     {
-        if (Config.ServerShutdownChannelId == 0)
-            return;
-        
-        if (!Client.TryGetOrAddChannel(Config.ServerShutdownChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("server quit logs", Config.ServerShutdownChannelId, Config.GuildId));
-            return;
-        }
-        
-        Translation.ServerShutdown.SendToChannel(channel, new());
+        Translation.ServerShutdown.Send(Config.ServerShutdownChannel, new());
     }
 
     public static void OnServerStart()
     {
         ServerEvents.WaitingForPlayers -= OnServerStart;
-        IsSubscribed = false;
-
-        if (Config.ServerStartChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.ServerStartChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("server start logs", Config.ServerStartChannelId,
-                Config.GuildId));
-            return;
-        }
-
-        Translation.ServerStart.SendToChannel(channel, new());
+        Translation.ServerStart.Send(Config.ServerStartChannel, new());
     }
 
     public override void OnServerCommandExecuted(CommandExecutedEventArgs ev)
@@ -80,8 +55,7 @@ public class Events : CustomEventsHandler
         if (string.IsNullOrEmpty(ev.CommandName))
             return;
 
-        SocketTextChannel channel;
-        TranslationBuilder builder = new TranslationBuilder("player", player)
+        TranslationBuilder builder = new PlayerTranslationBuilder("player", player)
             .AddCustomReplacer("type", ev.CommandType.ToString())
             .AddCustomReplacer("arguments", () => !ev.Arguments.Any() ? " " : string.Join(" ", ev.Arguments))
             .AddCustomReplacer("command", ev.CommandName)
@@ -91,32 +65,12 @@ public class Events : CustomEventsHandler
         MessageContent translation;
         if (ev.CommandType == CommandType.RemoteAdmin)
         {
-            if (Config.RemoteAdminChannelId == 0)
-                return;
-
-            if (!Client.TryGetOrAddChannel(Config.RemoteAdminChannelId, out channel))
-            {
-                Logger.Error(LoggingUtils.GenerateMissingChannelMessage("remote admin logs",
-                    Config.RemoteAdminChannelId, Config.GuildId));
-                return;
-            }
-            
             translation = Config.UseSecondaryTranslationRemoteAdmin && !ev.ExecutedSuccessfully ? Translation.RemoteAdminCommandFailResponse : Translation.RemoteAdmin;
-            translation.SendToChannel(channel, builder);
+            translation.Send(Config.RemoteAdminChannel, builder);
             return;
         }
 
-        if (Config.CommandLogChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.CommandLogChannelId, out channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("command logs", Config.CommandLogChannelId,
-                Config.GuildId));
-            return;
-        }
-        
         translation = Config.UseSecondaryTranslationCommand && !ev.ExecutedSuccessfully ? Translation.CommandLogFailResponse : Translation.CommandLog;
-        translation.SendToChannel(channel, builder);
+        translation.Send(Config.CommandLogChannel, builder);
     }
 }

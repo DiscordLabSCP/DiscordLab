@@ -1,5 +1,5 @@
 using System.ComponentModel;
-using DiscordLab.Bot.API.Features;
+using DiscordLab.Core;
 
 namespace DiscordLab.ConnectionLogs;
 

@@ -1,7 +1,9 @@
+using System.Text;
 using CommandSystem;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Features.Wrappers;
+using NorthwoodLib.Pools;
+using Utils;
 
 namespace DiscordLab.Moderation.Commands;
 
@@ -37,23 +39,33 @@ public class TempMuteRemoteAdmin : ICommand, IUsageProvider
             player = Server.Host;
         }
 
-        if (!CommandUtils.TryGetPlayerFromUnparsed(arguments.At(0), out Player target))
+        IEnumerable<ReferenceHub> players = RAUtils.ProcessPlayerIdOrNamesList(arguments, 0, out string[] newArgs);
+
+        if (!players.Any())
         {
             response = Plugin.Instance.Translation.InvalidUser;
         }
 
-        DateTime time = TempMuteManager.GetExpireDate(arguments.At(1));
+        DateTime time = TempMuteManager.GetExpireDate(newArgs[0]);
 
-        TempMuteManager.MutePlayer(target, time, player);
+        StringBuilder str = StringBuilderPool.Shared.Rent();
+        
+        foreach (ReferenceHub referenceHub in players)
+        {
+            Player target = Player.Get(referenceHub);
+            TempMuteManager.MutePlayer(target, time, player);
 
-        TranslationBuilder builder =
-            new TranslationBuilder(Plugin.Instance.Translation.TempMuteSuccess, "player", target)
-                {
-                    Time = time
-                }
-                .AddCustomReplacer("duration", () => arguments.At(1));
+            TranslationBuilder builder =
+                new PlayerTranslationBuilder(Plugin.Instance.Translation.TempMuteSuccess, "player", target)
+                    {
+                        Time = time
+                    }
+                    .AddCustomReplacer("duration", () => newArgs[0]);
 
-        response = builder;
+            str.AppendLine(builder);
+        }
+
+        response = StringBuilderPool.Shared.ToStringReturn(str);
         return true;
     }
 }

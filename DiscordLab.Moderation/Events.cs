@@ -1,15 +1,10 @@
-using Discord;
-using Discord.WebSocket;
-using DiscordLab.Bot;
-using DiscordLab.Bot.API.Extensions;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.TranslationBuilders;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Arguments.ServerEvents;
 using LabApi.Events.CustomHandlers;
-using LabApi.Features.Console;
 using LabApi.Features.Wrappers;
-using RemoteAdmin;
 
 namespace DiscordLab.Moderation;
 
@@ -29,35 +24,15 @@ public class Events : CustomEventsHandler
 
     public override void OnPlayerUnmuted(PlayerUnmutedEventArgs ev)
     {
-        if (Config.UnmuteLogChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.UnmuteLogChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("unmute logs", Config.UnmuteLogChannelId,
-                Config.GuildId));
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Issuer);
 
-        Translation.UnmuteLog.SendToChannel(channel, builder);
+        Translation.UnmuteLog.Send(Config.UnmuteLogChannel, builder);
     }
 
     public override void OnPlayerMuted(PlayerMutedEventArgs ev)
     {
-        if (Config.MuteLogChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.MuteLogChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("mute logs", Config.MuteLogChannelId, Config.GuildId));
-            return;
-        }
-
         MessageContent translation = Translation.PermMuteLog;
 
         if (TempMuteManager.MuteConfig.Mutes.TryGetValue(ev.Player.UserId, out DateTime time))
@@ -69,32 +44,24 @@ public class Events : CustomEventsHandler
             time = DateTime.Now;
         }
 
-        TranslationBuilder builder = new TranslationBuilder
+        TranslationBuilder builder = new PlayerTranslationBuilder
             {
                 Time = time
             }
             .AddPlayer("player", ev.Issuer)
             .AddPlayer("target", ev.Player);
 
-        translation.SendToChannel(channel, builder);
+        translation.Send(Config.MuteLogChannel, builder);
     }
 
     public override void OnServerBanIssuing(BanIssuingEventArgs ev)
     {
-        if (Config.BanLogChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.BanLogChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("ban logs", Config.BanLogChannelId, Config.GuildId));
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder
+        PlayerTranslationBuilder builder = new()
             {
                 Time = new(ev.BanDetails.Expires, DateTimeKind.Utc)
-            }
+            };
+
+        builder
             .AddCustomReplacer("userid", ev.BanDetails.Id)
             .AddCustomReplacer("reason", ev.BanDetails.Reason);
 
@@ -112,48 +79,30 @@ public class Events : CustomEventsHandler
             builder.AddCustomReplacer("issuerid", ev.BanDetails.Issuer);
         }
 
-        Translation.BanLogEmbed.SendToChannel(channel, builder);
+        Translation.BanLogEmbed.Send(Config.BanLogChannel, builder);
     }
 
     public override void OnServerBanRevoked(BanRevokedEventArgs ev)
     {
-        if (Config.UnbanLogChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.UnbanLogChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("unban logs", Config.UnbanLogChannelId, Config.GuildId));
-            return;
-        }
-
         TranslationBuilder builder = new TranslationBuilder()
             .AddCustomReplacer("userid", ev.BanDetails.Id)
             .AddCustomReplacer("username", ev.BanDetails.OriginalName)
             .AddCustomReplacer("playerid", ev.BanDetails.Issuer);
 
-        Translation.UnbanLog.SendToChannel(channel, builder);
+        Translation.UnbanLog.Send(Config.UnbanLogChannel, builder);
     }
 
     public override void OnServerSentAdminChat(SentAdminChatEventArgs ev)
     {
-        if (Config.AdminChatLogChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.AdminChatLogChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("admin chat logs", Config.AdminChatLogChannelId, Config.GuildId));
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        PlayerTranslationBuilder builder = new();
+            
+        builder
             .AddCustomReplacer("message", ev.Message)
             .AddCustomReplacer("sender", ev.Sender.Nickname);
 
         if (Player.TryGet(ev.Sender, out Player player))
             builder.AddPlayer("player", player);
         
-        Translation.AdminChatLog.SendToChannel(channel, builder);
+        Translation.AdminChatLog.Send(Config.AdminChatLogChannel, builder);
     }
 }

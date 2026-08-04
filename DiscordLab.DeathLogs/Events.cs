@@ -1,12 +1,9 @@
-using Discord.WebSocket;
-using DiscordLab.Bot;
-using DiscordLab.Bot.API.Attributes;
-using DiscordLab.Bot.API.Features;
-using DiscordLab.Bot.API.Utilities;
+using DiscordLab.Core.API.Attributes;
+using DiscordLab.Core.API.Extensions;
+using DiscordLab.Core.API.TranslationBuilders;
 using InventorySystem.Items.Scp1509;
 using LabApi.Events.Arguments.PlayerEvents;
 using LabApi.Events.Handlers;
-using LabApi.Features.Console;
 using PlayerRoles;
 using PlayerRoles.PlayableScps.Scp1507;
 using PlayerRoles.PlayableScps.Scp3114;
@@ -45,24 +42,13 @@ public static class Events
         if (ev.Attacker == null || ev.Attacker.Team.GetFaction() != ev.Player.Team.GetFaction())
             return;
 
-        if (Config.TeamKillChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.TeamKillChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("team kill logs", Config.TeamKillChannelId,
-                Config.GuildId));
-
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler))
             .AddCustomReplacer("role", ev.Player.Team.GetFaction().ToString());
 
-        Translation.TeamKill.SendToChannel(channel, builder);
+        Translation.TeamKill.Send(Config.TeamKillChannel, builder);
     }
 
     public static void OnCuffKill(PlayerDyingEventArgs ev)
@@ -70,23 +56,12 @@ public static class Events
         if (ev.Attacker == null || !ev.Player.IsDisarmed || (ev.Attacker.IsSCP && Config.ScpIgnoreCuffed))
             return;
 
-        if (Config.CuffedChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.CuffedChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("cuff kill logs", Config.CuffedChannelId,
-                Config.GuildId));
-
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
 
-        Translation.CuffedPlayerDeath.SendToChannel(channel, builder);
+        Translation.CuffedPlayerDeath.Send(Config.CuffedChannel, builder);
     }
 
     public static void OnDeath(PlayerDyingEventArgs ev)
@@ -95,22 +70,12 @@ public static class Events
             ev.Attacker.Team.GetFaction() == ev.Player.Team.GetFaction())
             return;
 
-        if (Config.ChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.ChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(LoggingUtils.GenerateMissingChannelMessage("kill logs", Config.ChannelId, Config.GuildId));
-
-            return;
-        }
-
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("target", ev.Player)
             .AddPlayer("player", ev.Attacker)
             .AddCustomReplacer("cause", ConvertToString(ev.DamageHandler));
 
-        Translation.PlayerDeath.SendToChannel(channel, builder);
+        Translation.PlayerDeath.Send(Config.Channel, builder);
     }
 
     public static void OnOwnDeath(PlayerDyingEventArgs ev)
@@ -118,28 +83,17 @@ public static class Events
         if (ev.Attacker != null)
             return;
 
-        if (Config.SelfChannelId == 0)
-            return;
-
-        if (!Client.TryGetOrAddChannel(Config.SelfChannelId, out SocketTextChannel channel))
-        {
-            Logger.Error(
-                LoggingUtils.GenerateMissingChannelMessage("self kill logs", Config.SelfChannelId, Config.GuildId));
-
-            return;
-        }
-
         string converted = ConvertToString(ev.DamageHandler);
 
         // usually because of disconnect, only way to really track rn
         if (converted == "Unknown")
             return;
 
-        TranslationBuilder builder = new TranslationBuilder()
+        TranslationBuilder builder = new PlayerTranslationBuilder()
             .AddPlayer("player", ev.Player)
             .AddCustomReplacer("cause", converted);
 
-        Translation.PlayerDeathSelf.SendToChannel(channel, builder);
+        Translation.PlayerDeathSelf.Send(Config.SelfChannel, builder);
     }
 
     private static readonly Dictionary<byte, string> Translations = new()
