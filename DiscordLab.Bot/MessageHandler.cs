@@ -1,5 +1,8 @@
 namespace DiscordLab.Bot;
 
+extern alias DiscordNet;
+using ActivityType = DiscordNet::Discord.ActivityType;
+
 using System.Collections.ObjectModel;
 using Discord;
 using Discord.Rest;
@@ -198,12 +201,12 @@ public class MessageHandler : Core.MessageHandler
         await Client.SocketClient.SetStatusAsync(userStatus);
     }
 
-    public override async Task EditActivity(string activity, Core.API.Enums.ActivityType type)
+    public override async Task EditActivity(string activity, DiscordLab.Core.API.Enums.ActivityType type)
     {
-        Discord.ActivityType activityType = type switch
+        ActivityType activityType = type switch
         {
-            Core.API.Enums.ActivityType.Playing => Discord.ActivityType.Playing,
-            Core.API.Enums.ActivityType.Custom => Discord.ActivityType.CustomStatus,
+            Core.API.Enums.ActivityType.Playing => ActivityType.Playing,
+            Core.API.Enums.ActivityType.Custom => ActivityType.CustomStatus,
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, null)
         };
 
